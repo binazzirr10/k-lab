@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Lab AI — Университеты Кореи</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .universities-container {
+            max-width: 1200px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+        }
+
+        .universities-header {
+            background: white;
+            border-radius: 60px;
+            padding: 40px;
+            margin-bottom: 40px;
+            text-align: center;
+            border: 2px solid #ffb5b5;
+        }
+
+        .universities-title {
+            font-size: 48px;
+            color: #ff9e9e;
+            margin-bottom: 10px;
+        }
+
+        .filter-section {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 30px;
+            background: white;
+            padding: 20px;
+            border-radius: 50px;
+        }
+
+        .filter-btn {
+            padding: 12px 25px;
+            border: 2px solid #ffe4e4;
+            border-radius: 40px;
+            background: white;
+            color: #888;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: #ffb5b5;
+            color: white;
+            border-color: #ffb5b5;
+        }
+
+        .universities-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 25px;
+        }
+
+        .university-card {
+            background: white;
+            border-radius: 40px;
+            padding: 25px;
+            box-shadow: 0 15px 40px rgba(255, 181, 181, 0.1);
+            transition: all 0.3s;
+            cursor: pointer;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .university-card:hover {
+            transform: translateY(-10px);
+            border-color: #ffb5b5;
+            box-shadow: 0 25px 50px rgba(255, 181, 181, 0.2);
+        }
+
+        .university-card::before {
+            content: "🎓";
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 50px;
+            opacity: 0.1;
+        }
+
+        .uni-rank {
+            background: linear-gradient(135deg, #ffb5b5, #b5d1a3);
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .uni-name {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff9e9e;
+            margin-bottom: 5px;
+        }
+
+        .uni-name-kr {
+            font-size: 18px;
+            color: #b5d1a3;
+            margin-bottom: 10px;
+        }
+
+        .uni-location {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .uni-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+        }
+
+        .uni-badge {
+            background: #fff5f5;
+            color: #ff9e9e;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .uni-badge.topik {
+            background: #ffe4e4;
+            color: #ff6b6b;
+        }
+
+        .uni-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+        }
+
+        .uni-deadline {
+            background: #ffb5b5;
+            color: white;
+            padding: 5px 12px;
+            border-radius: 30px;
+            font-size: 12px;
+        }
+
+        .uni-detail-btn {
+            color: #ff9e9e;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 50px;
+        }
+
+        .page-btn {
+            width: 40px;
+            height: 40px;
+            border: 2px solid #ffe4e4;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .page-btn:hover, .page-btn.active {
+            background: #ffb5b5;
+            color: white;
+            border-color: #ffb5b5;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <div class="dashboard-nav">
+        <div class="nav-logo">
+            <span class="logo-k">K</span><span class="logo-lab">-Lab AI</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">📊 Дашборд</a>
+            <a href="courses.html" class="nav-link">📚 Курсы</a>
+            <a href="speaking.html" class="nav-link">🎙 Speaking Lab</a>
+            <a href="kdrama.html" class="nav-link">📺 K-Drama</a>
+            <a href="universities.html" class="nav-link active">🎓 Университеты</a>
+        </div>
+        
+        <div class="nav-user">
+            <div class="user-avatar">👩‍🎓</div>
+            <div class="user-info">
+                <div class="user-name" id="userNameDisplay">Анна</div>
+                <div class="user-level">Уровень A1</div>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪</button>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="universities-container">
+        <!-- Заголовок -->
+        <div class="universities-header">
+            <h1 class="universities-title">🎓 Университеты Кореи</h1>
+            <p style="color: #888; max-width: 600px; margin: 0 auto;">
+                Твоя цель — поступление в лучшие вузы Кореи. Выбирай университет и смотри требования!
+            </p>
+        </div>
+
+        <!-- Фильтры -->
+        <div class="filter-section">
+            <button class="filter-btn active">Все</button>
+            <button class="filter-btn">Сеул</button>
+            <button class="filter-btn">Тэджон</button>
+            <button class="filter-btn">Пусан</button>
+            <button class="filter-btn">TOPIK 3</button>
+            <button class="filter-btn">TOPIK 4</button>
+            <button class="filter-btn">Английские программы</button>
+        </div>
+
+        <!-- Сетка университетов -->
+        <div class="universities-grid">
+            <!-- KAIST -->
+            <div class="university-card" onclick="location.href='university-detail.html?id=kaist'">
+                <div class="uni-rank">#1</div>
+                <div class="uni-name">KAIST</div>
+                <div class="uni-name-kr">한국과학기술원</div>
+                <div class="uni-location">
+                    <span>📍</span> Тэджон
+                </div>
+                <div class="uni-badges">
+                    <span class="uni-badge">🏆 Топ-30 мира</span>
+                    <span class="uni-badge">🔬 Наука и техника</span>
+                    <span class="uni-badge topik">TOPIK 4</span>
+                </div>
+                <div style="color: #666; font-size: 14px; margin: 10px 0;">
+                    Лучший научно-технический университет Кореи. Высокий уровень английских программ.
+                </div>
+                <div class="uni-footer">
+                    <span class="uni-deadline">📅 Дедлайн: 30.04</span>
+                    <a href="university-detail.html?id=kaist" class="uni-detail-btn">Подробнее →</a>
+                </div>
+            </div>
+
+            <!-- Seoul National University -->
+            <div class="university-card" onclick="location.href='university-detail.html?id=snu'">
+                <div class="uni-rank">#2</div>
+                <div class="uni-name">Seoul National University</div>
+                <div class="uni-name-kr">서울대학교</div>
+                <div class="uni-location">
+                    <span>📍</span> Сеул
+                </div>
+                <div class="uni-badges">
+                    <span class="uni-badge">🏆 Престиж</span>
+                    <span class="uni-badge">📚 Все направления</span>
+                    <span class="uni-badge topik">TOPIK 5</span>
+                </div>
+                <div style="color: #666; font-size: 14px; margin: 10px 0;">
+                    Главный университет Кореи. Высочайшие требования и конкуренция.
+                </div>
+                <div class="uni-footer">
+                    <span class="uni-deadline">📅 Дедлайн: 15.05</span>
+                    <a href="university-detail.html?id=snu" class="uni-detail-btn">Подробнее →</a>
+                </div>
+            </div>
+
+            <!-- Yonsei University -->
+            <div class="university-card" onclick="location.href='university-detail.html?id=yonsei'">
+                <div class="uni-rank">#3</div>
+                <div class="uni-name">Yonsei University</div>
+                <div class="uni-name-kr">연세대학교</div>
+                <div class="uni-location">
+                    <span>📍</span> Сеул
+                </div>
+                <div class="uni-badges">
+                    <span class="uni-badge">🏆 SKY</span>
+                    <span class="uni-badge">🌏 Международный</span>
+                    <span class="uni-badge topik">TOPIK 4</span>
+                </div>
+                <div style="color: #666; font-size: 14px; margin: 10px 0;">
+                    Один из трёх лучших университетов (SKY). Сильные гуманитарные науки.
+                </div>
+                <div class="uni-footer">
+                    <span class="uni-deadline">📅 Дедлайн: 20.05</span>
+                    <a href="university-detail.html?id=yonsei" class="uni-detail-btn">Подробнее →</a>
+                </div>
+            </div>
+
+            <!-- Korea University -->
+            <div class="university-card" onclick="location.href='university-detail.html?id=korea'">
+                <div class="uni-rank">#4</div>
+                <div class="uni-name">Korea University</div>
+                <div class="uni-name-kr">고려대학교</div>
+                <div class="uni-location">
+                    <span>📍</span> Сеул
+                </div>
+                <div class="uni-badges">
+                    <span class="uni-badge">🏆 SKY</span>
+                    <span class="uni-badge">⚖️ Юриспруденция</span>
+                    <span class="uni-badge topik">TOPIK 4</span>
+                </div>
+                <div style="color: #666; font-size: 14px; margin: 10px 0;">
+                    Известен сильными программами по праву и бизнесу.
+                </div>
+                <div class="uni-footer">
+                    <span class="uni-deadline">📅 Дедлайн: 25.05</span>
+                    <a href="university-detail.html?id=korea" class="uni-detail-btn">Подробнее →</a>
+                </div>
+            </div>
+
+            <!-- POSTECH -->
+            <div class="university-card" onclick="location.href='university-detail.html?id=postech'">
+                <div class="uni-rank">#5</div>
+                <div class="uni-name">POSTECH</div>
+                <div class="uni-name-kr">포항공과대학교</div>
+                <div class="uni-location">
+                    <span>📍</span> Пхохан
+                </div>
+                <div class="uni-badges">
+                    <span class="uni-badge">🔬 Наука</span>
+                    <span class="uni-badge">🎯 Маленькие группы</span>
+                    <span class="uni-badge topik">TOPIK 3</span>
+                </div>
+                <div style="color: #666; font-size: 14px; margin: 10px 0;">
+                    Частный исследовательский университет с отличным финансированием.
+                </div>
+                <div class="uni-footer">
+                    <span class="uni-deadline">📅 Дедлайн: 10.05</span>
+                    <a href="university-detail.html?id=postech" class="uni-detail-btn">Подробнее →</a>
+                </div>
+            </div>
+
+            <!-- Sungkyunkwan University -->
+            <div class="university-card" onclick="location.href='university-detail.html?id=skku'">
+                <div class="uni-rank">#6</div>
+                <div class="uni-name">Sungkyunkwan University</div>
+                <div class="uni-name-kr">성균관대학교</div>
+                <div class="uni-location">
+                    <span>📍</span> Сеул/Сувон
+                </div>
+                <div class="uni-badges">
+                    <span class="uni-badge">🏛️ Исторический</span>
+                    <span class="uni-badge">🤝 Сотрудничество с Samsung</span>
+                    <span class="uni-badge topik">TOPIK 3</span>
+                </div>
+                <div style="color: #666; font-size: 14px; margin: 10px 0;">
+                    Один из старейших университетов, сильные инженерные программы.
+                </div>
+                <div class="uni-footer">
+                    <span class="uni-deadline">📅 Дедлайн: 18.05</span>
+                    <a href="university-detail.html?id=skku" class="uni-detail-btn">Подробнее →</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Пагинация -->
+        <div class="pagination">
+            <div class="page-btn active">1</div>
+            <div class="page-btn">2</div>
+            <div class="page-btn">3</div>
+            <div class="page-btn">→</div>
+        </div>
+    </div>
+
+    <script>
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>

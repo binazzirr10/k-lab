@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Lab AI — Админ-панель</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(145deg, #fff5f5 0%, #f5f9f0 100%);
+            min-height: 100vh;
+        }
+
+        /* Навигация */
+        .admin-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: white;
+            box-shadow: 0 5px 20px rgba(255, 181, 181, 0.2);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .nav-logo {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .logo-k {
+            background: linear-gradient(135deg, #ff9e9e, #ffb5b5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Gaegu', cursive;
+        }
+
+        .logo-lab {
+            color: #b5d1a3;
+            font-weight: 300;
+            font-family: 'Gaegu', cursive;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #888;
+            padding: 8px 20px;
+            border-radius: 40px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .nav-link:hover {
+            background: #fff5f5;
+            color: #ff9e9e;
+        }
+
+        .nav-link.active {
+            background: #ffb5b5;
+            color: white;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffb5b5, #b5d1a3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #ffb5b5;
+        }
+
+        /* Основной контейнер */
+        .admin-container {
+            max-width: 1200px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+        }
+
+        /* Заголовок */
+        .admin-header {
+            background: white;
+            border-radius: 60px;
+            padding: 30px 40px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 2px solid #ffb5b5;
+        }
+
+        .admin-title {
+            font-size: 36px;
+            color: #ff9e9e;
+            font-family: 'Gaegu', cursive;
+        }
+
+        .admin-date {
+            color: #b5d1a3;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 40px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(255, 181, 181, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ffb5b5, #b5d1a3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+        }
+
+        .stat-info h3 {
+            color: #888;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ff9e9e;
+        }
+
+        /* Таблица учеников */
+        .students-table {
+            background: white;
+            border-radius: 60px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(255, 181, 181, 0.1);
+        }
+
+        .table-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .table-header h2 {
+            color: #ff9e9e;
+            font-size: 28px;
+            font-family: 'Gaegu', cursive;
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            background: #f8f8f8;
+            border-radius: 40px;
+            padding: 5px 5px 5px 20px;
+        }
+
+        .search-box input {
+            border: none;
+            background: none;
+            padding: 10px;
+            width: 200px;
+            outline: none;
+        }
+
+        .search-box button {
+            background: #ffb5b5;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            color: white;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th {
+            text-align: left;
+            padding: 15px 10px;
+            color: #ff9e9e;
+            border-bottom: 2px solid #ffe4e4;
+            font-size: 16px;
+        }
+
+        td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #ffe4e4;
+            color: #666;
+        }
+
+        .status-badge {
+            background: #b5d1a3;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 30px;
+            font-size: 12px;
+            display: inline-block;
+        }
+
+        .status-badge.inactive {
+            background: #ffb5b5;
+        }
+
+        .action-btn {
+            background: none;
+            border: 2px solid #ffe4e4;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            cursor: pointer;
+            margin: 0 3px;
+            transition: all 0.3s;
+        }
+
+        .action-btn:hover {
+            background: #ffb5b5;
+            border-color: #ffb5b5;
+            color: white;
+        }
+
+        .progress-bar {
+            width: 100px;
+            height: 6px;
+            background: #ffe4e4;
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffb5b5, #b5d1a3);
+            border-radius: 3px;
+        }
+
+        /* Модальное окно */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            border-radius: 60px;
+            padding: 40px;
+            max-width: 400px;
+            width: 90%;
+            position: relative;
+        }
+
+        .modal-close {
+            position: absolute;
+            top: 20px;
+            right: 25px;
+            font-size: 30px;
+            cursor: pointer;
+            color: #ffb5b5;
+        }
+
+        .modal h3 {
+            color: #ff9e9e;
+            font-size: 28px;
+            margin-bottom: 20px;
+            font-family: 'Gaegu', cursive;
+        }
+
+        .modal input, .modal select {
+            width: 100%;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border: 2px solid #ffe4e4;
+            border-radius: 40px;
+            font-size: 15px;
+        }
+
+        .modal-btns {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .save-btn {
+            flex: 1;
+            background: #b5d1a3;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .cancel-btn {
+            flex: 1;
+            background: #ffb5b5;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 40px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <div class="admin-nav">
+        <div class="nav-logo">
+            <span class="logo-k">K</span><span class="logo-lab">-Lab AI</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">📊 Дашборд</a>
+            <a href="courses.html" class="nav-link">📚 Курсы</a>
+            <a href="admin.html" class="nav-link active">👑 Админ</a>
+        </div>
+        
+        <div class="nav-user">
+            <div class="user-avatar">👑</div>
+            <div class="user-info">
+                <div class="user-name" id="userName">Binazir</div>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪</button>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="admin-container">
+        <!-- Заголовок -->
+        <div class="admin-header">
+            <h1 class="admin-title">👑 Админ-панель</h1>
+            <div class="admin-date" id="currentDate"></div>
+        </div>
+
+        <!-- Статистика -->
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <div class="stat-icon">👥</div>
+                <div class="stat-info">
+                    <h3>Всего учеников</h3>
+                    <div class="stat-number" id="totalStudents">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">✅</div>
+                <div class="stat-info">
+                    <h3>Активных</h3>
+                    <div class="stat-number" id="activeStudents">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-info">
+                    <h3>Средний прогресс</h3>
+                    <div class="stat-number" id="avgProgress">0%</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">💰</div>
+                <div class="stat-info">
+                    <h3>Доход</h3>
+                    <div class="stat-number" id="totalRevenue">0 ₸</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Таблица учеников -->
+        <div class="students-table">
+            <div class="table-header">
+                <h2>📋 Список учеников</h2>
+                <div class="search-box">
+                    <input type="text" placeholder="Поиск..." id="searchInput">
+                    <button onclick="searchStudents()">🔍</button>
+                </div>
+            </div>
+
+            <table id="studentsTable">
+                <thead>
+                    <tr>
+                        <th>Имя</th>
+                        <th>Email</th>
+                        <th>Уровень</th>
+                        <th>Прогресс</th>
+                        <th>Статус</th>
+                        <th>Подписка до</th>
+                        <th>Действия</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsList">
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            Загрузка учеников...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Модальное окно редактирования -->
+    <div id="editModal" class="modal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closeModal()">&times;</span>
+            <h3>✏️ Редактировать ученика</h3>
+            
+            <input type="text" id="editName" placeholder="Имя">
+            <input type="email" id="editEmail" placeholder="Email">
+            <select id="editStatus">
+                <option value="active">Активен</option>
+                <option value="inactive">Заморожен</option>
+            </select>
+            
+            <div class="modal-btns">
+                <button class="save-btn" onclick="saveEdit()">Сохранить</button>
+                <button class="cancel-btn" onclick="closeModal()">Отмена</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    
+    <script>
+        // ========== НАСТРОЙКИ FIREBASE ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyCh3-Zt51KVS5d_nZNjNfZMsSyAyCC1xxA",
+            authDomain: "k-lab-18075.firebaseapp.com",
+            projectId: "k-lab-18075",
+            storageBucket: "k-lab-18075.firebasestorage.app",
+            messagingSenderId: "1044910537486",
+            appId: "1:1044910537486:web:539f48b621f1094b85755f"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // ========== ПРОВЕРКА АДМИНА ==========
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            const userData = userDoc.data();
+
+            if (userData?.role !== 'admin') {
+                window.location.href = 'dashboard.html';
+                return;
+            }
+
+            document.getElementById('userName').textContent = userData.name || 'Admin';
+            loadStudents();
+            loadStats();
+        });
+
+        // ========== ЗАГРУЗКА УЧЕНИКОВ ==========
+        async function loadStudents() {
+            const snapshot = await db.collection('users').where('role', '==', 'user').get();
+            const studentsList = document.getElementById('studentsList');
+            
+            if (snapshot.empty) {
+                studentsList.innerHTML = `
+                    <tr>
+                        <td colspan="7" style="text-align: center; padding: 40px;">
+                            Пока нет учеников
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            let html = '';
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                const endDate = data.subscription?.endDate ? new Date(data.subscription.endDate).toLocaleDateString() : 'Нет';
+                const status = data.subscription?.status === 'active' ? 'active' : 'inactive';
+                
+                html += `
+                    <tr>
+                        <td>${data.name || 'Без имени'}</td>
+                        <td>${data.email}</td>
+                        <td>A1</td>
+                        <td>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: ${data.stats?.lessonsCompleted ? data.stats.lessonsCompleted * 10 : 0}%"></div>
+                            </div>
+                        </td>
+                        <td><span class="status-badge ${status === 'active' ? '' : 'inactive'}">${status === 'active' ? 'Активен' : 'Заморожен'}</span></td>
+                        <td>${endDate}</td>
+                        <td>
+                            <button class="action-btn" onclick="editStudent('${doc.id}')">✏️</button>
+                            <button class="action-btn" onclick="toggleStatus('${doc.id}', '${status}')">${status === 'active' ? '🔒' : '🔓'}</button>
+                        </td>
+                    </tr>
+                `;
+            });
+
+            studentsList.innerHTML = html;
+        }
+
+        // ========== ЗАГРУЗКА СТАТИСТИКИ ==========
+        async function loadStats() {
+            const snapshot = await db.collection('users').get();
+            let total = 0;
+            let active = 0;
+            let totalXp = 0;
+            let totalRevenue = 0;
+
+            snapshot.forEach(doc => {
+                const data = doc.data();
+                total++;
+                if (data.subscription?.status === 'active') active++;
+                if (data.stats?.totalXp) totalXp += data.stats.totalXp;
+            });
+
+            const paymentsSnapshot = await db.collection('payments').get();
+            paymentsSnapshot.forEach(doc => {
+                totalRevenue += doc.data().amount || 0;
+            });
+
+            document.getElementById('totalStudents').textContent = total;
+            document.getElementById('activeStudents').textContent = active;
+            document.getElementById('avgProgress').textContent = total ? Math.round((active / total) * 100) + '%' : '0%';
+            document.getElementById('totalRevenue').textContent = totalRevenue.toLocaleString() + ' ₸';
+        }
+
+        // ========== РЕДАКТИРОВАНИЕ ==========
+        let currentEditId = null;
+
+        window.editStudent = function(id) {
+            currentEditId = id;
+            document.getElementById('editModal').style.display = 'flex';
+        };
+
+        window.closeModal = function() {
+            document.getElementById('editModal').style.display = 'none';
+        };
+
+        window.saveEdit = async function() {
+            const name = document.getElementById('editName').value;
+            const email = document.getElementById('editEmail').value;
+            const status = document.getElementById('editStatus').value;
+
+            if (currentEditId) {
+                await db.collection('users').doc(currentEditId).update({
+                    name: name,
+                    email: email,
+                    'subscription.status': status
+                });
+                loadStudents();
+                closeModal();
+            }
+        };
+
+        // ========== ИЗМЕНЕНИЕ СТАТУСА ==========
+        window.toggleStatus = async function(id, currentStatus) {
+            const newStatus = currentStatus === 'active' ? 'inactive' : 'active';
+            await db.collection('users').doc(id).update({
+                'subscription.status': newStatus
+            });
+            loadStudents();
+        };
+
+        // ========== ПОИСК ==========
+        window.searchStudents = function() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            alert('Поиск: ' + query + ' (функция будет добавлена позже)');
+        };
+
+        // ========== ВЫХОД ==========
+        window.logout = function() {
+            auth.signOut();
+            window.location.href = 'index.html';
+        };
+
+        // ========== ДАТА ==========
+        document.getElementById('currentDate').textContent = new Date().toLocaleDateString('ru-RU', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        });
+    </script>
+</body>
+</html>

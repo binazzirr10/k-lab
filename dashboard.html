@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Lab AI — Личный кабинет</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Gaegu:wght@300;400;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background: linear-gradient(145deg, #fff5f5 0%, #f5f9f0 100%);
+            min-height: 100vh;
+        }
+
+        /* Навигация */
+        .dashboard-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 40px;
+            background: white;
+            box-shadow: 0 5px 20px rgba(255, 181, 181, 0.2);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+        }
+
+        .nav-logo {
+            font-size: 28px;
+            font-weight: 700;
+        }
+
+        .logo-k {
+            background: linear-gradient(135deg, #ff9e9e, #ffb5b5);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-family: 'Gaegu', cursive;
+        }
+
+        .logo-lab {
+            color: #b5d1a3;
+            font-weight: 300;
+            font-family: 'Gaegu', cursive;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #888;
+            padding: 8px 20px;
+            border-radius: 40px;
+            transition: all 0.3s;
+            font-weight: 600;
+        }
+
+        .nav-link:hover {
+            background: #fff5f5;
+            color: #ff9e9e;
+        }
+
+        .nav-link.active {
+            background: #ffb5b5;
+            color: white;
+        }
+
+        .nav-user {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #ffb5b5, #b5d1a3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+        }
+
+        .logout-btn {
+            background: none;
+            border: none;
+            font-size: 20px;
+            cursor: pointer;
+            color: #ffb5b5;
+        }
+
+        /* Основной контейнер */
+        .dashboard-container {
+            max-width: 1200px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+        }
+
+        /* Приветствие */
+        .welcome-section {
+            background: white;
+            border-radius: 60px;
+            padding: 40px;
+            margin-bottom: 30px;
+            border: 2px solid #ffb5b5;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-section::before {
+            content: "🌸 🎋 🏮";
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 60px;
+            opacity: 0.1;
+        }
+
+        .welcome-title {
+            font-size: 48px;
+            color: #ff9e9e;
+            font-family: 'Gaegu', cursive;
+            margin-bottom: 10px;
+        }
+
+        .welcome-subtitle {
+            color: #b5d1a3;
+            font-size: 18px;
+        }
+
+        /* Статистика */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 40px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(255, 181, 181, 0.1);
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #ffb5b5, #b5d1a3);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 30px;
+            color: white;
+        }
+
+        .stat-info h3 {
+            color: #888;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: 700;
+            color: #ff9e9e;
+        }
+
+        /* Прогресс по урокам */
+        .progress-section {
+            background: white;
+            border-radius: 60px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .section-title {
+            color: #ff9e9e;
+            font-size: 28px;
+            font-family: 'Gaegu', cursive;
+            margin-bottom: 20px;
+        }
+
+        .lesson-progress {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .lesson-info {
+            flex: 1;
+        }
+
+        .lesson-name {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            color: #666;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #ffe4e4;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #ffb5b5, #b5d1a3);
+            border-radius: 5px;
+            transition: width 0.3s;
+        }
+
+        /* Награды */
+        .badges-section {
+            background: white;
+            border-radius: 60px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+
+        .badges-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .badge {
+            text-align: center;
+            padding: 20px;
+            background: #fff5f5;
+            border-radius: 30px;
+            transition: all 0.3s;
+        }
+
+        .badge:hover {
+            transform: translateY(-5px);
+            background: #ffe4e4;
+        }
+
+        .badge-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        .badge-name {
+            color: #ff9e9e;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Рекомендации */
+        .recommendations {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+        }
+
+        .rec-card {
+            background: white;
+            border-radius: 40px;
+            padding: 25px;
+            border-left: 5px solid #ffb5b5;
+        }
+
+        .rec-icon {
+            font-size: 30px;
+            margin-bottom: 10px;
+        }
+
+        .rec-card h4 {
+            color: #ff9e9e;
+            margin-bottom: 10px;
+        }
+
+        .rec-card p {
+            color: #888;
+            font-size: 14px;
+            margin-bottom: 15px;
+        }
+
+        .rec-btn {
+            background: none;
+            border: 2px solid #ffb5b5;
+            color: #ff9e9e;
+            padding: 8px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .rec-btn:hover {
+            background: #ffb5b5;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <div class="dashboard-nav">
+        <div class="nav-logo">
+            <span class="logo-k">K</span><span class="logo-lab">-Lab AI</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link active">📊 Дашборд</a>
+            <a href="courses.html" class="nav-link">📚 Курсы</a>
+            <a href="speaking.html" class="nav-link">🎙 Speaking Lab</a>
+            <a href="kdrama.html" class="nav-link">📺 K-Drama</a>
+            <a href="universities.html" class="nav-link">🎓 Университеты</a>
+        </div>
+        
+        <div class="nav-user">
+            <div class="user-avatar" id="userAvatar">👩‍🎓</div>
+            <div class="user-info">
+                <div class="user-name" id="userName">Загрузка...</div>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪</button>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="dashboard-container">
+        <!-- Приветствие -->
+        <div class="welcome-section">
+            <h1 class="welcome-title" id="welcomeMessage">С возвращением, друг! 🌸</h1>
+            <p class="welcome-subtitle">Продолжай учить корейский с любовью 💕</p>
+        </div>
+
+        <!-- Статистика -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-info">
+                    <h3>Дней подряд</h3>
+                    <div class="stat-number" id="streak">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">⭐</div>
+                <div class="stat-info">
+                    <h3>Всего XP</h3>
+                    <div class="stat-number" id="totalXp">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-info">
+                    <h3>Уроков пройдено</h3>
+                    <div class="stat-number" id="lessonsDone">0</div>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-info">
+                    <h3>Точность</h3>
+                    <div class="stat-number" id="accuracy">0%</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Прогресс по урокам -->
+        <div class="progress-section">
+            <h2 class="section-title">📚 Прогресс по урокам</h2>
+            
+            <div class="lesson-progress">
+                <div class="lesson-info">
+                    <div class="lesson-name">
+                        <span>Урок 1: Корейский алфавит</span>
+                        <span id="lesson1Progress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="lesson1Bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lesson-progress">
+                <div class="lesson-info">
+                    <div class="lesson-name">
+                        <span>Урок 2: Давайте познакомимся!</span>
+                        <span id="lesson2Progress">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="lesson2Bar" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Награды -->
+        <div class="badges-section">
+            <h2 class="section-title">🏆 Твои награды</h2>
+            
+            <div class="badges-grid" id="badgesContainer">
+                <div class="badge" style="opacity: 0.5;">
+                    <div class="badge-icon">🎯</div>
+                    <div class="badge-name">Первые шаги</div>
+                </div>
+                <div class="badge" style="opacity: 0.5;">
+                    <div class="badge-icon">🔥</div>
+                    <div class="badge-name">7 дней</div>
+                </div>
+                <div class="badge" style="opacity: 0.5;">
+                    <div class="badge-icon">📚</div>
+                    <div class="badge-name">Ученик A1</div>
+                </div>
+                <div class="badge" style="opacity: 0.5;">
+                    <div class="badge-icon">🎤</div>
+                    <div class="badge-name">Говорун</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Рекомендации -->
+        <h2 class="section-title">🤍 Рекомендации для тебя</h2>
+        <div class="recommendations">
+            <div class="rec-card">
+                <div class="rec-icon">📖</div>
+                <h4>Урок 1</h4>
+                <p>Повтори гласные и согласные</p>
+                <button class="rec-btn" onclick="location.href='course-detail-1.html'">Продолжить</button>
+            </div>
+            <div class="rec-card">
+                <div class="rec-icon">🎤</div>
+                <h4>Speaking Lab</h4>
+                <p>Потренируй произношение</p>
+                <button class="rec-btn" onclick="location.href='speaking.html'">Начать</button>
+            </div>
+            <div class="rec-card">
+                <div class="rec-icon">📺</div>
+                <h4>K-Drama</h4>
+                <p>Посмотри сцену из дорамы</p>
+                <button class="rec-btn" onclick="location.href='kdrama.html'">Смотреть</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
+
+    <script>
+        // ========== НАСТРОЙКИ FIREBASE ==========
+        const firebaseConfig = {
+            apiKey: "AIzaSyCh3-Zt51KVS5d_nZNjNfZMsSyAyCC1xxA",
+            authDomain: "k-lab-18075.firebaseapp.com",
+            projectId: "k-lab-18075",
+            storageBucket: "k-lab-18075.firebasestorage.app",
+            messagingSenderId: "1044910537486",
+            appId: "1:1044910537486:web:539f48b621f1094b85755f"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+        const auth = firebase.auth();
+
+        // ========== ПРОВЕРКА АВТОРИЗАЦИИ ==========
+        auth.onAuthStateChanged(async (user) => {
+            if (!user) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Загружаем данные пользователя
+            const userDoc = await db.collection('users').doc(user.uid).get();
+            const userData = userDoc.data();
+
+            if (!userData) {
+                window.location.href = 'index.html';
+                return;
+            }
+
+            // Если админ — отправляем в админку
+            if (userData.role === 'admin') {
+                window.location.href = 'admin.html';
+                return;
+            }
+
+            // Показываем имя пользователя
+            document.getElementById('userName').textContent = userData.name || 'Ученик';
+            document.getElementById('welcomeMessage').textContent = `С возвращением, ${userData.name || 'друг'}! 🌸`;
+
+            // Загружаем статистику
+            loadStats(user.uid, userData);
+            loadLessonsProgress(user.uid);
+            updateBadges(userData);
+        });
+
+        // ========== ЗАГРУЗКА СТАТИСТИКИ ==========
+        function loadStats(userId, userData) {
+            document.getElementById('streak').textContent = userData.stats?.streak || 0;
+            document.getElementById('totalXp').textContent = userData.stats?.totalXp || 0;
+            document.getElementById('lessonsDone').textContent = userData.stats?.lessonsCompleted || 0;
+            
+            const accuracy = userData.stats?.totalXp ? Math.min(100, Math.round((userData.stats.totalXp / 500) * 100)) : 0;
+            document.getElementById('accuracy').textContent = accuracy + '%';
+        }
+
+        // ========== ЗАГРУЗКА ПРОГРЕССА УРОКОВ ==========
+        async function loadLessonsProgress(userId) {
+            const lessonsSnapshot = await db.collection('lessons').where('userId', '==', userId).get();
+
+            lessonsSnapshot.forEach(doc => {
+                const data = doc.data();
+                if (data.lessonId === '1') {
+                    document.getElementById('lesson1Progress').textContent = data.progress + '%';
+                    document.getElementById('lesson1Bar').style.width = data.progress + '%';
+                }
+                if (data.lessonId === '2') {
+                    document.getElementById('lesson2Progress').textContent = data.progress + '%';
+                    document.getElementById('lesson2Bar').style.width = data.progress + '%';
+                }
+            });
+        }
+
+        // ========== ОБНОВЛЕНИЕ НАГРАД ==========
+        function updateBadges(userData) {
+            const badges = document.querySelectorAll('.badge');
+            const lessonsDone = userData.stats?.lessonsCompleted || 0;
+            const streak = userData.stats?.streak || 0;
+
+            // Первые шаги — 1 урок
+            if (lessonsDone >= 1) {
+                badges[0].style.opacity = '1';
+            }
+
+            // 7 дней подряд
+            if (streak >= 7) {
+                badges[1].style.opacity = '1';
+            }
+
+            // Ученик A1 — 5 уроков
+            if (lessonsDone >= 5) {
+                badges[2].style.opacity = '1';
+            }
+        }
+
+        // ========== ВЫХОД ==========
+        window.logout = function() {
+            auth.signOut();
+            window.location.href = 'index.html';
+        };
+    </script>
+</body>
+</html>

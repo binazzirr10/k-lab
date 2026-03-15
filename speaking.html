@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>K-Lab AI — Speaking Lab</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        .speaking-container {
+            max-width: 1000px;
+            margin: 100px auto 40px;
+            padding: 0 20px;
+        }
+        
+        .speaking-header {
+            background: white;
+            border-radius: 60px;
+            padding: 40px;
+            margin-bottom: 30px;
+            text-align: center;
+            border: 2px solid #ffb5b5;
+        }
+        
+        .speaking-title {
+            font-size: 48px;
+            color: #ff9e9e;
+            margin-bottom: 10px;
+        }
+        
+        .practice-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+        
+        .practice-card {
+            background: white;
+            border-radius: 40px;
+            padding: 30px;
+            box-shadow: 0 15px 40px rgba(255, 181, 181, 0.1);
+        }
+        
+        .phrase-box {
+            background: #f8f8f8;
+            border-radius: 30px;
+            padding: 30px;
+            text-align: center;
+            font-size: 32px;
+            color: #ff9e9e;
+            margin: 20px 0;
+        }
+        
+        .mic-big {
+            width: 100px;
+            height: 100px;
+            background: linear-gradient(135deg, #ffb5b5, #b5d1a3);
+            border: none;
+            border-radius: 50%;
+            font-size: 50px;
+            color: white;
+            cursor: pointer;
+            margin: 20px auto;
+            box-shadow: 0 15px 40px rgba(255, 181, 181, 0.4);
+            transition: all 0.3s;
+        }
+        
+        .mic-big:hover {
+            transform: scale(1.1);
+        }
+        
+        .mic-big.recording {
+            background: #ff6b6b;
+            animation: pulse 1s infinite;
+        }
+        
+        .score-circle {
+            width: 120px;
+            height: 120px;
+            margin: 20px auto;
+        }
+        
+        .history-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            border-bottom: 1px solid #ffe4e4;
+        }
+        
+        .history-score {
+            font-size: 24px;
+            font-weight: 700;
+            color: #ff9e9e;
+            min-width: 60px;
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Навигация -->
+    <div class="dashboard-nav">
+        <div class="nav-logo">
+            <span class="logo-k">K</span><span class="logo-lab">-Lab AI</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="dashboard.html" class="nav-link">📊 Дашборд</a>
+            <a href="courses.html" class="nav-link">📚 Курсы</a>
+            <a href="speaking.html" class="nav-link active">🎙 Speaking Lab</a>
+            <a href="kdrama.html" class="nav-link">📺 K-Drama</a>
+            <a href="universities.html" class="nav-link">🎓 Университеты</a>
+        </div>
+        
+        <div class="nav-user">
+            <div class="user-avatar">👩‍🎓</div>
+            <div class="user-info">
+                <div class="user-name" id="userNameDisplay">Анна</div>
+                <div class="user-level">Уровень A1</div>
+            </div>
+            <button class="logout-btn" onclick="logout()">🚪</button>
+        </div>
+    </div>
+
+    <!-- Основной контент -->
+    <div class="speaking-container">
+        <div class="speaking-header">
+            <h1 class="speaking-title">🎙 Speaking Lab</h1>
+            <p>Тренируй произношение с AI анализом</p>
+        </div>
+        
+        <!-- Сетка практики -->
+        <div class="practice-grid">
+            <!-- Карточка текущей практики -->
+            <div class="practice-card">
+                <h2 style="color: #ff9e9e; margin-bottom: 20px;">🎯 Текущее задание</h2>
+                
+                <div class="phrase-box">
+                    안녕하세요, 반갑습니다
+                </div>
+                
+                <button class="mic-big" onclick="startPractice()">🎤</button>
+                
+                <div id="practiceStatus" style="text-align: center; color: #888;">
+                    Нажми на микрофон и прочитай фразу
+                </div>
+            </div>
+            
+            <!-- Карточка результатов -->
+            <div class="practice-card">
+                <h2 style="color: #ff9e9e; margin-bottom: 20px;">📊 Твой прогресс</h2>
+                
+                <div class="score-circle">
+                    <svg viewBox="0 0 36 36" style="width: 100%;">
+                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                              fill="none" stroke="#ffe4e4" stroke-width="3"/>
+                        <path d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" 
+                              fill="none" stroke="#ff9e9e" stroke-width="3" stroke-dasharray="85, 100" 
+                              stroke-linecap="round"/>
+                        <text x="18" y="20.35" text-anchor="middle" fill="#ff9e9e" font-size="8" font-weight="700">85%</text>
+                    </svg>
+                </div>
+                
+                <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-weight: 700; color: #b5d1a3;">78%</div>
+                        <div style="font-size: 12px;">Беглость</div>
+                    </div>
+                    <div style="text-align: center;">
+                        <div style="font-size: 20px; font-weight: 700; color: #ffb5b5;">82%</div>
+                        <div style="font-size: 12px;">Точность</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- История практик -->
+        <div class="practice-card">
+            <h2 style="color: #ff9e9e; margin-bottom: 20px;">📜 История</h2>
+            
+            <div class="history-item">
+                <div class="history-score">95%</div>
+                <div style="flex: 1;">안녕하세요</div>
+                <div style="color: #b5d1a3;">5 мин назад</div>
+            </div>
+            
+            <div class="history-item">
+                <div class="history-score">82%</div>
+                <div style="flex: 1;">감사합니다</div>
+                <div style="color: #b5d1a3;">15 мин назад</div>
+            </div>
+            
+            <div class="history-item">
+                <div class="history-score">78%</div>
+                <div style="flex: 1;">반갑습니다</div>
+                <div style="color: #b5d1a3;">1 час назад</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+        
+        async function startPractice() {
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                
+                mediaRecorder = new MediaRecorder(stream);
+                audioChunks = [];
+                
+                mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+                
+                mediaRecorder.onstop = () => {
+                    const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
+                    document.getElementById('practiceStatus').innerHTML = '🤖 AI анализирует...';
+                    
+                    setTimeout(() => {
+                        const score = Math.floor(Math.random() * 30) + 70;
+                        document.getElementById('practiceStatus').innerHTML = 
+                            `✅ Результат: ${score}% - Хорошая работа!`;
+                    }, 2000);
+                };
+                
+                mediaRecorder.start();
+                document.getElementById('practiceStatus').innerHTML = '🎙️ Запись... Говорите!';
+                document.querySelector('.mic-big').classList.add('recording');
+                
+                setTimeout(() => {
+                    if (mediaRecorder?.state === 'recording') {
+                        mediaRecorder.stop();
+                        mediaRecorder.stream.getTracks().forEach(t => t.stop());
+                        document.querySelector('.mic-big').classList.remove('recording');
+                    }
+                }, 5000);
+                
+            } catch (error) {
+                alert('❌ Доступ к микрофону не получен!');
+            }
+        }
+        
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = 'index.html';
+        }
+    </script>
+</body>
+</html>
