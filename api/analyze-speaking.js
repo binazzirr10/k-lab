@@ -14,7 +14,7 @@ export default async function handler(req, res) {
   const prompt = `Ты доброжелательный AI-преподаватель корейского. Пользователь должен произнести: "${expectedPhrase}". Браузер распознал: "${browserTranscript || 'нет текста'}". Прослушай короткую запись. Верни ТОЛЬКО JSON без Markdown: {"aiFeedback":"1–2 коротких предложения по-русски", "practiceTip":"один короткий совет по-русски", "heardTranscript":"корейский текст, который ты услышал"}. Не заявляй, что дал научную фонетическую оценку или точный процент произношения.`;
 
   try {
-    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent', {
+    const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
       body: JSON.stringify({
