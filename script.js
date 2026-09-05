@@ -1,191 +1,60 @@
-// ========== РАБОЧАЯ ВЕРСИЯ С FIREBASE v9 ==========
+console.log('K-Lab loaded');
 
-console.log('✅ Скрипт загружен!');
+const copy = {
+  ru: { main:'Корейский, который\nостаётся', korean:'с тобой.', sub:'Не просто уроки. Твой личный ритм языка: фразы, голос и бережный AI‑наставник, который помнит, где ты остановилась.', start:'НАЧАТЬ ПЕРВЫЙ УРОК →', hint:'오늘부터 같이 해요 · Начнём сегодня' },
+  en: { main:'Korean that\nstays', korean:'with you.', sub:'More than lessons: your own language rhythm, voice practice, and an AI mentor that remembers where you left off.', start:'START YOUR FIRST LESSON →', hint:'오늘부터 같이 해요 · Let’s begin today' },
+  kr: { main:'당신과 함께\n남는', korean:'한국어.', sub:'단순한 수업이 아닙니다. 당신의 리듬에 맞춰 기억하고 함께 연습하는 AI 튜터입니다.', start:'첫 수업 시작하기 →', hint:'오늘부터 같이 해요 · 오늘 시작해요' }
+};
 
-// ========== ПЕРЕКЛЮЧЕНИЕ ЯЗЫКОВ ==========
 window.switchLanguage = function(lang) {
-    document.querySelectorAll('.lang-btn').forEach(btn => {
-        btn.classList.remove('active');
-        if (btn.textContent.toLowerCase() === lang) {
-            btn.classList.add('active');
-        }
-    });
-    
-    if (lang === 'ru') {
-        document.getElementById('heroMain').textContent = 'Твой личный AI-учитель';
-        document.getElementById('heroKorean').textContent = 'корейского языка';
-        document.getElementById('heroSub').textContent = 'Говори. Анализируй. Улучшай. 🇰🇷';
-        document.getElementById('btnText').textContent = '🎯 Начать учиться';
-        document.getElementById('hintText').textContent = 'Первый урок бесплатно ✨ 7 дней доступа';
-        document.getElementById('modalChoiceTitle').textContent = '👋 Добро пожаловать!';
-        document.getElementById('modalLoginBtn').textContent = '🔐 Войти';
-        document.getElementById('modalRegisterBtn').textContent = '✨ Регистрация';
-        document.getElementById('modalHintText').innerHTML = 'После регистрации ты получишь <strong>7 дней бесплатного доступа</strong>';
-    }
-    
-    if (lang === 'en') {
-        document.getElementById('heroMain').textContent = 'Your personal AI teacher';
-        document.getElementById('heroKorean').textContent = 'of Korean language';
-        document.getElementById('heroSub').textContent = 'Speak. Analyze. Improve. 🇰🇷';
-        document.getElementById('btnText').textContent = '🎯 Start Learning';
-        document.getElementById('hintText').textContent = 'First lesson free ✨ 7 days access';
-        document.getElementById('modalChoiceTitle').textContent = '👋 Welcome!';
-        document.getElementById('modalLoginBtn').textContent = '🔐 Log In';
-        document.getElementById('modalRegisterBtn').textContent = '✨ Register';
-        document.getElementById('modalHintText').innerHTML = 'After registration you get <strong>7 days free access</strong>';
-    }
-    
-    if (lang === 'kr') {
-        document.getElementById('heroMain').textContent = '당신의 AI 선생님';
-        document.getElementById('heroKorean').textContent = '한국어';
-        document.getElementById('heroSub').textContent = '말하기. 분석. 향상. 🇰🇷';
-        document.getElementById('btnText').textContent = '🎯 시작하기';
-        document.getElementById('hintText').textContent = '첫 수업 무료 ✨ 7일 이용권';
-        document.getElementById('modalChoiceTitle').textContent = '👋 환영합니다!';
-        document.getElementById('modalLoginBtn').textContent = '🔐 로그인';
-        document.getElementById('modalRegisterBtn').textContent = '✨ 회원가입';
-        document.getElementById('modalHintText').innerHTML = '가입 후 <strong>7일 무료 이용</strong>이 가능합니다';
-    }
+  document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.textContent.toLowerCase() === lang));
+  const text = copy[lang];
+  const main = document.getElementById('heroMain');
+  const korean = document.getElementById('heroKorean');
+  const sub = document.getElementById('heroSub');
+  const button = document.getElementById('btnText');
+  const hint = document.getElementById('hintText');
+  if (!main || !text) return;
+  main.innerHTML = text.main.replace('\n', '<br>');
+  korean.textContent = text.korean; sub.textContent = text.sub; button.textContent = text.start; hint.textContent = text.hint;
 };
 
-// ========== КНОПКА "НАЧАТЬ УЧИТЬСЯ" ==========
-window.handleStartClick = function() {
-    openModal('choiceModal');
-};
+window.handleStartClick = () => { window.location.href = 'register.html'; };
+window.openLoginModal = () => { window.location.href = 'login.html'; };
+window.openRegisterModal = () => { window.location.href = 'register.html'; };
+window.closeModal = modalId => { const modal = document.getElementById(modalId); if (modal) modal.style.display = 'none'; };
+window.openModal = modalId => { const modal = document.getElementById(modalId); if (modal) modal.style.display = 'flex'; };
+window.switchToLogin = event => { if (event) event.preventDefault(); window.location.href = 'login.html'; };
+window.switchToRegister = event => { if (event) event.preventDefault(); window.location.href = 'register.html'; };
 
-// ========== УПРАВЛЕНИЕ МОДАЛЬНЫМИ ОКНАМИ ==========
-window.openModal = function(modalId) {
-    document.getElementById(modalId).style.display = 'flex';
-};
-
-window.closeModal = function(modalId) {
-    document.getElementById(modalId).style.display = 'none';
-};
-
-window.openLoginModal = function() {
-    closeModal('choiceModal');
-    openModal('loginModal');
-};
-
-window.openRegisterModal = function() {
-    closeModal('choiceModal');
-    openModal('registerModal');
-};
-
-window.switchToLogin = function(e) {
-    if (e) e.preventDefault();
-    closeModal('registerModal');
-    openModal('loginModal');
-};
-
-window.switchToRegister = function(e) {
-    if (e) e.preventDefault();
-    closeModal('loginModal');
-    openModal('registerModal');
-};
-
-// ========== РЕГИСТРАЦИЯ ==========
 window.handleRegister = async function() {
-    const name = document.getElementById('regName').value;
-    const email = document.getElementById('regEmail').value;
-    const password = document.getElementById('regPassword').value;
-    
-    if (!name || !email || !password) {
-        alert('❌ Заполни все поля!');
-        return;
-    }
-    
-    if (password.length < 6) {
-        alert('❌ Пароль должен быть минимум 6 символов');
-        return;
-    }
-    
-    try {
-        // Регистрация в Firebase
-        const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-        
-        // Сохраняем данные в Firestore
-        await firebase.firestore().collection('users').doc(user.uid).set({
-            name: name,
-            email: email,
-            role: email === 'binazzirr@mail.ru' ? 'admin' : 'user',
-            createdAt: new Date().toISOString(),
-            lastActive: new Date().toISOString(),
-            subscription: {
-                status: 'trial',
-                startDate: new Date().toISOString(),
-                endDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString()
-            },
-            stats: {
-                streak: 0,
-                totalXp: 0,
-                lessonsCompleted: 0
-            }
-        });
-        
-        alert('✅ Регистрация успешна!');
-        closeModal('registerModal');
-        
-        // Перенаправление
-        if (email === 'binazzirr@mail.ru') {
-            window.location.href = 'admin.html';
-        } else {
-            window.location.href = 'dashboard.html';
-        }
-        
-    } catch (error) {
-        alert('❌ Ошибка: ' + error.message);
-    }
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim();
+  const password = document.getElementById('regPassword').value;
+  if (!name || !email || !password) return alert('Заполни все поля.');
+  if (password.length < 6) return alert('Пароль должен содержать минимум 6 символов.');
+  try {
+    const userCredential = await firebase.auth().createUserWithEmailAndPassword(email, password);
+    const user = userCredential.user;
+    await firebase.firestore().collection('users').doc(user.uid).set({
+      name, email, role:'user', createdAt:new Date().toISOString(), lastActive:new Date().toISOString(),
+      subscription:{ status:'trial', startDate:new Date().toISOString(), endDate:new Date(Date.now() + 7*24*60*60*1000).toISOString() },
+      stats:{ streak:0, totalXp:0, lessonsCompleted:0 }
+    });
+    window.location.href = 'dashboard.html';
+  } catch (error) { alert(error.code === 'auth/email-already-in-use' ? 'Этот email уже зарегистрирован.' : error.message); }
 };
 
-// ========== ВХОД ==========
 window.handleLogin = async function() {
-    const email = document.getElementById('loginEmail').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    if (!email || !password) {
-        alert('❌ Заполни все поля!');
-        return;
-    }
-    
-    try {
-        console.log('1️⃣ Пытаемся войти с email:', email);
-        
-        const userCredential = await firebase.auth().signInWithEmailAndPassword(email, password);
-        const user = userCredential.user;
-        
-        console.log('2️⃣ Успешный вход! UID:', user.uid);
-        
-        closeModal('loginModal');
-        
-        console.log('3️⃣ Вызываем checkUserStatus...');
-        const result = await window.checkUserStatus(user.uid);
-        
-        console.log('4️⃣ Результат checkUserStatus:', result);
-        
-        if (result && result.success) {
-            console.log('5️⃣ Перенаправляем на:', result.redirectTo);
-            window.location.href = result.redirectTo;
-        } else {
-            console.error('❌ Ошибка в checkUserStatus:', result?.error);
-            alert('Ошибка при проверке статуса');
-        }
-        
-    } catch (error) {
-        console.error('❌ Ошибка входа:', error);
-        alert('❌ Ошибка: ' + error.message);
-    }
+  const email = document.getElementById('loginEmail').value.trim();
+  const password = document.getElementById('loginPassword').value;
+  if (!email || !password) return alert('Введи email и пароль.');
+  try {
+    const user = (await firebase.auth().signInWithEmailAndPassword(email, password)).user;
+    const result = await window.checkUserStatus(user.uid);
+    if (result && result.success) window.location.href = result.redirectTo;
+    else alert('Не удалось проверить статус аккаунта.');
+  } catch (error) { alert('Неверный email или пароль.'); }
 };
 
-// ========== ЗАКРЫТИЕ ПО КЛИКУ ВНЕ МОДАЛКИ ==========
-window.onclick = function(event) {
-    if (event.target.classList.contains('modal')) {
-        event.target.style.display = 'none';
-    }
-};
-
-// ========== ЗАПУСК ПРИ ЗАГРУЗКЕ ==========
-document.addEventListener('DOMContentLoaded', function() {
-    switchLanguage('ru');
-});
+document.addEventListener('DOMContentLoaded', () => { if (document.getElementById('heroMain')) switchLanguage('ru'); });
