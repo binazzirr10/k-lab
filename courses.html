@@ -13,4 +13,5 @@
 </section><section class="why"><div><h3>Не зубри — собирай.</h3><p>Каждая грамматика сразу появляется в реальном мини‑диалоге, а не в отрыве от смысла.</p></div><div><h3>Голос — часть урока.</h3><p>Фразы из темы переходят в Speaking Lab, где Gemini даёт учебный AI‑отзыв по записи.</p></div></section></main>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script><script src="firebase.js"></script><script>
 auth.onAuthStateChanged(async user=>{if(!user){location.href='index.html';return}const doc=await db.collection('users').doc(user.uid).get(),data=doc.data()||{},stats=data.stats||{};document.getElementById('userName').textContent=data.name||'Ученик';const done=Math.min(12,Number(stats.lessonsCompleted)||0);document.getElementById('progressText').textContent=`${done} / 12 уроков`;document.getElementById('progressBar').style.width=`${done/12*100}%`});window.logout=async()=>{await auth.signOut();location.href='index.html'};
-</script></body></html>
+</script>
+<script src="tutor-widget.js"></script></body></html>

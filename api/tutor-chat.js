@@ -4,11 +4,11 @@ export default async function handler(req, res) {
   const { message, lessonContext } = req.body || {};
   if (!message || typeof message !== 'string' || message.length > 700) return res.status(400).json({ error: 'Напиши короткий вопрос.' });
   if (!process.env.GEMINI_API_KEY) return res.status(500).json({ error: 'Gemini ещё не настроен на сервере.' });
-  const prompt = `Ты K‑Tutor, доброжелательный преподаватель корейского для начинающих из Казахстана. Контекст текущего урока: ${lessonContext || 'Знакомство: 안녕하세요, 저는 ...이에요/예요.'} Отвечай по-русски просто, точно и максимум в 4 коротких предложениях. Если уместно, добавь 1 корейский пример с переводом. Не придумывай правила и не уходи в сложную грамматику. Вопрос ученика: ${message}`;
+  const prompt = `Ты K‑Tutor, доброжелательный преподаватель корейского для начинающих из Казахстана. Контекст текущего урока: ${lessonContext || 'Знакомство: 안녕하세요, 저는 ...이에요/예요.'} Отвечай по-русски просто, точно и ЗАКАНЧИВАЙ мысль полностью. Максимум 4 коротких предложения. Если уместно, добавь один корейский пример с переводом. Не придумывай правила и не уходи в сложную грамматику. Вопрос ученика: ${message}`;
   try {
     const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent', {
       method: 'POST', headers: { 'Content-Type': 'application/json', 'x-goog-api-key': process.env.GEMINI_API_KEY },
-      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.35, maxOutputTokens: 300 } })
+      body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }], generationConfig: { temperature: 0.25, maxOutputTokens: 500 } })
     });
     const data = await response.json();
     if (!response.ok) throw new Error(data?.error?.message || 'Gemini unavailable');

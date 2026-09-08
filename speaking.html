@@ -49,4 +49,5 @@
     const params=new URLSearchParams(location.search),requestedPhrase=params.get('phrase'),requestedLesson=params.get('lesson');if(requestedLesson&&phrases.some(item=>item.id===requestedLesson))selected=phrases.find(item=>item.id===requestedLesson);else if(requestedPhrase){const found=phrases.find(item=>item.ko===requestedPhrase);selected=found||{id:'lesson-phrase',lesson:'ФРАЗА ИЗ УРОКА',ko:requestedPhrase,ru:'Фраза, выбранная в уроке',roman:''};if(!found)phrases.unshift(selected)}choosePhrase(selected.id);
     auth.onAuthStateChanged(async user=>{if(!user){location.href='index.html';return}currentUser=user;const doc=await db.collection('users').doc(user.uid).get();document.getElementById('userName').textContent=(doc.data()||{}).name||'Ученик';loadHistory(user.uid)});window.logout=async()=>{await auth.signOut();location.href='index.html'};
   </script>
+  <script src="tutor-widget.js"></script>
 </body></html>

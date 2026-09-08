@@ -1,0 +1,22 @@
+// K-Lab floating tutor. Add this one script to any page before </body>.
+(() => {
+  const page = document.title.replace('K‑Lab', '').replace('K-Lab', '').trim() || 'страница K‑Lab';
+  const css = `
+    #kt-launch{position:fixed;right:22px;bottom:22px;z-index:1000;display:flex;align-items:center;gap:9px;padding:12px 15px;border:1px solid #15251e;border-radius:999px;background:#dcbf6b;color:#15251e;box-shadow:4px 4px 0 #15251e;font:700 11px "DM Sans",sans-serif;letter-spacing:.06em;cursor:pointer}#kt-launch:hover{transform:translate(2px,2px);box-shadow:2px 2px 0 #15251e}#kt-dot{width:8px;height:8px;border-radius:50%;background:#b52432}.kt-panel{position:fixed;right:22px;bottom:86px;z-index:1001;width:min(355px,calc(100vw - 34px));overflow:hidden;border:1px solid #15251e;background:#fffdf8;box-shadow:7px 7px 0 #15251e;color:#15251e;font-family:"DM Sans",sans-serif}.kt-panel[hidden]{display:none}.kt-head{display:flex;align-items:center;justify-content:space-between;padding:15px 16px;background:#15251e;color:#fffdf8}.kt-head b{font-family:Georgia,"Noto Sans KR",serif;font-size:21px;font-weight:500;letter-spacing:-.05em}.kt-head span{display:block;margin-top:3px;color:#c4cec6;font-size:9px;font-weight:700;letter-spacing:.09em}.kt-close{border:0;background:transparent;color:#fffdf8;font-size:20px;cursor:pointer}.kt-context{padding:10px 14px;border-bottom:1px solid rgba(21,37,30,.16);background:#e9efe5;color:#536158;font-size:10px}.kt-messages{display:grid;gap:9px;max-height:310px;min-height:160px;overflow:auto;padding:14px}.kt-msg{max-width:92%;padding:10px 11px;background:#edf1ed;color:#25342d;font-size:12px;line-height:1.52;white-space:pre-wrap}.kt-msg.user{justify-self:end;background:#dcbf6b;color:#15251e}.kt-msg.thinking{color:#637169;font-style:italic}.kt-form{display:flex;gap:7px;padding:12px;border-top:1px solid rgba(21,37,30,.16)}.kt-form input{min-width:0;flex:1;padding:10px;border:1px solid #15251e;background:#fffdf8;color:#15251e;font:12px "DM Sans",sans-serif}.kt-form button{padding:10px 12px;border:1px solid #15251e;background:#15251e;color:#fffdf8;font:700 10px "DM Sans",sans-serif;letter-spacing:.07em;cursor:pointer}@media(max-width:520px){#kt-launch{right:14px;bottom:14px}.kt-panel{right:14px;bottom:76px}}`;
+  const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
+  const launch = document.createElement('button'); launch.id = 'kt-launch'; launch.innerHTML = '<span id="kt-dot"></span>ASK K‑TUTOR';
+  const panel = document.createElement('section'); panel.className = 'kt-panel'; panel.hidden = true;
+  panel.innerHTML = `<div class="kt-head"><div><b>K‑Tutor</b><span>AI‑НАСТАВНИК K‑LAB</span></div><button class="kt-close" aria-label="Закрыть">×</button></div><div class="kt-context">ТЕКУЩИЙ РАЗДЕЛ · ${page}</div><div class="kt-messages"><div class="kt-msg">Привет! Я помогу с корейским, заданиями и фразами на этой странице. Спроси коротко и конкретно.</div></div><form class="kt-form"><input maxlength="700" placeholder="Например: почему здесь 은/는?"><button>ОТПР.</button></form>`;
+  document.body.append(launch, panel);
+  const messages = panel.querySelector('.kt-messages'), input = panel.querySelector('input');
+  const add = (text, type = '') => { const item = document.createElement('div'); item.className = `kt-msg ${type}`; item.textContent = text; messages.appendChild(item); messages.scrollTop = messages.scrollHeight; return item; };
+  launch.onclick = () => { panel.hidden = !panel.hidden; if (!panel.hidden) input.focus(); };
+  panel.querySelector('.kt-close').onclick = () => { panel.hidden = true; };
+  panel.querySelector('form').onsubmit = async event => {
+    event.preventDefault(); const message = input.value.trim(); if (!message) return; input.value = ''; add(message, 'user'); const thinking = add('K‑Tutor думает…', 'thinking');
+    try {
+      const response = await fetch('/api/tutor-chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message, lessonContext: `Пользователь находится на странице: ${page}. Объясняй в контексте этой страницы K‑Lab.` }) });
+      const data = await response.json(); thinking.remove(); if (!response.ok) throw new Error(data.error || 'Ошибка ответа'); add(data.answer);
+    } catch (error) { thinking.remove(); add('Сейчас не получилось получить ответ. Попробуй ещё раз через несколько секунд.'); }
+  };
+})();
