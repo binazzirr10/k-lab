@@ -1,0 +1,3 @@
+insert into public.lessons (id, course_id, slug, title, summary, content, xp_reward, estimated_minutes, position, is_published)
+values ('a1000000-0000-4000-8000-000000000102','a1000000-0000-4000-8000-000000000001','lesson-02-country','Откуда ты?','Скажи, из какой ты страны, и отличи 이에요 от 아니에요.',jsonb_build_object('focus','저는 카자흐스탄 사람이에요','grammar','이에요 / 아니에요','checkpoint','Нужно 2 правильных ответа из 3.'),25,9,2,true)
+on conflict (slug) do update set title=excluded.title,summary=excluded.summary,content=excluded.content,xp_reward=excluded.xp_reward,estimated_minutes=excluded.estimated_minutes,position=excluded.position,is_published=excluded.is_published;
