@@ -1,0 +1,7 @@
+insert into public.k_scenes (id, slug, title, location_label, cover_url, script, difficulty, is_published)
+values
+('c1000000-0000-4000-8000-000000000001','new-friend','Новый друг','Утро у кампуса','/assets/kscene-campus-morning.png','[{"speaker":"민지","text":"안녕하세요. 저는 민지예요."},{"speaker":"알리나","text":"안녕하세요."},{"speaker":"민지","text":"이름이 뭐예요?"},{"speaker":"알리나","text":"저는 알리나예요."}]'::jsonb,'A1',true),
+('c1000000-0000-4000-8000-000000000002','where-are-you-from','Откуда ты?','Холл университета','/assets/kscene-university-hall.png','[{"speaker":"민지","text":"어느 나라 사람이에요?"},{"speaker":"알리나","text":"저는 카자흐스탄 사람이에요."},{"speaker":"민지","text":"한국 사람이에요?"},{"speaker":"알리나","text":"아니에요."}]'::jsonb,'A1',true),
+('c1000000-0000-4000-8000-000000000003','what-is-this','Что это?','Кафе после занятий','/assets/kscene-cafe-table.png','[{"speaker":"알리나","text":"민지 씨, 이것은 뭐예요?"},{"speaker":"민지","text":"이것은 제 책이에요."},{"speaker":"알리나","text":"저것은 가방이에요?"},{"speaker":"민지","text":"네, 맞아요."}]'::jsonb,'A1',true),
+('c1000000-0000-4000-8000-000000000004','joons-day','День Джуна','Языковой клуб','/assets/kscene-language-club.png','[{"speaker":"준","text":"안녕하세요, 알리나 씨. 오늘 뭐 해요?"},{"speaker":"알리나","text":"저는 한국어를 공부해요."},{"speaker":"준","text":"좋아요. 저는 친구를 만나요."},{"speaker":"알리나","text":"저는 커피를 마셔요."}]'::jsonb,'A1',true)
+on conflict (slug) do update set title=excluded.title,location_label=excluded.location_label,cover_url=excluded.cover_url,script=excluded.script,difficulty=excluded.difficulty,is_published=excluded.is_published;

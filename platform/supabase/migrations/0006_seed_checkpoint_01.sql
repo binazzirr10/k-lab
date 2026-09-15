@@ -1,0 +1,3 @@
+insert into public.lessons (id, course_id, slug, title, summary, content, xp_reward, estimated_minutes, position, is_published)
+values ('a1000000-0000-4000-8000-000000000105','a1000000-0000-4000-8000-000000000001','checkpoint-01','Checkpoint 01 · Первый разговор','Итоговый тест по первым четырём урокам: 50 баллов.',jsonb_build_object('max_score',50,'pass_score',35,'sections',jsonb_build_array('слова','грамматика','фразы','аудирование','speaking')),50,20,5,true)
+on conflict (slug) do update set title=excluded.title,summary=excluded.summary,content=excluded.content,xp_reward=excluded.xp_reward,estimated_minutes=excluded.estimated_minutes,position=excluded.position,is_published=excluded.is_published;
