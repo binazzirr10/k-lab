@@ -52,6 +52,7 @@ export default async function StudioPage() {
   if (!userId) redirect("/sign-in");
 
   const user = await currentUser();
+  const isAdmin = String(user?.publicMetadata?.role ?? "").toLowerCase() === "admin";
   const clerkName = user?.firstName || user?.username || "ученица";
   const profileResult = await getOrCreateStudentProfile({ userId, displayName: clerkName, avatarUrl: user?.imageUrl ?? null }).catch(() => ({ profile: null, connected: false }));
   const name = profileResult.profile?.display_name || clerkName;
@@ -74,7 +75,7 @@ export default async function StudioPage() {
       <nav className="rhythm-nav" aria-label="Главное меню K-Lab">
         <a className="rhythm-logo" href="/"><span className="rhythm-seal">ㅋ</span>K‑Lab</a>
         <div className="rhythm-links">
-          <a className="active" href="/studio">МОЙ РИТМ</a><a href="https://k-lab-two.vercel.app/courses.html">УРОКИ</a><a href="/vocabulary">WORD DECK</a><a href="https://k-lab-two.vercel.app/speaking.html">SPEAKING</a><a href="/k-scene">K‑SCENE</a><a href="https://k-lab-two.vercel.app/universities.html">KOREA PATH</a>
+          <a className="active" href="/studio">МОЙ РИТМ</a><a href="https://k-lab-two.vercel.app/courses.html">УРОКИ</a><a href="/vocabulary">WORD DECK</a><a href="https://k-lab-two.vercel.app/speaking.html">SPEAKING</a><a href="/k-scene">K‑SCENE</a><a href="https://k-lab-two.vercel.app/universities.html">KOREA PATH</a>{isAdmin && <a href="/admin">АДМИН</a>}
         </div>
         <div className="rhythm-user"><span className="rhythm-name">{name}</span><UserButton appearance={{ elements: { avatarBox: "rhythm-avatar" } }} /></div>
       </nav>
