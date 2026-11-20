@@ -106,7 +106,7 @@ export default async function StudioPage() {
         {!stats.connected && <p className="rhythm-db-note">База подключается: после первого нового урока здесь появится прогресс.</p>}
       </main>
       <footer className="rhythm-footer">© 2026 K‑LAB · LEARN THE LANGUAGE. KEEP THE FEELING.</footer>
-      <KTutor lessonContext="Пользователь находится в личном кабинете K-Lab. Помоги выбрать следующий шаг, объясни корейскую фразу или составь короткий план практики." />
+      <KTutor context="studio" />
     </>
   );
 }
