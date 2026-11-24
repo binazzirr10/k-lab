@@ -1,0 +1,63 @@
+.deck-wrap{width:min(1120px,calc(100% - 40px));margin:35px auto 80px;font-family:var(--font-text)}
+.deck-hero{display:grid;grid-template-columns:1.15fr .85fr;gap:20px;padding-bottom:30px;border-bottom:1px solid var(--ink)}
+.deck-hero span{color:var(--accent);font-size:12px;font-weight:700;}
+.deck-hero h1{margin:12px 0 0;font:500 clamp(36px,6vw,72px)/1.02 var(--font-display);letter-spacing:-.03em}
+.deck-hero p{margin:12px 0 0;max-width:560px;color:var(--muted);font-size:14px;line-height:1.6}
+.deck-stats{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--ink);border-left:1px solid var(--ink)}
+.deck-stats div{padding:19px;border-right:1px solid var(--ink);border-bottom:1px solid var(--ink);background:var(--mist)}
+.deck-stats b{display:block;font:500 32px var(--font-display)}
+.deck-stats small{color:var(--muted);font-size:12px;}
+.deck-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:27px 0 17px}
+.deck-tabs button{padding:10px 12px;border: 1px solid var(--line);background:var(--surface);color:var(--ink);font:700 12px var(--font-text);}
+.deck-tabs button.active{background:var(--ink);color:var(--surface)}
+.deck-card{display:grid;grid-template-columns:.82fr 1.18fr;min-height:390px;border: 1px solid var(--line);background:var(--surface)}
+.deck-korean{display:flex;flex-direction:column;justify-content:space-between;padding:32px;background:var(--mist)}
+.deck-korean i{color:var(--accent);font:700 12px var(--font-text);font-style:normal}
+.deck-korean h2{margin:0;font:500 clamp(50px,7vw,85px) Georgia,var(--font-text)}
+.deck-korean p{margin:0;color:var(--muted);font-size:13px}
+.deck-card-body{padding:32px}
+:is(.deck-back, .deck-card-body noscript) h3{margin:0;font:500 35px var(--font-display)}
+.deck-card-body>p{color:var(--muted);font-size:14px}
+.deck-example{margin-top:27px;padding:17px;border-left:3px solid var(--sage-dark);background:var(--mist)}
+.deck-example b{font:600 19px var(--font-text)}
+.deck-example span{display:block;margin-top:7px;color:var(--muted);font-size:12px}
+.deck-actions{display:flex;flex-wrap:wrap;gap:9px;margin-top:28px}
+.deck-actions button,.deck-sound{padding:11px 13px;border: 1px solid var(--line);background:var(--surface);color:var(--ink);font:700 12px var(--font-text);}
+.deck-actions button.known{background:var(--ink);color:var(--surface)}
+.deck-actions button.review{background:var(--sun)}
+.deck-status{margin-top:17px;color:var(--muted);font-size:12px}
+.deck-quiz{margin-top:20px;padding:23px;border: 1px solid var(--line);background:var(--ink);color:var(--surface)}
+.deck-quiz h3{margin:0;font:500 27px var(--font-display)}
+.deck-quiz p{color:var(--on-dark);font-size:12px}
+.deck-quiz section{display:flex;flex-wrap:wrap;gap:8px}
+.deck-quiz button{padding:9px 1.9rem 9px 11px;border:1px solid var(--sun);background:transparent;color:var(--sun);font:12px var(--font-text)}
+.deck-quiz button.correct{background:var(--mist);color:var(--ink)}
+@media(max-width:780px){.deck-hero,.deck-card{grid-template-columns:1fr}
+.deck-stats{margin-top:18px}
+.deck-wrap{width:calc(100% - 28px)}
+.deck-korean{min-height:240px}
+.deck-card-body{padding:24px}}
+@media(max-width:500px){.deck-stats{grid-template-columns:1fr}}
+
+.deck-hero { align-items: end; }
+.deck-hero h1, .deck-quiz h3, :is(.deck-back, .deck-card-body noscript) h3 { letter-spacing: -.03em; line-height: 1.04; overflow-wrap: anywhere; }
+.deck-stats { grid-template-columns: repeat(3,minmax(0,1fr)); }
+.deck-stats div { padding: clamp(8px,1.6vw,19px); }
+.deck-stats small {  overflow-wrap: anywhere; }
+.deck-card { grid-template-columns: minmax(0,.9fr) minmax(0,1.1fr);  }
+.deck-korean { gap: 16px; padding: clamp(16px,3vw,32px); border-right: 1px solid var(--ink); }
+.deck-korean h2 { font-size: clamp(36px,4.8vw,64px); line-height: 1.08; overflow-wrap: anywhere; }
+.deck-korean .deck-front p { margin-top: .6em; }
+.deck-faces { display: grid; transform-style: preserve-3d; transition: transform var(--dur-enter, 520ms) var(--ease-in-out, cubic-bezier(.77,0,.175,1)); }
+.deck-faces.flipped { transform: rotateY(180deg); }
+.deck-front, .deck-back { grid-area: 1 / 1; min-width: 0; align-self: center; backface-visibility: hidden; }
+.deck-back { transform: rotateY(180deg); }
+.deck-flip { align-self: start; border: 1px solid var(--line); background: var(--surface); font-size: 24px; }
+.deck-quiz button.incorrect { background: var(--error-bg); color: var(--error); }
+@media (scripting: none) {
+  .deck-flip { display: none; }
+}
+@media (max-width: 780px) {
+  .deck-card { grid-template-columns: minmax(0,1fr); }
+  .deck-korean { min-height: 216px; border-right: 0; border-bottom: 1px solid var(--ink); }
+}

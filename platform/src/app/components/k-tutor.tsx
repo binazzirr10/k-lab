@@ -1,6 +1,8 @@
 "use client";
 
 import { type FormEvent, useEffect, useRef, useState } from "react";
+import { AnimatePresence, m, useReducedMotion } from "motion/react";
+import { MotionScope, spring } from "./motion-kit/motion";
 import { resolveTutorContext, type TutorContextId } from "@/lib/tutor-contexts";
 
 type Message = { role: "tutor" | "user"; text: string };
@@ -68,6 +70,7 @@ const tutorCss = `
 const unavailableText = "Ответ не пришёл. Проверь интернет и отправь вопрос ещё раз.";
 
 export function KTutor({ context }: { context: TutorContextId }) {
+  const reduced = useReducedMotion();
   const label = resolveTutorContext(context)?.label ?? "K‑LAB";
   const [open, setOpen] = useState(false);
   const [question, setQuestion] = useState("");
@@ -140,7 +143,9 @@ export function KTutor({ context }: { context: TutorContextId }) {
         <header><div><b>K‑Tutor</b><span>AI‑НАСТАВНИК K‑LAB</span></div><button type="button" onClick={close} aria-label="Закрыть чат">×</button></header>
         <p className="k-tutor-context">ТЕКУЩИЙ РАЗДЕЛ · {label}</p>
         <div ref={transcript} className="k-tutor-messages" role="log" aria-live="polite">
-          {messages.map((item, index) => <p className={item.role} key={`${item.role}-${index}`}>{item.text}</p>)}
+          <MotionScope><AnimatePresence initial={false}>
+          {messages.map((item, index) => <m.p className={item.role} key={`${item.role}-${index}`} initial={reduced ? false : { y: 6, opacity: .74 }} animate={{ y: 0, opacity: 1 }} transition={spring}>{item.text}</m.p>)}
+          </AnimatePresence></MotionScope>
           {loading && <p className="thinking">K‑Tutor думает…</p>}
         </div>
         <form onSubmit={askTutor}><input ref={input} aria-label="Вопрос для K-Tutor" value={question} onChange={(event) => setQuestion(event.target.value)} maxLength={700} placeholder="Например: почему здесь 은/는?" /><button type="submit" disabled={loading}>СПРОСИТЬ</button></form>
