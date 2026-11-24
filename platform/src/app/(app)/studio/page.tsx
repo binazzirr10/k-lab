@@ -1,3 +1,4 @@
+import { activePlan, planName } from "@/lib/plans";
 import { AppNav } from "@/app/components/app-nav";
 import { UserButton } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
@@ -52,6 +53,7 @@ export default async function StudioPage() {
 
   const user = await currentUser();
   const isAdmin = String(user?.publicMetadata?.role ?? "").toLowerCase() === "admin";
+  const current = activePlan(user?.publicMetadata);
   const clerkName = user?.firstName || user?.username || "Ученик";
   const profileResult = await getOrCreateStudentProfile({ userId, displayName: clerkName, avatarUrl: user?.imageUrl ?? null }).catch(() => ({ profile: null, connected: false }));
   const name = profileResult.profile?.display_name || clerkName;
@@ -74,7 +76,7 @@ export default async function StudioPage() {
 
       <main className="rhythm-wrap">
         <section className="rhythm-hero">
-          <div><div className="rhythm-eyebrow">Личный кабинет · 오늘의 리듬</div><h1>Мой ритм</h1><p>Открой следующее задание курса или выбери другое занятие ниже на странице.</p></div>
+          <div><div className="rhythm-eyebrow">Личный кабинет · 오늘의 리듬</div><h1>Мой ритм</h1><p>Открой следующее задание курса или выбери другое занятие ниже на странице.</p><p>Тариф: <b>{planName(current.plan)}</b>{current.until && ` до ${new Date(current.until).toLocaleDateString("ru-RU", { timeZone: "Asia/Almaty" })}`} · <Link href="/pricing">Все тарифы</Link></p></div>
           <aside className="rhythm-lesson"><small>Следующее задание курса</small><h2>{nextLesson.title}</h2><p>{nextLesson.description}</p><a href={nextLesson.href}>Открыть задание →</a></aside>
         </section>
 

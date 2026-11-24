@@ -12,6 +12,7 @@ const links = [
   ["speaking", "Speaking Lab", "Speaking Lab"],
   ["drama", "K-Drama", "K-Drama"],
   ["university", "University Hub", "Университеты"],
+  ["pricing", "Plans", "Тарифы"],
 ] as const;
 
 function EntryLinks({ signedIn = false }: { signedIn?: boolean }) {

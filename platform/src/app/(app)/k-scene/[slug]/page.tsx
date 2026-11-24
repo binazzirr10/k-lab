@@ -1,9 +1,12 @@
+import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { notFound, redirect } from "next/navigation";
 import { AppNav } from "@/app/components/app-nav";
 import { KTutor } from "@/app/components/k-tutor";
 import { getScene } from "@/lib/k-scenes";
+import { activePlan, canOpenScene } from "@/lib/plans";
+import "@/app/components/plan-cards.css";
 import { ScenePlayer } from "./scene-player";
 
 export default async function ScenePage({ params }: { params: Promise<{ slug: string }> }) {
@@ -13,6 +16,7 @@ export default async function ScenePage({ params }: { params: Promise<{ slug: st
   const scene = getScene(slug);
   if (!scene) notFound();
   const user = await currentUser();
+  const open = canOpenScene(activePlan(user?.publicMetadata).plan, scene.slug);
   const name = user?.firstName || user?.username || "Ученик";
 
   return (
@@ -27,7 +31,11 @@ export default async function ScenePage({ params }: { params: Promise<{ slug: st
           </div>
           <aside><b>Озвучка реплик</b><p>Фразы озвучивает браузер. Если звука нет, попробуй другой браузер.</p></aside>
         </header>
-        <ScenePlayer scene={scene} />
+        {open ? <ScenePlayer scene={scene} /> : <section className="plan-locked">
+          <h2>Эта сцена в Pro</h2>
+          <p>Бесплатно открыта первая сцена. Pro открывает все сцены курса.</p>
+          <Link className="plan-action" href="/pricing">Смотреть тарифы</Link>
+        </section>}
       </main>
       <KTutor context={`scene:${scene.slug}`} />
     </>

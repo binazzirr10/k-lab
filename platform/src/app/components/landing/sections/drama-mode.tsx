@@ -5,7 +5,8 @@ import { type CSSProperties, type KeyboardEvent, useEffect, useRef, useState } f
 import { LayoutGroup } from "motion/react";
 import * as m from "motion/react-m";
 import type { Lang } from "@/lib/landing/lang";
-import { landingScenes, wordGlosses } from "@/lib/landing/scenes";
+import { wordGlosses } from "@/lib/landing/glosses";
+import type { LandingScene } from "@/lib/landing/scenes";
 import { sceneImage } from "@/lib/landing/scene-images";
 import { MagneticPill, Reveal, useReducedMotion } from "../motion";
 import { Divider } from "../motion/divider";
@@ -16,13 +17,13 @@ import s from "./drama-mode.module.css";
 const FoldingScreen = dynamic(() => import("../motion/folding-screen").then((module) => module.FoldingScreen), { ssr: false });
 
 const copy = {
-  en: { title: ["K‑Drama Mode"], intro: "Follow four original illustrated K‑Scene dialogues from the course, one line at a time.", open: "Open the full K‑Scene", play: "Play", pause: "Pause", previous: "Previous line", next: "Next line", scrub: "Dialogue line", subtitles: "Subtitles", romanization: "Romanization", translation: "English", scenes: "Choose a scene", word: "Word meaning", voice: "Korean audio is unavailable in this browser." },
-  ru: { title: ["Режим K‑Drama"], intro: "Читай и слушай четыре авторских иллюстрированных диалога K‑Scene из курса, реплика за репликой.", open: "Открыть сцену целиком", play: "Воспроизвести", pause: "Пауза", previous: "Предыдущая реплика", next: "Следующая реплика", scrub: "Реплика диалога", subtitles: "Субтитры", romanization: "Латиница", translation: "Русский", scenes: "Выбери сцену", word: "Значение слова", voice: "Корейская озвучка недоступна в этом браузере." },
+  en: { title: ["K‑Drama Mode"], intro: "Follow original illustrated K‑Scene dialogues from the course, one line at a time. The first scene is free, and Pro opens the rest.", open: "Open the full K‑Scene", play: "Play", pause: "Pause", previous: "Previous line", next: "Next line", scrub: "Dialogue line", subtitles: "Subtitles", romanization: "Romanization", translation: "English", scenes: "Choose a scene", preview: "This is a preview. The whole scene is in Pro.", plans: "See plans", word: "Word meaning", voice: "Korean audio is unavailable in this browser." },
+  ru: { title: ["Режим K‑Drama"], intro: "Читай и слушай авторские иллюстрированные диалоги K‑Scene из курса, реплика за репликой. Первая сцена бесплатна, остальные открывает Pro.", open: "Открыть сцену целиком", play: "Воспроизвести", pause: "Пауза", previous: "Предыдущая реплика", next: "Следующая реплика", scrub: "Реплика диалога", subtitles: "Субтитры", romanization: "Латиница", translation: "Русский", scenes: "Выбери сцену", preview: "Это начало сцены. Целиком она есть в Pro.", plans: "Смотреть тарифы", word: "Значение слова", voice: "Корейская озвучка недоступна в этом браузере." },
 };
 const tracks = ["korean", "romanization", "translation"] as const;
 type Track = typeof tracks[number];
 
-export function DramaMode({ lang }: { lang: Lang }) {
+export function DramaMode({ lang, scenes }: { lang: Lang; scenes: LandingScene[] }) {
   const t = copy[lang];
   const reduced = useReducedMotion();
   const [sceneIndex, setSceneIndex] = useState(0);
@@ -33,7 +34,7 @@ export function DramaMode({ lang }: { lang: Lang }) {
   const [voiceError, setVoiceError] = useState(false);
   const [visible, setVisible] = useState<Record<Track, boolean>>({ korean: true, romanization: true, translation: true });
   const sound = useRef<{ cancel?: () => void; timers: number[]; resumeWord: number }>({ timers: [], resumeWord: 0 });
-  const scene = landingScenes[sceneIndex];
+  const scene = scenes[sceneIndex];
   const [leaving, setLeaving] = useState<{ scene: typeof scene; at: number } | null>(null);
   const folds = useRef(0);
   const line = scene.lines[lineIndex];
@@ -179,11 +180,12 @@ export function DramaMode({ lang }: { lang: Lang }) {
             }}>{track === "korean" ? "한국어" : t[track]}</button>)}
           </div>
           {gloss && <p className={s.gloss} role="status"><span className={e.label}>{t.word}</span> <b lang="ko">{pickedWord}</b> · {gloss}</p>}
+          {scene.locked && <p className={s.gloss} role="status">{t.preview} <a href="#pricing">{t.plans}</a></p>}
           {voiceError && <p className={e.note} role="status">{t.voice}</p>}
         </div>
         <LayoutGroup id="scene-film-strip">
           <div className={s.strip} role="group" aria-label={t.scenes}>
-            {landingScenes.map((item, i) => <m.button layout={!reduced} data-enter="rise" style={{ "--i": i } as CSSProperties} transition={{ layout: { duration: .38, ease: [.22, .61, .36, 1] } }}
+            {scenes.map((item, i) => <m.button layout={!reduced} data-enter="rise" style={{ "--i": i } as CSSProperties} transition={{ layout: { duration: .38, ease: [.22, .61, .36, 1] } }}
               type="button" key={item.slug} className={s.frame} aria-pressed={i === sceneIndex} onClick={() => {
                 sound.current.resumeWord = 0;
                 if (i !== sceneIndex && !reduced) setLeaving({ scene, at: folds.current += 1 });
@@ -193,7 +195,7 @@ export function DramaMode({ lang }: { lang: Lang }) {
                 {/* eslint-disable-next-line @next/next/no-img-element -- Existing responsive WebP variants. */}
                 <img {...sceneImage(item.cover, "(max-width: 760px) 45vw, 29vw")} width="320" height="180" alt="" loading="lazy" />
               </span>
-              <span className={s.frameTitle}><span>{String(i + 1).padStart(2, "0")}</span><span>{title(item)}</span></span>
+              <span className={s.frameTitle}><span>{String(i + 1).padStart(2, "0")}</span><span>{title(item)}{item.locked && <small className={s.pro}>Pro</small>}</span></span>
             </m.button>)}
           </div>
         </LayoutGroup>
@@ -202,7 +204,7 @@ export function DramaMode({ lang }: { lang: Lang }) {
   </section>;
 }
 
-function Still({ scene }: { scene: (typeof landingScenes)[number] }) {
+function Still({ scene }: { scene: LandingScene }) {
   return <>
     {/* eslint-disable-next-line @next/next/no-img-element -- Existing responsive WebP variants. */}
     <img className={s.background} {...sceneImage(scene.cover, "100vw")} alt="" decoding="async" loading="lazy" />

@@ -75,3 +75,5 @@
 .translation { animation: subtitle .6s cubic-bezier(.2, .75, .2, 1) .34s backwards; }
 @keyframes subtitle { from { transform: translateY(26px) skewX(-12deg); filter: blur(9px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .word, .roman, .translation, .tally { animation: none; } }
+
+.pro { margin-left: .5rem; padding: .1rem .5rem; border-radius: 999px; background: var(--ink); color: var(--paper); font-size: 12px; white-space: nowrap; }

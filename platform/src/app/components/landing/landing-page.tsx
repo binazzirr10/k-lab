@@ -13,6 +13,9 @@ import { SpeakingLab } from "./sections/speaking-lab";
 import { DramaMode } from "./sections/drama-mode";
 import { UniversityHub } from "./sections/university-hub";
 import { VocabularyDeck } from "./sections/vocabulary";
+import { Pricing } from "./sections/pricing";
+import type { LandingScene } from "@/lib/landing/scenes";
+import type { PracticePhrases } from "@/lib/landing/phrases";
 
 const resources = [
   ["/hangul", "Hangul", "Хангыль"],
@@ -26,7 +29,9 @@ const resources = [
 
 const loadMotion = () => import("../motion-kit/features").then((module) => module.default);
 
-function LandingContent({ posters }: { posters: HangulPosters }) {
+type LandingProps = { posters: HangulPosters; scenes: LandingScene[]; phrases: PracticePhrases };
+
+function LandingContent({ posters, scenes, phrases }: LandingProps) {
   const { lang } = useLanguage();
   useEntrances();
   return <LazyMotion strict features={loadMotion}><div className="landing">
@@ -35,10 +40,11 @@ function LandingContent({ posters }: { posters: HangulPosters }) {
     <main>
       <Hero lang={lang} posters={posters} />
       <Discover lang={lang} />
-      <SpeakingLab lang={lang} />
-      <DramaMode lang={lang} />
+      <SpeakingLab lang={lang} phrases={phrases} />
+      <DramaMode lang={lang} scenes={scenes} />
       <UniversityHub lang={lang} />
       <VocabularyDeck lang={lang} />
+      <Pricing lang={lang} />
       <section className="landing-shell landing-resources" aria-labelledby="landing-resources">
         <div className="landing-closing">
           <h2 id="landing-resources" lang="ko"><WeightRipple text="천천히, 하지만 꾸준히." /></h2>
@@ -54,6 +60,6 @@ function LandingContent({ posters }: { posters: HangulPosters }) {
   </div></LazyMotion>;
 }
 
-export function LandingPage({ posters }: { posters: HangulPosters }) {
-  return <LangProvider><LandingContent posters={posters} /></LangProvider>;
+export function LandingPage(props: LandingProps) {
+  return <LangProvider><LandingContent {...props} /></LangProvider>;
 }

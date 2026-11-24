@@ -7,11 +7,14 @@ import { redirect } from "next/navigation";
 import { AppNav } from "@/app/components/app-nav";
 import { KTutor } from "@/app/components/k-tutor";
 import { kScenes } from "@/lib/k-scenes";
+import { activePlan, canOpenScene } from "@/lib/plans";
+import "@/app/components/plan-cards.css";
 
 export default async function KSceneHub() {
   const { userId } = await auth();
   if (!userId) redirect("/sign-in");
   const user = await currentUser();
+  const { plan } = activePlan(user?.publicMetadata);
   const name = user?.firstName || user?.username || "Ученик";
 
   return (
@@ -36,7 +39,7 @@ export default async function KSceneHub() {
               <div>
                 <small>{scene.lesson.replace("Lesson", "Урок")} · {scene.location}</small>
                 <h2>{scene.title}</h2>
-                <p>{scene.lines.length} реплик <span aria-hidden="true">↗</span></p>
+                <p>{scene.lines.length} реплик {!canOpenScene(plan, scene.slug) && <span className="scene-lock">Pro</span>} <span aria-hidden="true">↗</span></p>
               </div>
             </Link>
           ))}

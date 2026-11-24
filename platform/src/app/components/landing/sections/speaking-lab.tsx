@@ -4,13 +4,14 @@ import { type CSSProperties, useEffect, useRef, useState } from "react";
 import { LayoutGroup } from "motion/react";
 import * as m from "motion/react-m";
 import type { Lang } from "@/lib/landing/lang";
-import { practicePhrases } from "@/lib/landing/phrases";
+import type { PracticePhrases } from "@/lib/landing/phrases";
 import { MagneticPill, Reveal, useReducedMotion } from "../motion";
 import { Divider } from "../motion/divider";
 import { AssembledPhrase } from "../motion/assemble";
 import { Gayageum } from "../motion/gayageum";
 import { speakKorean } from "../motion/speech";
 import { compareSyllables, usePracticeRecorder } from "./use-practice-recorder";
+import { countAttempt, useSpeakingQuota } from "./use-speaking-quota";
 import e from "./editorial.module.css";
 import s from "./speaking-lab.module.css";
 
@@ -20,6 +21,7 @@ const copy = {
     link: "Open the full Speaking Lab", phrase: "Practice phrase", playbackError: "Couldn’t play this recording.", listen: "Listen", record: "Record", stop: "Stop recording", cancel: "Cancel",
     reference: "Twelve gayageum strings. Drag to play.", mic: "Your microphone", take: "Your recording", exchange: "In conversation", minji: "Minji", answer: "You",
     privacy: "K-Lab doesn’t upload your recording. Your browser may use its own speech service.",
+    left: ["1 free attempt left today.", "2 free attempts left today.", "3 free attempts a day."], spent: "You’ve used today’s 3 free attempts.", plans: "No limit in Pro",
     idle: "Record up to 8 seconds.", asking: "Waiting for microphone permission…", denied: "Microphone permission was denied. Check your browser settings to try again.",
     recording: "Recording", processing: "Preparing your take…", result: "Your take is ready.", unsupported: "This browser or connection doesn’t support microphone recording.",
     error: "Couldn’t record. Check your microphone and try again.", heard: "The browser heard", missing: "Speech recognition is unavailable in this browser.",
@@ -30,6 +32,7 @@ const copy = {
     link: "Открыть полную версию", phrase: "Фраза для практики", playbackError: "Не удалось воспроизвести запись.", listen: "Послушать", record: "Записать", stop: "Остановить запись", cancel: "Отмена",
     reference: "Двенадцать струн каягыма. Проведи по ним.", mic: "Твой микрофон", take: "Твоя запись", exchange: "В диалоге", minji: "Минджи", answer: "Ты",
     privacy: "K-Lab не загружает твою запись. Браузер может использовать собственную службу распознавания речи.",
+    left: ["Сегодня осталась 1 бесплатная попытка.", "Сегодня осталось 2 бесплатные попытки.", "3 бесплатные попытки в день."], spent: "На сегодня 3 бесплатные попытки закончились.", plans: "В Pro без лимита",
     idle: "Запись до 8 секунд.", asking: "Ожидаем разрешения на доступ к микрофону…", denied: "Доступ к микрофону запрещён. Проверь настройки браузера и попробуй снова.",
     recording: "Идёт запись", processing: "Готовим твою запись…", result: "Твоя запись готова.", unsupported: "В этом браузере или при таком соединении запись недоступна.",
     error: "Записать не удалось. Проверь микрофон и попробуй снова.", heard: "Браузер распознал", missing: "Этот браузер не поддерживает распознавание речи.",
@@ -37,7 +40,7 @@ const copy = {
   },
 };
 
-export function SpeakingLab({ lang }: { lang: Lang }) {
+export function SpeakingLab({ lang, phrases }: { lang: Lang; phrases: PracticePhrases }) {
   const t = copy[lang];
   const reduced = useReducedMotion();
   const [index, setIndex] = useState(0);
@@ -47,8 +50,13 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
   const [position, setPosition] = useState(0);
   const playback = useRef<HTMLAudioElement>(null);
   const cancelSpeech = useRef<(() => void) | null>(null);
-  const { line, cue } = practicePhrases[index];
+  const { line, cue } = phrases[index];
   const { status, seconds, url, heard, recognition, canvas, start, stop, reset } = usePracticeRecorder();
+  const left = useSpeakingQuota();
+  const spent = left === 0 && (status === "idle" || status === "result" || status === "denied" || status === "error");
+  useEffect(() => {
+    if (status === "recording") countAttempt();
+  }, [status]);
   const busy = ["asking", "recording", "processing"].includes(status);
   useEffect(() => () => cancelSpeech.current?.(), []);
   useEffect(() => {
@@ -89,7 +97,7 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
       <div className={`${e.paper} ${s.instrument}`}>
         <LayoutGroup id="practice-phrases">
           <div className={s.choices} role="group" aria-label={t.phrase}>
-            {practicePhrases.map(({ line: phrase }, i) => <button type="button" disabled={busy} aria-pressed={index === i} data-enter="rise" style={{ "--i": i } as CSSProperties}
+            {phrases.map(({ line: phrase }, i) => <button type="button" disabled={busy} aria-pressed={index === i} data-enter="rise" style={{ "--i": i } as CSSProperties}
               key={phrase.text} onClick={() => changePhrase(i)}>
               <span aria-hidden="true">{String(i + 1).padStart(2, "0")}</span><span lang="ko">{phrase.text}</span>
               {index === i && <m.span className={s.underline} layoutId={reduced ? undefined : "phrase-underline"} transition={{ duration: .26 }} />}
@@ -122,7 +130,7 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
                 transition={{ duration: reduced ? 0 : active ? 1 : .2, ease: "linear" }} />
             </svg>
             <button className={s.microphone} type="button" aria-label={active ? t.stop : status === "asking" ? t.cancel : t.record}
-              disabled={status === "processing" || status === "unsupported"} onClick={() => {
+              disabled={spent || status === "processing" || status === "unsupported"} onClick={() => {
                 if (active) stop();
                 else if (status === "asking") reset();
                 else { cancelSpeech.current?.(); playback.current?.pause(); setPosition(0); setAudioError(null); void start(); }
@@ -152,7 +160,7 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
               <button className={e.button} type="button" aria-pressed={playing} onClick={togglePlayback}>{playing ? "Ⅱ" : "▷"} {t.take}</button>
             </>}
           </div>
-          <div><p className={e.note} role="status">{t[status]}{audioError && ` ${t[audioError]}`}</p><p className={e.note}>{t.privacy}</p></div>
+          <div><p className={e.note} role="status">{t[status]}{audioError && ` ${t[audioError]}`}</p>{left !== null && <p className={e.note} role="status">{left === 0 ? t.spent : t.left[left - 1]} <a href="#pricing">{t.plans}</a></p>}<p className={e.note}>{t.privacy}</p></div>
         </div>
         {status === "result" && (heard ? <div className={s.result}>
           <p className={e.note}>{t.heard} <b lang="ko">{heard}</b> · {t.match}</p>

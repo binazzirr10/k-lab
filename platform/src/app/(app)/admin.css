@@ -29,3 +29,20 @@
     .admin-shell{width:calc(100% - 28px)}
     .admin-note{flex-direction:column;gap:8px}
   }
+
+.admin-plan{margin-top:20px;padding:25px;border:1px solid var(--line);background:var(--surface)}
+.admin-plan h2{margin:0 0 6px;font:500 29px/1.1 var(--font-display)}
+.admin-plan>p{margin:0 0 16px;color:var(--muted);font-size:14px}
+.admin-plan :is(input,select,button){min-height:44px;padding:8px 14px;border:1px solid var(--line);border-radius:var(--radius);background:var(--bg);color:var(--ink);font:500 14px var(--font-text)}
+.admin-plan button{cursor:pointer}
+.admin-plan button:disabled{opacity:.6;cursor:default}
+.admin-plan-search{display:flex;gap:8px;margin-bottom:12px}
+.admin-plan-search input{flex:1;min-width:0}
+.admin-plans{margin:0;padding:0;list-style:none}
+.admin-plans li{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr) minmax(0,2fr);gap:12px 20px;align-items:center;padding:14px 0;border-top:1px solid var(--line)}
+.admin-plan-user,.admin-plan-state{display:grid;gap:2px;font-size:14px}
+.admin-plan-user span{overflow-wrap:anywhere;color:var(--muted);font-size:13px}
+.admin-plan-state span{color:var(--muted);font-size:13px}
+.admin-plan-state mark{justify-self:start;padding:2px 8px;background:var(--sun);color:var(--ink)}
+.admin-plan-form{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:13px}
+@media(max-width:800px){.admin-plans li{grid-template-columns:minmax(0,1fr)}}
