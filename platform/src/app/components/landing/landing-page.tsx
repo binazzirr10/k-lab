@@ -4,6 +4,7 @@ import { useEffect, useRef } from "react";
 import { SiteHeader } from "./site-header";
 import { Hero } from "./hero";
 import type { HangulPosters } from "./hangul-scene/stage";
+import { WeightRipple } from "./motion/weight-ripple";
 import { Discover } from "./discover";
 import { SiteFooter } from "./site-footer";
 import { LangProvider, useLanguage } from "./lang-provider";
@@ -66,7 +67,7 @@ function LandingContent({ posters }: { posters: HangulPosters }) {
       <VocabularyDeck lang={lang} />
       <section className="landing-shell landing-resources" aria-labelledby="landing-resources">
         <div className="landing-closing">
-          <h2 id="landing-resources" lang="ko">천천히, 하지만 꾸준히.</h2>
+          <h2 id="landing-resources" lang="ko"><WeightRipple text="천천히, 하지만 꾸준히." /></h2>
           <p>{lang === "en" ? "Slowly, but steadily." : "Медленно, но уверенно."}</p>
         </div>
         <div>

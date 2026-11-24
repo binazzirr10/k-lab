@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "motion/react";
 import type { Lang } from "@/lib/landing/lang";
 import { landingWords } from "@/lib/landing/words";
 import { MagneticPill, Reveal, useReducedMotion } from "../motion";
+import { Bojagi } from "../motion/bojagi";
 import { speakKorean } from "../motion/speech";
 import e from "./editorial.module.css";
 import s from "./vocabulary.module.css";
@@ -45,17 +46,20 @@ function save(value: ReturnType<typeof read>) {
   window.dispatchEvent(new Event(localEvent));
 }
 
+type Flight = { to: number; x: number; y: number };
+
 export function VocabularyDeck({ lang }: { lang: Lang }) {
   const t = copy[lang];
   const reduced = useReducedMotion();
   const progress = read(useSyncExternalStore(subscribe, stored, () => empty));
   const [queue, setQueue] = useState(order);
   const [flipped, setFlipped] = useState(false);
-  const [direction, setDirection] = useState(1);
+  const [flight, setFlight] = useState<Flight>({ to: 1, x: 0, y: 0 });
   const [version, setVersion] = useState(0);
   const [error, setError] = useState(false);
   const audio = useRef<(() => void) | null>(null);
   const deck = useRef<HTMLDivElement>(null);
+  const strokes = useRef<HTMLDivElement>(null);
   const id = queue.find((candidate) => !progress.known.includes(candidate));
   const word = landingWords.find((candidate) => candidate.id === id);
   useEffect(() => () => audio.current?.(), []);
@@ -71,7 +75,13 @@ export function VocabularyDeck({ lang }: { lang: Lang }) {
     audio.current?.();
     const latest = read(stored());
     if (latest.known.includes(id)) return;
-    setDirection(known ? 1 : -1);
+    const stroke = strokes.current?.children[latest.known.length]?.getBoundingClientRect();
+    const card = deck.current?.firstElementChild?.getBoundingClientRect();
+    setFlight({
+      to: known ? 1 : -1,
+      x: stroke && card ? stroke.x + stroke.width / 2 - card.x - card.width / 2 : 0,
+      y: stroke && card ? stroke.y + stroke.height / 2 - card.y - card.height / 2 : 0,
+    });
     setFlipped(false);
     setError(false);
     setVersion((current) => current + 1);
@@ -107,9 +117,9 @@ export function VocabularyDeck({ lang }: { lang: Lang }) {
         <h2 className={e.title} id={heading}><Reveal lines={t.title} /></h2>
         <p className={e.lead}>{t.intro}</p>
         <div className={s.progressGroup}>
-          <div className={s.strokes} aria-hidden="true">{order.map((item, i) => <span key={item}>
+          <div className={s.strokes} ref={strokes} aria-hidden="true">{order.map((item, i) => <span key={item}>
             <motion.i initial={false} animate={{ scaleY: i < progress.known.length ? 1 : 0 }}
-              transition={{ duration: reduced ? 0 : .32, ease: [.22, .61, .36, 1] }} />
+              transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 210, damping: 9, delay: i < progress.known.length ? .78 : 0 }} />
           </span>)}</div>
           <div className={s.progress} role="status">
             <span><b>{progress.known.length}<i> / {order.length}</i></b>{t.progress}</span>
@@ -121,7 +131,7 @@ export function VocabularyDeck({ lang }: { lang: Lang }) {
       </div>
       <div className={`${e.paper} ${s.workbench}`} ref={deck} role="group" aria-labelledby={heading} tabIndex={0} aria-keyshortcuts="ArrowLeft ArrowRight Space" onKeyDown={shortcuts}>
         <div className={s.deck} data-empty={!word}>
-          <AnimatePresence initial={false} mode="popLayout" custom={direction}>
+          <AnimatePresence initial={false} mode="popLayout" custom={flight}>
             {word ? <motion.div key={`${word.id}-${version}`} className={s.card}
               drag={reduced ? false : "x"} dragConstraints={{ left: 0, right: 0 }} dragElastic={.38} dragMomentum={false}
               onDragEnd={(_, { offset, velocity }) => {
@@ -130,21 +140,29 @@ export function VocabularyDeck({ lang }: { lang: Lang }) {
               }}
               variants={{
                 in: { x: 0, opacity: 1, rotate: 0, scale: 1 },
-                out: (to: number) => reduced ? { x: 0, opacity: 1 } : { x: to * 165, rotate: to * 6, opacity: 0 },
+                out: ({ to, x, y }: Flight) => reduced ? { x: 0, opacity: 1 } : to > 0
+                  // Known: the card folds away and flies to its stroke on the counter.
+                  ? { x: [0, 46, x * .55, x], y: [0, -74, y * .55 - 90, y], scale: [1, .62, .3, .03], rotate: [0, 9, -24, -80], opacity: [1, 1, 1, .2],
+                      transition: { duration: .95, times: [0, .24, .64, 1], ease: "easeInOut" } }
+                  // Again: it slides out and tucks back under the stack.
+                  : { x: [0, -250, -250, 0], rotate: [0, -10, -10, 3], scale: [1, .97, .93, .9], zIndex: [2, 2, -2, -2], opacity: [1, 1, 1, 0],
+                      transition: { duration: .85, times: [0, .4, .42, 1], ease: "easeInOut" } },
               }}
-              initial={reduced ? false : { opacity: .8, scale: .98 }} animate="in" exit="out"
+              initial={reduced ? false : { opacity: 0, scale: .93, y: 14 }} animate="in" exit="out"
               transition={{ duration: reduced ? 0 : .25, ease: [.22, .61, .36, 1] }}>
-              <motion.div className={s.cardContent} initial={false} animate={{ rotateY: flipped ? 180 : 0 }}
-                transition={{ duration: reduced ? 0 : .38, ease: [.22, .61, .36, 1] }}>
-                <div className={s.face} inert={flipped} aria-hidden={flipped}>
-                  <div className={s.word} lang="ko">{word.korean}</div>
-                  <p className={s.roman}>{word.romanization}</p>
-                </div>
+              <div className={s.cardContent}>
                 <div className={`${s.face} ${s.back}`} inert={!flipped} aria-hidden={!flipped}>
                   <p className={s.meaning}>{lang === "en" ? word.english : word.russian}</p>
                   <p className={s.roman} lang="ko">{word.korean}</p>
                 </div>
-              </motion.div>
+                {!flipped && <p className={s.srOnly}><span lang="ko">{word.korean}</span> {word.romanization}</p>}
+                <Bojagi open={flipped} reduced={reduced}>
+                  <div className={s.face} aria-hidden="true">
+                    <div className={s.word} lang="ko">{word.korean}</div>
+                    <p className={s.roman}>{word.romanization}</p>
+                  </div>
+                </Bojagi>
+              </div>
             </motion.div> : <div className={`${s.card} ${s.complete}`} key="complete">
               <h3>{t.done}</h3><p className={e.note}>{t.complete}</p>
             </div>}

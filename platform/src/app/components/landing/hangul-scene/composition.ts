@@ -37,4 +37,13 @@ export const scenes = {
 } satisfies Record<string, SceneConfig>;
 
 export type Scene = keyof typeof scenes;
-export type StageInput = { scene: Scene; pointer: [number, number]; impulse: [number, number] };
+export type StageInput = {
+  scene: Scene;
+  pointer: [number, number];
+  impulse: [number, number];
+  /** 0 while the hero is in view, 1 once it has scrolled away: the letters come apart on the way. */
+  leave: number;
+  /** The pointer is over the stage; `taps` counts presses on it. */
+  inside: boolean;
+  taps: number;
+};

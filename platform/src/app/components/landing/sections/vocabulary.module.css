@@ -9,7 +9,7 @@
 .progress { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding-top: .7rem; color: var(--muted); font-size: 15px; }
 .progress b { display: block; font: 400 clamp(1.85rem, 3.3vw, 3.3rem)/1.05 var(--display); word-spacing: -.1em; color: var(--ink); margin-bottom: .28rem; }
 .progress i { font-size: .53em; font-style: normal; color: var(--accent); }
-.deck { box-sizing: border-box; width: 100%; max-width: 660px; margin-inline: auto; padding: 1.05rem 1.3rem 1.9rem; position: relative; isolation: isolate; overflow: clip; }
+.deck { box-sizing: border-box; width: 100%; max-width: 660px; margin-inline: auto; padding: 1.05rem 1.3rem 1.9rem; position: relative; isolation: isolate; }
 .deck:not([data-empty="true"])::before, .deck:not([data-empty="true"])::after {
   content: ""; position: absolute; z-index: -1; inset: 1.3rem 2.25rem 1.65rem;
   background: #e5eadc; border: 1px solid #a4ae9b; transform: rotate(3.25deg);
@@ -18,8 +18,9 @@
 .card { display: grid; border: 1px solid #8e9b83; background: #edf0e3; min-height: clamp(16rem, 25vw, 22.5rem); perspective: 1100px; cursor: grab; touch-action: pan-y; }
 .card:active { cursor: grabbing; }
 .cardContent { display: grid; transform-style: preserve-3d; }
+.card { transform-origin: center; }
 .face { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; grid-area: 1 / 1; backface-visibility: hidden; padding: clamp(1.1rem, 3vw, 2.8rem); min-width: 0; }
-.back { transform: rotateY(180deg); background: #e6ebdc; }
+.back { background: #f7f6ee; }
 .word { font-size: clamp(3.6rem, 8vw, 7rem); font-weight: 450; line-height: 1.05; letter-spacing: -.065em; }
 .roman { color: var(--muted); margin: .8rem 0 0; font-size: 18px; }
 .meaning, .complete h3 { font: 400 clamp(2rem, 4.1vw, 4.5rem)/1.06 var(--display); word-spacing: -.1em; margin: 0; letter-spacing: -.025em; }

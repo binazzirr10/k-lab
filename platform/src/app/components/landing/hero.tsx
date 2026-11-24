@@ -1,4 +1,5 @@
 import type { Lang } from "@/lib/landing/lang";
+import { JamoText } from "./motion/jamo-text";
 import { HangulStage, type HangulPosters } from "./hangul-scene/stage";
 
 const copy = {
@@ -22,7 +23,7 @@ export function Hero({ lang, posters }: { lang: Lang; posters: HangulPosters }) 
     <div className="landing-hero-copy">
       <p className="landing-eyebrow">{content.eyebrow}</p>
       <h1 aria-label={content.lines.join(" ")}>{content.lines.map((line) =>
-        <span className="landing-type-mask" key={line} aria-hidden="true"><span data-line>{line}</span></span>
+        <span className="landing-type-mask" key={line} aria-hidden="true"><span><JamoText text={line} sweep /></span></span>
       )}</h1>
       <p className="landing-intro">{typeof content.intro === "string" ? content.intro :
         content.intro.map((line, index) => <span key={line}>{index > 0 && " "}{line}</span>)}</p>
