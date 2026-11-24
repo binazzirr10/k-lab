@@ -1,15 +1,19 @@
 "use client";
 
-import { useEffect, useRef, useState, type KeyboardEvent } from "react";
-import { LayoutGroup, motion } from "motion/react";
+import dynamic from "next/dynamic";
+import { type CSSProperties, type KeyboardEvent, useEffect, useRef, useState } from "react";
+import { LayoutGroup } from "motion/react";
+import * as m from "motion/react-m";
 import type { Lang } from "@/lib/landing/lang";
 import { landingScenes, wordGlosses } from "@/lib/landing/scenes";
 import { sceneImage } from "@/lib/landing/scene-images";
 import { MagneticPill, Reveal, useReducedMotion } from "../motion";
-import { FoldingScreen } from "../motion/folding-screen";
+import { Divider } from "../motion/divider";
 import { speakKorean } from "../motion/speech";
 import e from "./editorial.module.css";
 import s from "./drama-mode.module.css";
+
+const FoldingScreen = dynamic(() => import("../motion/folding-screen").then((module) => module.FoldingScreen), { ssr: false });
 
 const copy = {
   en: { title: ["K‑Drama Mode"], intro: "Follow four original illustrated K‑Scene dialogues from the course, one line at a time.", open: "Open the full K‑Scene", play: "Play", pause: "Pause", previous: "Previous line", next: "Next line", scrub: "Dialogue line", subtitles: "Subtitles", romanization: "Romanization", translation: "English", scenes: "Choose a scene", word: "Word meaning", voice: "Korean audio is unavailable in this browser." },
@@ -117,6 +121,7 @@ export function DramaMode({ lang }: { lang: Lang }) {
 
   return <section className={`${e.section} ${s.section}`} id="drama" data-scene="drama" lang={lang} aria-labelledby={heading}>
     <div className={e.frame}>
+      <Divider />
       <header className={`${e.intro} ${s.intro}`}>
         <span className={e.number} aria-hidden="true">02</span>
         <h2 className={e.title} id={heading}><Reveal lines={t.title} /></h2>
@@ -126,28 +131,28 @@ export function DramaMode({ lang }: { lang: Lang }) {
         <MagneticPill href={`/k-scene/${scene.slug}`}>{t.open}</MagneticPill>
       </div>
       <div className={s.player} role="group" tabIndex={0} aria-keyshortcuts="ArrowLeft ArrowRight Space" aria-label={title(scene)} onKeyDown={onPlayerKey}>
-        <figure className={s.film}>
+        <figure className={s.film} data-handoff="" data-open-on-view="screen">
           <div className={s.still}>
             {leaving && <FoldingScreen key={leaving.at} onFolded={() => setLeaving(null)}><Still scene={leaving.scene} /></FoldingScreen>}
-            <motion.div className={s.camera} initial={false}
+            <m.div className={s.camera} initial={false}
               animate={reduced ? { scale: 1, x: "0%" } : { scale: lineIndex % 2 ? 1.16 : 1.07, x: lineIndex % 2 ? "2.3%" : "-1.4%" }}
               transition={{ duration: reduced ? 0 : 1.85, ease: [.22, .61, .36, 1] }}>
               <Still scene={scene} />
-            </motion.div>
+            </m.div>
           </div>
           <figcaption className={s.filmCaption}><span>{title(scene)}</span><span>{location}</span></figcaption>
           <div className={s.overlay}>
             <div className={s.subtitles} aria-live={playing ? "off" : "polite"}>
               <span className={s.speaker} lang="ko">{line.speaker}</span>
-              {visible.korean && <div className={s.korean} lang="ko">
+              {visible.korean && <div className={s.korean} lang="ko" key={`${sceneIndex}-${lineIndex}`}>
                 {line.text.split(" ").map((word, i) => {
                   const key = word.replace(/[^가-힣]/g, "");
-                  return <button key={i} type="button" className={s.word} data-current={activeWord === i}
+                  return <button key={i} type="button" className={s.word} style={{ "--i": i } as CSSProperties} data-current={activeWord === i}
                     aria-pressed={pickedWord === key} onClick={() => setPickedWord((current) => current === key ? "" : key)}>{word}</button>;
                 })}
               </div>}
-              {visible.romanization && <p className={s.roman}>{line.romanization}</p>}
-              {visible.translation && <p className={s.translation}>{lang === "en" ? line.english : line.translation}</p>}
+              {visible.romanization && <p className={s.roman} key={line.romanization}>{line.romanization}</p>}
+              {visible.translation && <p className={s.translation} key={line.english}>{lang === "en" ? line.english : line.translation}</p>}
             </div>
             <div className={s.transport}>
               <div className={s.transportButtons}>
@@ -156,7 +161,7 @@ export function DramaMode({ lang }: { lang: Lang }) {
                 <button type="button" aria-label={t.next} disabled={lineIndex === scene.lines.length - 1} onClick={() => seek(lineIndex + 1)}><Icon name="next" /></button>
               </div>
               <label className={s.scrub}>
-                <span className={s.count}><span className={s.srOnly}>{t.scrub} </span>{lineIndex + 1} / {scene.lines.length}</span>
+                <span className={s.count}><span className={s.srOnly}>{t.scrub} </span><span className={s.tally} key={lineIndex}>{lineIndex + 1}</span> / {scene.lines.length}</span>
                 <span className={s.scrubTrack}>
                   <span className={s.ticks} aria-hidden="true">{scene.lines.map((_, i) => <i key={i} data-active={i <= lineIndex} />)}</span>
                   <input type="range" min={0} max={scene.lines.length - 1} value={lineIndex} aria-valuetext={`${lineIndex + 1} / ${scene.lines.length}`} onChange={(event) => seek(Number(event.currentTarget.value))} />
@@ -178,7 +183,7 @@ export function DramaMode({ lang }: { lang: Lang }) {
         </div>
         <LayoutGroup id="scene-film-strip">
           <div className={s.strip} role="group" aria-label={t.scenes}>
-            {landingScenes.map((item, i) => <motion.button layout={!reduced} transition={{ layout: { duration: .38, ease: [.22, .61, .36, 1] } }}
+            {landingScenes.map((item, i) => <m.button layout={!reduced} data-enter="rise" style={{ "--i": i } as CSSProperties} transition={{ layout: { duration: .38, ease: [.22, .61, .36, 1] } }}
               type="button" key={item.slug} className={s.frame} aria-pressed={i === sceneIndex} onClick={() => {
                 sound.current.resumeWord = 0;
                 if (i !== sceneIndex && !reduced) setLeaving({ scene, at: folds.current += 1 });
@@ -189,7 +194,7 @@ export function DramaMode({ lang }: { lang: Lang }) {
                 <img {...sceneImage(item.cover, "(max-width: 760px) 45vw, 29vw")} width="320" height="180" alt="" loading="lazy" />
               </span>
               <span className={s.frameTitle}><span>{String(i + 1).padStart(2, "0")}</span><span>{title(item)}</span></span>
-            </motion.button>)}
+            </m.button>)}
           </div>
         </LayoutGroup>
       </div>
@@ -200,9 +205,9 @@ export function DramaMode({ lang }: { lang: Lang }) {
 function Still({ scene }: { scene: (typeof landingScenes)[number] }) {
   return <>
     {/* eslint-disable-next-line @next/next/no-img-element -- Existing responsive WebP variants. */}
-    <img className={s.background} {...sceneImage(scene.cover, "100vw")} alt="" decoding="async" fetchPriority="low" />
+    <img className={s.background} {...sceneImage(scene.cover, "100vw")} alt="" decoding="async" loading="lazy" />
     {/* eslint-disable-next-line @next/next/no-img-element -- Existing transparent WebP variants. */}
-    <img className={s.cast} data-solo={scene.slug === "joons-day"} {...sceneImage(scene.cast, "(max-width: 760px) 95vw, 57vw")} alt="" decoding="async" fetchPriority="low" />
+    <img className={s.cast} data-solo={scene.slug === "joons-day"} {...sceneImage(scene.cast, "(max-width: 760px) 95vw, 57vw")} alt="" decoding="async" loading="lazy" />
   </>;
 }
 

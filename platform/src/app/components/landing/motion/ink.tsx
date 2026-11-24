@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useId, useRef, type ReactNode } from "react";
-import { animate } from "motion/react";
 import styles from "./motion.module.css";
 
 /** Writing soaks in like wet ink on hanji: blots spread, join, and dry into sharp type. */
@@ -17,7 +16,7 @@ export function Ink({ children }: { children: ReactNode }) {
     const blur = node.querySelector("feGaussianBlur");
     const edge = node.querySelector("feFuncA");
     if (!text || !displace || !blur || !edge) return;
-    let controls: ReturnType<typeof animate> | undefined;
+    let frame = 0;
     const dry = () => { text.style.filter = ""; text.style.opacity = ""; text.style.maskImage = ""; };
     const soak = (progress: number) => {
       const wet = 1 - progress;
@@ -34,10 +33,17 @@ export function Ink({ children }: { children: ReactNode }) {
       if (!entry.isIntersecting) return;
       observer.disconnect();
       text.style.filter = `url(#${id})`;
-      controls = animate(0, 1, { duration: 1.7, ease: [.22, .7, .25, 1], onUpdate: soak, onComplete: dry });
+      const begin = performance.now();
+      const step = (now: number) => {
+        const time = Math.min(1, Math.max(0, now - begin) / 1700);
+        soak(1 - (1 - time) ** 2.6);
+        if (time < 1) frame = requestAnimationFrame(step);
+        else dry();
+      };
+      frame = requestAnimationFrame(step);
     }, { threshold: .3 });
     observer.observe(node);
-    return () => { observer.disconnect(); controls?.stop(); dry(); };
+    return () => { observer.disconnect(); cancelAnimationFrame(frame); dry(); };
   }, [id]);
 
   return <span ref={ref} className={styles.lines}>

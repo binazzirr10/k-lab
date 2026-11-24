@@ -1,11 +1,14 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { animate, stagger } from "motion/react";
 import { soundOf } from "./jamo";
 import styles from "./motion.module.css";
 
-const turn = [.45, 0, .15, 1] as const;
+const turn = "cubic-bezier(.45, 0, .15, 1)";
+const rolls = (hold: number): Keyframe[] => [
+  { transform: "rotateX(0deg)", offset: 0, easing: turn }, { transform: "rotateX(90deg)", offset: .34 },
+  { transform: "rotateX(90deg)", offset: .34 + hold, easing: turn }, { transform: "rotateX(180deg)", offset: 1 },
+];
 
 /**
  * Letters on little rollers: each one turns to the Korean letter of the same sound and back.
@@ -13,17 +16,19 @@ const turn = [.45, 0, .15, 1] as const;
  */
 export function JamoText({ text, sweep = false, active = false }: { text: string; sweep?: boolean; active?: boolean }) {
   const ref = useRef<HTMLSpanElement>(null);
+  const swept = useRef(false);
 
   useEffect(() => {
     const node = ref.current;
     if (!node || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const rollers = [...node.querySelectorAll<HTMLElement>("[data-roller]")];
-    const running = new Map<HTMLElement, { stop: () => void }>();
+    const running = new Map<HTMLElement, Animation>();
+    const timers: number[] = [];
     const roll = (roller: HTMLElement, hold: number) => {
       if (running.has(roller)) return;
-      const controls = animate(roller, { rotateX: [0, 90, 90, 180] }, { duration: .9 + hold, times: [0, .34, .34 + hold / (.9 + hold), 1], ease: [.45, 0, .15, 1] });
-      running.set(roller, controls);
-      void controls.then(() => { running.delete(roller); roller.style.transform = ""; });
+      const animation = roller.animate(rolls(hold / (.9 + hold)), { duration: (.9 + hold) * 1000 });
+      running.set(roller, animation);
+      animation.onfinish = () => running.delete(roller);
     };
     const over = (event: PointerEvent) => {
       const roller = (event.target as Element).closest<HTMLElement>("[data-roller]");
@@ -31,19 +36,20 @@ export function JamoText({ text, sweep = false, active = false }: { text: string
     };
     node.addEventListener("pointerover", over);
     let cancelled = false;
-    if (sweep) {
+    if (sweep && !swept.current) {
       void (document.fonts?.ready ?? Promise.resolve()).then(() => {
         if (cancelled) return;
+        swept.current = true;
         rollers.forEach((roller, index) => {
-          const timer = window.setTimeout(() => roll(roller, .3), 350 + index * 62);
-          running.set(document.createElement("i"), { stop: () => window.clearTimeout(timer) });
+          timers.push(window.setTimeout(() => roll(roller, .3), 350 + index * 62));
         });
       });
     }
     return () => {
       cancelled = true;
       node.removeEventListener("pointerover", over);
-      running.forEach((controls) => controls.stop());
+      timers.forEach(window.clearTimeout);
+      running.forEach((animation) => animation.cancel());
     };
   }, [sweep, text]);
 
@@ -51,9 +57,8 @@ export function JamoText({ text, sweep = false, active = false }: { text: string
     const node = ref.current;
     if (!node || !active || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const rollers = node.querySelectorAll<HTMLElement>("[data-roller]");
-    if (!rollers.length) return;
-    const controls = animate(rollers, { rotateX: [0, 90, 90, 180] }, { duration: 1.1, ease: turn, times: [0, .34, .56, 1], delay: stagger(.026) });
-    return () => { controls.stop(); rollers.forEach((roller) => { roller.style.transform = ""; }); };
+    const animations = [...rollers].map((roller, index) => roller.animate(rolls(.22), { duration: 1100, delay: index * 26 }));
+    return () => animations.forEach((animation) => animation.cancel());
   }, [active]);
 
   return <span ref={ref} className={styles.jamoText}>

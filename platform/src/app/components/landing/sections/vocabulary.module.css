@@ -49,3 +49,11 @@
  .actions button, .reset { font-size: 14px; }
  .deck { padding-inline: .5rem; }
 }
+
+.tally { display: inline-block; animation: tally .5s cubic-bezier(.2, .9, .25, 1.25); }
+@keyframes tally { from { transform: translateY(.75em) rotateX(-80deg); opacity: 0; } }
+
+.example { animation: example-in .55s cubic-bezier(.2, .75, .2, 1); }
+.exampleTranslation { animation: example-in .5s cubic-bezier(.2, .75, .2, 1) .12s backwards; }
+@keyframes example-in { from { transform: translateX(46px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .example, .exampleTranslation, .tally { animation: none; } }

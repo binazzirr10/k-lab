@@ -1,18 +1,9 @@
 "use client";
 
-import dynamic from "next/dynamic";
-import { Component, useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState } from "react";
 import { scenes, type Scene, type SceneConfig, type StageInput } from "./composition";
+import type { Engine } from "./engine";
 import { HangulIllustration } from "./poster";
-
-const CanvasScene = dynamic(() => import("./canvas-scene"), { ssr: false });
-
-class SceneBoundary extends Component<{ children: ReactNode; onFailure: () => void }, { failed: boolean }> {
-  state = { failed: false };
-  static getDerivedStateFromError() { return { failed: true }; }
-  componentDidCatch() { this.props.onFailure(); }
-  render() { return this.state.failed ? null : this.props.children; }
-}
 
 type PreviewDevice = Navigator & { deviceMemory?: number; connection?: { saveData?: boolean } };
 
@@ -32,6 +23,9 @@ export type HangulPosters = { desktop?: string; mobile?: string };
 export function HangulStage({ posters }: { posters: HangulPosters }) {
   const marker = useRef<HTMLDivElement>(null);
   const layer = useRef<HTMLDivElement>(null);
+  const canvas = useRef<HTMLCanvasElement>(null);
+  const engine = useRef<Engine | null>(null);
+  const wanted = useRef(false);
   const input = useRef<StageInput>({ scene: "hero", pointer: [0, 0], impulse: [0, 0], leave: 0, inside: false, taps: 0 });
   const [enabled, setEnabled] = useState(false);
   const [running, setRunning] = useState(false);
@@ -105,8 +99,25 @@ export function HangulStage({ posters }: { posters: HangulPosters }) {
         top: host.top + config.place.top, width: columns * config.place.width, height: config.place.height,
       } : bounds;
       if (visual.dataset.scene !== name) {
+        const from = visual.getBoundingClientRect();
+        const near = visual.dataset.scene && from.width && box.width && Math.abs(from.top - box.top) < innerHeight * 1.1 && visual.style.opacity !== "0";
         visual.dataset.scene = name;
-        visual.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 650, easing: "ease-out" });
+        visual.getAnimations().forEach((animation) => animation.cancel());
+        if (near) {
+          // Keep the same centre and size, then swing over in an arc.
+          const size = Math.min(from.width, from.height) / Math.min(box.width, box.height);
+          const dx = from.left + from.width / 2 - box.left - box.width / 2;
+          const dy = from.top + from.height / 2 - box.top - box.height / 2;
+          const bend = dx > 0 ? -1 : 1;
+          visual.animate([
+            { transform: `translate(${dx}px, ${dy}px) scale(${size})`, opacity: 0 },
+            { transform: `translate(${dx * .86}px, ${dy * .86}px) scale(${size * .94 + .06})`, opacity: 1, offset: .16 },
+            { transform: `translate(${dx * .42 + bend * 90}px, ${dy * .42 - 30}px) scale(${size * .42 + .58}) rotate(${bend * 11}deg)`, offset: .55 },
+            { transform: "none", opacity: 1 },
+          ], { duration: 1150, easing: "cubic-bezier(.45, 0, .2, 1)" });
+        } else {
+          visual.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 650, easing: "ease-out" });
+        }
       }
       visual.style.setProperty("--scene-left", `${box.left}px`);
       visual.style.setProperty("--scene-top", `${box.top}px`);
@@ -179,19 +190,38 @@ export function HangulStage({ posters }: { posters: HangulPosters }) {
   }, [enabled, failed, capture]);
 
   const live = enabled && !failed;
+
+  useEffect(() => {
+    const surface = canvas.current;
+    if (!live || !surface) return;
+    let cancelled = false;
+    const fail = () => { if (!cancelled) setFailed(true); };
+    void import("./engine").then(({ createEngine }) => {
+      if (cancelled) return;
+      engine.current = createEngine(surface, { capture, input: input.current, onReady: () => setReady(true), onFailure: fail });
+      engine.current.setRunning(wanted.current);
+    }).catch(fail);
+    return () => {
+      cancelled = true;
+      engine.current?.dispose();
+      engine.current = null;
+    };
+  }, [live, capture]);
+
+  useEffect(() => {
+    wanted.current = running;
+    engine.current?.setRunning(running);
+  }, [running]);
   return <div ref={marker} className="hangul-stage" aria-hidden="true" data-live={live && ready} data-capture={capture}>
     <div className="hangul-static">
-      <HangulIllustration />
+      {(posterFailed || !posters.desktop) && <HangulIllustration />}
       {!posterFailed && (posters.desktop || posters.mobile) && <picture>
         {posters.mobile && <source media="(max-width: 899px)" srcSet={posters.mobile} />}
-        <img src={posters.desktop ?? posters.mobile} alt="" onError={() => setPosterFailed(true)} />
+        <img src={posters.desktop ?? posters.mobile} alt="" fetchPriority="high" decoding="async" onError={() => setPosterFailed(true)} />
       </picture>}
     </div>
     <div ref={layer} className="hangul-live">
-      {live && <SceneBoundary onFailure={() => setFailed(true)}>
-        <CanvasScene capture={capture} running={running} input={input}
-          onReady={() => setReady(true)} onFailure={() => setFailed(true)} />
-      </SceneBoundary>}
+      {live && <canvas ref={canvas} className="hangul-canvas" />}
     </div>
   </div>;
 }

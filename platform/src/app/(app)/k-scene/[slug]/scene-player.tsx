@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useEffect, useRef, useState } from "react";
+import { Fragment, useEffect, useRef, useState, ViewTransition } from "react";
 import { AnimatePresence, m, useReducedMotion } from "motion/react";
 import { MotionScope, spring } from "@/app/components/motion-kit/motion";
 import styles from "@/app/components/motion-kit/learning.module.css";
@@ -58,7 +58,7 @@ export function ScenePlayer({ scene }: { scene: KScene }) {
   }
 
   return <>
-    <section className="scene-stage"><img className="scene-stage-bg" src={scene.cover} alt={scene.location} /><MotionScope>
+    <ViewTransition name={`scene-${scene.slug}`} share="klab-morph" default="none"><section className="scene-stage"><img className="scene-stage-bg" src={scene.cover} alt={scene.location} /><MotionScope>
       <m.img className="scene-stage-cast" src={scene.cast} alt="Персонаж сцены" initial={false}
         animate={{ scale: !reduced && scene.slug === "joons-day" && line.speaker === "준" && current > 0 ? 1.035 : 1 }}
         transition={spring} />
@@ -72,7 +72,7 @@ export function ScenePlayer({ scene }: { scene: KScene }) {
           {index > 0 && " "}<m.em className={styles.captionWord} initial={reduced ? false : { y: 6, opacity: .65 }}
             animate={{ y: 0, opacity: 1 }} transition={{ ...spring, delay: reduced ? 0 : index * .035 }}>{word}</m.em>
         </Fragment>)}</b><span>{line.translation}</span>
-      </m.div></AnimatePresence></MotionScope></div></aside></section>
+      </m.div></AnimatePresence></MotionScope></div></aside></section></ViewTransition>
     <div className="scene-controls"><button className="primary" onClick={() => speak(current)}>▶ СЛУШАТЬ РЕПЛИКУ</button><button onClick={() => setCurrent((value) => Math.max(0, value - 1))} disabled={current === 0}>← НАЗАД</button><button onClick={() => setCurrent((value) => Math.min(scene.lines.length - 1, value + 1))} disabled={current === scene.lines.length - 1}>ДАЛЬШЕ →</button><a href={`https://k-lab-two.vercel.app/speaking.html?phrase=${encodeURIComponent(line.text)}&lesson=scene-${scene.slug}`}>ЗАПИСАТЬ В SPEAKING LAB →</a>{current === scene.lines.length - 1 && <button className="primary" disabled={saving} onClick={finish}>{saving ? "СОХРАНЯЕМ…" : "ЗАВЕРШИТЬ СЦЕНУ ✓"}</button>}</div>
     <div className="scene-result" role="status">{done && <p className="scene-note">Готово, прохождение сцены сохранено. Её можно открыть ещё раз в любое время.</p>}{saveError && <p className="scene-note">Не удалось сохранить прохождение. Нажми «Завершить сцену» ещё раз.</p>}</div>
     <section className="scene-script"><h2>Все реплики</h2>{scene.lines.map((item, index) => <div className={`scene-line ${index === current ? "active" : ""}${speaking === index ? " speaking" : ""}`} key={`${item.speaker}-${index}`}><small aria-current={index === current ? "step" : undefined}>{item.speaker}</small><div><b>{item.text}</b><span>{item.translation}</span></div><button aria-label={`Слушать реплику ${index + 1}`} onClick={() => { setCurrent(index); speak(index); }}>🔊</button></div>)}</section>

@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState, useSyncExternalStore, type KeyboardEvent } from "react";
-import { AnimatePresence, motion } from "motion/react";
+import { type CSSProperties, type KeyboardEvent, useEffect, useRef, useState, useSyncExternalStore } from "react";
+import { AnimatePresence } from "motion/react";
+import * as m from "motion/react-m";
 import type { Lang } from "@/lib/landing/lang";
 import { landingWords } from "@/lib/landing/words";
 import { MagneticPill, Reveal, useReducedMotion } from "../motion";
+import { Divider } from "../motion/divider";
 import { Bojagi } from "../motion/bojagi";
 import { speakKorean } from "../motion/speech";
 import e from "./editorial.module.css";
@@ -112,27 +114,28 @@ export function VocabularyDeck({ lang }: { lang: Lang }) {
   const heading = "vocabulary-heading";
   return <section className={e.section} id="vocabulary" data-scene="vocabulary" lang={lang} aria-labelledby={heading}>
     <div className={e.frame}>
+      <Divider />
       <div className={`${e.intro} ${s.intro}`}>
         <span className={e.number} aria-hidden="true">04</span>
         <h2 className={e.title} id={heading}><Reveal lines={t.title} /></h2>
         <p className={e.lead}>{t.intro}</p>
         <div className={s.progressGroup}>
-          <div className={s.strokes} ref={strokes} aria-hidden="true">{order.map((item, i) => <span key={item}>
-            <motion.i initial={false} animate={{ scaleY: i < progress.known.length ? 1 : 0 }}
+          <div className={s.strokes} ref={strokes} aria-hidden="true">{order.map((item, i) => <span key={item} data-enter="grow" style={{ "--i": i } as CSSProperties}>
+            <m.i initial={false} animate={{ scaleY: i < progress.known.length ? 1 : 0 }}
               transition={reduced ? { duration: 0 } : { type: "spring", stiffness: 210, damping: 9, delay: i < progress.known.length ? .78 : 0 }} />
           </span>)}</div>
           <div className={s.progress} role="status">
-            <span><b>{progress.known.length}<i> / {order.length}</i></b>{t.progress}</span>
-            <span><b>{progress.attempts}</b>{t.reviews}</span>
+            <span><b><span className={s.tally} key={progress.known.length}>{progress.known.length}</span><i> / {order.length}</i></b>{t.progress}</span>
+            <span><b><span className={s.tally} key={progress.attempts}>{progress.attempts}</span></b>{t.reviews}</span>
           </div>
           <button type="button" className={s.reset} disabled={!progress.attempts && !progress.known.length} onClick={reset}>{t.reset}</button>
         </div>
         <MagneticPill href="/vocabulary">{t.link}</MagneticPill>
       </div>
-      <div className={`${e.paper} ${s.workbench}`} ref={deck} role="group" aria-labelledby={heading} tabIndex={0} aria-keyshortcuts="ArrowLeft ArrowRight Space" onKeyDown={shortcuts}>
+      <div className={`${e.paper} ${s.workbench}`} data-enter="deal" ref={deck} role="group" aria-labelledby={heading} tabIndex={0} aria-keyshortcuts="ArrowLeft ArrowRight Space" onKeyDown={shortcuts}>
         <div className={s.deck} data-empty={!word}>
           <AnimatePresence initial={false} mode="popLayout" custom={flight}>
-            {word ? <motion.div key={`${word.id}-${version}`} className={s.card}
+            {word ? <m.div key={`${word.id}-${version}`} className={s.card}
               drag={reduced ? false : "x"} dragConstraints={{ left: 0, right: 0 }} dragElastic={.38} dragMomentum={false}
               onDragEnd={(_, { offset, velocity }) => {
                 const projected = offset.x + velocity.x * .11;
@@ -163,7 +166,7 @@ export function VocabularyDeck({ lang }: { lang: Lang }) {
                   </div>
                 </Bojagi>
               </div>
-            </motion.div> : <div className={`${s.card} ${s.complete}`} key="complete">
+            </m.div> : <div className={`${s.card} ${s.complete}`} key="complete">
               <h3>{t.done}</h3><p className={e.note}>{t.complete}</p>
             </div>}
           </AnimatePresence>
@@ -175,7 +178,7 @@ export function VocabularyDeck({ lang }: { lang: Lang }) {
             <button type="button" onClick={() => review(true)}>{t.know}<kbd aria-hidden="true">→</kbd></button>
           </div>
           <div className={s.context}>
-            <p className={s.example} lang="ko">{word.example.split(word.korean).map((part, i) =>
+            <p className={s.example} lang="ko" key={word.id}>{word.example.split(word.korean).map((part, i) =>
               <span key={i}>{i > 0 && <span data-revealed={flipped} className={s.gap}>
                 <span aria-hidden={!flipped}>{word.korean}</span>
                 {!flipped && <span className={s.srOnly} lang={lang}>{t.gap}</span>}

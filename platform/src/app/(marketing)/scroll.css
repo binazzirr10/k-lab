@@ -1,0 +1,50 @@
+/* Entrances tied to the scroll position. They run off the main thread, reverse when you scroll back and are
+   simply absent where the browser has no scroll timelines. */
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .landing [data-enter] { animation: enter-rise linear both; animation-timeline: view(); animation-range: entry 0% cover 24%; }
+    .landing [data-enter="rise"] { animation-range: entry calc(var(--i, 0) * 13%) cover calc(16% + var(--i, 0) * 3%); }
+    .landing [data-enter="slide"] { animation-name: enter-slide; animation-range: entry 0% cover 15%; }
+    .landing [data-enter="deal"] { animation-name: enter-deal; animation-range: entry 0% cover 33%; }
+    .landing [data-enter="grow"] { animation-name: enter-grow; transform-origin: bottom; animation-range: entry calc(var(--i, 0) * 9%) cover calc(18% + var(--i, 0) * 2%); }
+    .landing-closing p { animation: enter-unroll linear both; animation-timeline: view(); animation-range: entry 10% cover 34%; }
+    .landing-course-index a { animation: enter-slide linear both; animation-timeline: view(); animation-range: entry 0% cover 14%; }
+    .landing-footer > * { animation: enter-rise linear both; animation-timeline: view(); animation-range: entry 0% entry 90%; }
+    .landing-discover { animation: leave-row linear both; animation-timeline: view(); animation-range: exit 5% exit 70%; transform-origin: 50% 100%; }
+    .landing-hero-copy { animation: leave-copy linear both; animation-timeline: view(); animation-range: exit -5% exit 85%; }
+    .landing-header::after {
+      content: ""; position: absolute; inset: auto 0 -1px; height: 1px; background: #6f8060; transform-origin: 0 50%;
+      animation: read-through linear both; animation-timeline: scroll(root);
+    }
+  }
+}
+@keyframes enter-rise { from { transform: translateY(64px) rotate(2.5deg); opacity: 0; } }
+@keyframes enter-unroll { from { clip-path: inset(-20% 100% -20% 0); } to { clip-path: inset(-20% 0 -20% 0); } }
+@keyframes enter-slide { from { transform: translateX(120px) skewX(-7deg); opacity: 0; } }
+@keyframes enter-deal { from { transform: translate(150px, 90px) rotate(9deg); opacity: 0; } }
+@keyframes enter-grow { from { transform: scaleY(0); } }
+@keyframes leave-row { to { transform: perspective(1100px) rotateX(-22deg) scale(.93); opacity: 0; } }
+@keyframes leave-copy { to { transform: translateY(70px) scale(.94); filter: blur(5px); opacity: 0; } }
+@keyframes read-through { from { transform: scaleX(0); } }
+
+/* The phone menu opens as a drop of ink from the button. */
+.landing-menu { transition: clip-path .62s cubic-bezier(.6, 0, .15, 1), overlay .62s allow-discrete, display .62s allow-discrete; clip-path: circle(0 at calc(100% - 46px) 31px); }
+.landing-menu[open] { clip-path: circle(150vmax at calc(100% - 46px) 31px); }
+@starting-style { .landing-menu[open] { clip-path: circle(0 at calc(100% - 46px) 31px); } }
+.landing-menu[open] nav a { animation: menu-line .6s cubic-bezier(.2, .75, .2, 1) backwards; }
+.landing-menu[open] nav a:nth-child(1) { animation-delay: .16s; }
+.landing-menu[open] nav a:nth-child(2) { animation-delay: .23s; }
+.landing-menu[open] nav a:nth-child(3) { animation-delay: .30s; }
+.landing-menu[open] nav a:nth-child(4) { animation-delay: .37s; }
+@keyframes menu-line { from { transform: translateY(34px) rotate(3deg); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .landing-menu { transition: none; } .landing-menu nav a { animation: none !important; } }
+
+/* Opened by use-entrances.ts */
+@media (prefers-reduced-motion: no-preference) {
+  [data-open-on-view] { transition: clip-path 1.25s cubic-bezier(.7, 0, .15, 1), transform 1.25s cubic-bezier(.7, 0, .15, 1); }
+    html[data-transition="handoff"] [data-open-on-view] { transition: none; }
+  [data-open-on-view="unroll"] { clip-path: inset(-20% 0); }
+  [data-open-on-view="unroll"][data-closed] { clip-path: inset(-20% 100% -20% 0); }
+  [data-open-on-view="screen"] { clip-path: inset(0); }
+  [data-open-on-view="screen"][data-closed] { clip-path: inset(0 38%); transform: scale(1.05); }
+}

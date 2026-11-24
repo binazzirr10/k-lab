@@ -2,6 +2,7 @@
 
 import { createContext, useContext, useSyncExternalStore, type ReactNode } from "react";
 import type { Lang } from "@/lib/landing/lang";
+import { withTransition } from "./motion/transition";
 
 const key = "klab-language";
 const signals = new EventTarget();
@@ -25,7 +26,15 @@ function subscribe(callback: () => void) {
   };
 }
 
-function setLang(lang: Lang) {
+function setLang(lang: Lang, from?: Element) {
+  if (lang === read()) return;
+  const box = from?.getBoundingClientRect();
+  document.documentElement.style.setProperty("--from-x", `${box ? box.x + box.width / 2 : innerWidth / 2}px`);
+  document.documentElement.style.setProperty("--from-y", `${box ? box.y + box.height / 2 : 0}px`);
+  withTransition("language", () => apply(lang));
+}
+
+function apply(lang: Lang) {
   document.documentElement.lang = lang;
   try { localStorage.setItem(key, lang); } catch { /* The current document retains the choice. */ }
   signals.dispatchEvent(new Event("change"));

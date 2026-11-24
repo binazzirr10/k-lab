@@ -1,4 +1,8 @@
+"use client";
+
+import type { MouseEvent } from "react";
 import type { Lang } from "@/lib/landing/lang";
+import { withTransition } from "./motion/transition";
 
 const features = [
   {
@@ -58,10 +62,32 @@ function SpeakingArtwork() {
   </svg>;
 }
 
+/** The picture on the card grows into the main picture of its section. */
+function handOff(event: MouseEvent<HTMLAnchorElement>, id: string) {
+  const art = event.currentTarget.querySelector<HTMLElement>(".landing-feature-art");
+  const section = document.getElementById(id);
+  const target = section?.querySelector<HTMLElement>("[data-handoff]");
+  if (event.metaKey || event.ctrlKey || event.shiftKey || event.altKey || !art || !section || !target
+    || !("startViewTransition" in document) || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  event.preventDefault();
+  art.style.setProperty("view-transition-name", "handoff");
+  withTransition("handoff", () => {
+    art.style.removeProperty("view-transition-name");
+    delete target.dataset.closed;
+    target.style.setProperty("view-transition-name", "handoff");
+    history.pushState(null, "", `#${id}`);
+    section.scrollIntoView({ behavior: "instant", block: "start" });
+  }, () => {
+    target.style.removeProperty("view-transition-name");
+    section.setAttribute("tabindex", "-1");
+    section.focus({ preventScroll: true });
+  });
+}
+
 export function Discover({ lang }: { lang: Lang }) {
   return <section className="landing-shell landing-discover" id="discover" aria-label={lang === "en" ? "Discover K-Lab" : "Обзор K-Lab"}>
     {features.map(({ id, image, crop, ...copy }, i) =>
-      <a className="landing-feature" key={id} href={`#${id}`}>
+      <a className="landing-feature" key={id} href={`#${id}`} onClick={(event) => handOff(event, id)}>
         <div>
           <span className="landing-index" aria-hidden="true">0{i + 1}</span>
           <h2 className="landing-type-mask"><span data-line>{copy[lang][0]}</span></h2>

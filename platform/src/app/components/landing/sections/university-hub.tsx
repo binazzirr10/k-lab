@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { motion } from "motion/react";
+import { type CSSProperties, useState } from "react";
+import * as m from "motion/react-m";
 import type { Lang } from "@/lib/landing/lang";
 import { admissionSteps, universities } from "@/lib/landing/universities";
-import { LineArrow, MagneticPill, Reveal, useDrawOnEnter, useReducedMotion } from "../motion";
+import { LineArrow, MagneticPill, Reveal, useReducedMotion } from "../motion";
+import { Divider } from "../motion/divider";
 import { JamoText } from "../motion/jamo-text";
 import { SplitFlap } from "../motion/split-flap";
 import e from "./editorial.module.css";
@@ -28,24 +29,24 @@ const copy = {
 export function UniversityHub({ lang }: { lang: Lang }) {
   const t = copy[lang];
   const reduced = useReducedMotion();
-  const pathLine = useDrawOnEnter();
   const [selected, setSelected] = useState<number | null>(0);
   const [preview, setPreview] = useState<number | null>(null);
   const open = preview ?? selected;
   const heading = "universities-heading";
   return <section className={e.section} id="university" data-scene="university" lang={lang} aria-labelledby={heading}>
     <div className={e.frame}>
+      <Divider />
       <div className={`${e.intro} ${s.intro}`}>
         <span className={e.number} aria-hidden="true">03</span>
         <h2 className={e.title} id={heading}><Reveal lines={t.title} /></h2>
         <p className={e.lead}>{t.intro}</p>
         <MagneticPill href="https://k-lab-two.vercel.app/universities.html">{t.directory}</MagneticPill>
       </div>
-      <div className={`${e.paper} ${s.index}`}>
+      <div className={`${e.paper} ${s.index}`} data-handoff="">
         <h3 className={s.indexLabel}>{t.index}</h3>
         <ul role="list" className={s.list} onPointerLeave={() => setPreview(null)}>
           {universities.map((university, i) => (
-            <li key={university.korean} className={s.row} onPointerEnter={(event) => {
+            <li key={university.korean} className={s.row} data-enter="slide" style={{ "--i": i } as CSSProperties} onPointerEnter={(event) => {
               if (event.pointerType === "mouse" && !event.currentTarget.parentElement?.querySelector(":focus-visible")) setPreview(i);
             }}>
               <button type="button" className={s.trigger} aria-controls={`university-details-${i}`} aria-expanded={open === i}
@@ -57,9 +58,9 @@ export function UniversityHub({ lang }: { lang: Lang }) {
                 <span className={s.korean} lang="ko">{university.korean}</span>
                 <span className={s.indicator} aria-hidden="true">{open === i ? "−" : "+"}</span>
               </button>
-              <motion.div initial={false} animate={{ height: open === i ? "auto" : 0 }}
+              <m.div initial={false} animate={{ height: open === i ? "auto" : 0 }}
                 transition={{ duration: reduced ? 0 : .32, ease: [.22, .61, .36, 1] }}
-                className={s.details} id={`university-details-${i}`} inert={open !== i} aria-hidden={open !== i}>
+                className={s.details} data-open={open === i} id={`university-details-${i}`} inert={open !== i} aria-hidden={open !== i}>
                 <div className={s.detailInner}>
                   <span className={s.outlineName} lang="ko"><SplitFlap text={university.korean} active={open === i} /></span>
                   <dl className={s.facts}>
@@ -69,7 +70,7 @@ export function UniversityHub({ lang }: { lang: Lang }) {
                   </dl>
                   <a className={s.official} href={university.admissions}>{t.official} <LineArrow /></a>
                 </div>
-              </motion.div>
+              </m.div>
             </li>
           ))}
         </ul>
@@ -77,8 +78,8 @@ export function UniversityHub({ lang }: { lang: Lang }) {
       <aside className={`${e.paper} ${s.path}`}>
         <h3>{t.path}</h3>
         <ol role="list">
-          <li className={s.pathRule} role="presentation" aria-hidden="true"><span ref={pathLine} /></li>
-          {admissionSteps[lang].map(([title, detail], i) => <li key={title}>
+          <li className={s.pathRule} role="presentation" aria-hidden="true"><span /></li>
+          {admissionSteps[lang].map(([title, detail], i) => <li key={title} data-enter="rise" style={{ "--i": i } as CSSProperties}>
             <span className={s.step} aria-hidden="true">{String(i + 1).padStart(2, "0")}</span><strong>{title}</strong><p>{detail}</p>
           </li>)}
         </ol>

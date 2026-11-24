@@ -27,8 +27,6 @@ export const landingScenes = kScenes.map((scene, index) => ({
   ...scene,
   englishTitle: editions[index].title,
   englishLocation: editions[index].location,
-  cover: scene.cover.replace(".png", ".webp"),
-  cast: scene.cast.replace(".png", ".webp"),
   lines: scene.lines.map((line, lineIndex) => ({
     ...line,
     romanization: editions[index].romanization[lineIndex],
