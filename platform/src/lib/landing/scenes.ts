@@ -1,0 +1,60 @@
+import { kScenes } from "../k-scenes";
+
+const editions = [
+  {
+    title: "A New Friend", location: "A morning on campus",
+    romanization: ["Annyeonghaseyo. Jeoneun Minjiyeyo.", "Annyeonghaseyo.", "Ireumi mwoyeyo?", "Jeoneun Allinayeyo.", "Bangapseumnida. Haksaengieyo?", "Ne, haksaengieyo. Bangapseumnida."],
+    english: ["Hello. I’m Minji.", "Hello.", "What’s your name?", "I’m Alina.", "Nice to meet you. Are you a student?", "Yes, I’m a student. Nice to meet you, too."],
+  },
+  {
+    title: "Where Are You From?", location: "The university hall",
+    romanization: ["Hanguk saramieyo?", "Anieyo.", "Eoneu nara saramieyo?", "Jeoneun Kajaheuseutan saramieyo.", "Minji ssineun Hanguk saramieyo?", "Ne, jeoneun Hanguk saramieyo."],
+    english: ["Are you Korean?", "No.", "What country are you from?", "I’m from Kazakhstan.", "Minji, are you Korean?", "Yes, I’m Korean."],
+  },
+  {
+    title: "What Is This?", location: "At a café after class",
+    romanization: ["Minji ssi, igeoseun mwoyeyo?", "Igeoseun je chaegieyo.", "Jeogeoseun gabangieyo?", "Ne, majayo.", "Geugeoseun penieyo?", "Anieyo. Igeoseun yeonpirieyo."],
+    english: ["Minji, what’s this?", "This is my book.", "Is that over there a bag?", "Yes, that’s right.", "Is that a pen?", "No. This is a pencil."],
+  },
+  {
+    title: "Joon’s Day", location: "The language club",
+    romanization: ["Annyeonghaseyo, Allina ssi. Oneul mwo haeyo?", "Jeoneun hangugeoreul gongbuhaeyo.", "Joayo. Jeoneun chingureul mannayo.", "Jeoneun keopireul masyeoyo.", "Gimbabeul meogeoyo?", "Ne, gimbabeul meogeoyo."],
+    english: ["Hello, Alina. What are you doing today?", "I’m studying Korean.", "Nice. I’m meeting a friend.", "I drink coffee.", "Do you eat gimbap?", "Yes, I eat gimbap."],
+  },
+];
+
+export const landingScenes = kScenes.map((scene, index) => ({
+  ...scene,
+  englishTitle: editions[index].title,
+  englishLocation: editions[index].location,
+  cover: scene.cover.replace(".png", ".webp"),
+  cast: scene.cast.replace(".png", ".webp"),
+  lines: scene.lines.map((line, lineIndex) => ({
+    ...line,
+    romanization: editions[index].romanization[lineIndex],
+    english: editions[index].english[lineIndex],
+  })),
+}));
+
+export const wordGlosses: Record<string, [string, string]> = {
+  안녕하세요: ["hello", "приветствие (вежл.)"], 저는: ["I (polite topic)", "я (вежл., тема)"],
+  민지예요: ["I’m Minji", "я Минджи"], 이름이: ["name (subject)", "имя (подлежащее)"],
+  뭐예요: ["what is it?", "что это?"], 알리나예요: ["I’m Alina", "я Алина"],
+  반갑습니다: ["nice to meet you", "приятно познакомиться"], 학생이에요: ["am / are a student", "студент / студентка"],
+  네: ["yes", "да"], 한국: ["Korea", "Корея"], 사람이에요: ["am / are a person", "являюсь человеком"],
+  아니에요: ["no / it isn’t", "нет / не является"], 어느: ["which", "какой"],
+  나라: ["country", "страна"], 카자흐스탄: ["Kazakhstan", "Казахстан"],
+  민지: ["Minji", "Минджи"], 씨: ["polite title after a name", "вежливое обращение после имени"],
+  씨는: ["polite title with a topic marker", "вежливое обращение с частицей темы"],
+  이것은: ["this (near me)", "это (рядом со мной)"], 제: ["my (polite)", "мой (вежл.)"],
+  책이에요: ["it’s a book", "это книга"], 저것은: ["that (over there)", "вон то"],
+  가방이에요: ["it’s a bag", "это сумка"], 맞아요: ["that’s right", "верно"],
+  그것은: ["that (near you)", "то (рядом с тобой)"], 펜이에요: ["it’s a pen", "это ручка"],
+  연필이에요: ["it’s a pencil", "это карандаш"], 알리나: ["Alina", "Алина"],
+  오늘: ["today", "сегодня"], 뭐: ["what", "что"], 해요: ["do", "делаю / делаете"],
+  한국어를: ["Korean language (object)", "корейский язык (дополнение)"],
+  공부해요: ["study", "учу / учусь"], 좋아요: ["nice / good", "хорошо"],
+  친구를: ["friend (object)", "друг (дополнение)"], 만나요: ["meet", "встречаюсь"],
+  커피를: ["coffee (object)", "кофе (дополнение)"], 마셔요: ["drink", "пью"],
+  김밥을: ["gimbap (object)", "кимбап (дополнение)"], 먹어요: ["eat", "ем"],
+};

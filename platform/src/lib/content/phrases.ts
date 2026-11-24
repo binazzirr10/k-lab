@@ -1,0 +1,113 @@
+type PhraseRow = readonly [korean: string, romanization: string, russian: string, note?: string];
+type SituationRow = { id: string; title: string; terms?: string; phrases: readonly PhraseRow[] };
+
+const rows: readonly SituationRow[] = [
+  { id: "hello", title: "Знакомство", phrases: [
+    ["안녕하세요.","Annyeonghaseyo.","Здравствуйте.","Вежливое повседневное приветствие."],
+    ["반갑습니다.","Bangapseumnida.","Приятно познакомиться.","Формально-вежливая форма."],
+    ["저는 알리나예요.","Jeoneun Allinayeyo.","Я Алина."],
+    ["이름이 뭐예요?","Ireumi mwoyeyo?","Как вас зовут?"],
+    ["저는 카자흐스탄 사람이에요.","Jeoneun Kajaheuseutan saramieyo.","Я из Казахстана."],
+    ["어느 나라 사람이에요?","Eoneu nara saramieyo?","Вы из какой страны?"],
+    ["안녕히 가세요.","Annyeonghi gaseyo.","До свидания.","Скажи так тому, кто уходит."],
+    ["안녕히 계세요.","Annyeonghi gyeseyo.","До свидания.","Скажи так тому, кто остаётся."],
+  ] },
+  { id: "cafe", title: "Кафе", terms: "кофе кофейня напитки", phrases: [
+    ["뭐 드릴까요?","Mwo deurilkkayo?","Что вам подать?","Так может спросить сотрудник кафе."],
+    ["커피 한 잔 주세요.","Keopi han jan juseyo.","Одну чашку кофе, пожалуйста."],
+    ["물 주세요.","Mul juseyo.","Воды, пожалуйста."],
+    ["메뉴판 주세요.","Menyupan juseyo.","Меню, пожалуйста."],
+    ["여기서 먹어요.","Yeogiseo meogeoyo.","Я ем здесь."],
+    ["포장해 주세요.","Pojanghae juseyo.","Упакуйте с собой, пожалуйста."],
+    ["맛있어요.","Masisseoyo.","Вкусно."],
+    ["계산해 주세요.","Gyesanhae juseyo.","Счёт, пожалуйста."],
+  ] },
+  { id: "directions", title: "Дорога", phrases: [
+    ["지하철역이 어디예요?","Jihacheollyeogi eodiyeyo?","Где станция метро?"],
+    ["저기예요.","Jeogiyeyo.","Вон там."],
+    ["화장실이 어디예요?","Hwajangsiri eodiyeyo?","Где туалет?"],
+    ["이쪽으로 가세요.","Ijjogeuro gaseyo.","Идите в эту сторону."],
+    ["쭉 가세요.","Jjuk gaseyo.","Идите прямо."],
+    ["오른쪽으로 가세요.","Oreunjjogeuro gaseyo.","Идите направо."],
+    ["왼쪽으로 가세요.","Oenjjogeuro gaseyo.","Идите налево."],
+    ["여기서 내려 주세요.","Yeogiseo naeryeo juseyo.","Высадите меня здесь, пожалуйста.","Подходит для такси."],
+  ] },
+  { id: "shopping", title: "Магазин", phrases: [
+    ["이거 얼마예요?","Igeo eolmayeyo?","Сколько это стоит?"],
+    ["오천 원이에요.","Ocheon wonieyo.","Пять тысяч вон."],
+    ["이거 주세요.","Igeo juseyo.","Дайте это, пожалуйста."],
+    ["다른 색 있어요?","Dareun saek isseoyo?","Есть другой цвет?"],
+    ["입어 봐도 돼요?","Ibeo bwado dwaeyo?","Можно примерить?"],
+    ["너무 비싸요.","Neomu bissayo.","Слишком дорого."],
+    ["카드로 계산할게요.","Kadeuro gyesanhalgeyo.","Я заплачу картой."],
+    ["봉투 주세요.","Bongtu juseyo.","Пакет, пожалуйста."],
+  ] },
+  { id: "study", title: "Учёба", phrases: [
+    ["이것은 뭐예요?","Igeoseun mwoyeyo?","Что это?"],
+    ["한국어 책이에요.","Hangugeo chaegieyo.","Это учебник корейского."],
+    ["한국어를 공부해요.","Hangugeoreul gongbuhaeyo.","Я учу корейский."],
+    ["어떻게 읽어요?","Eotteoke ilgeoyo?","Как это читается?"],
+    ["이 단어가 무슨 뜻이에요?","I daneoga museun tteusieyo?","Что значит это слово?"],
+    ["잘 모르겠어요.","Jal moreugesseoyo.","Я не совсем понимаю."],
+    ["질문 있어요.","Jilmun isseoyo.","У меня есть вопрос."],
+    ["이해했어요.","Ihaehaesseoyo.","Теперь понятно."],
+  ] },
+  { id: "time", title: "Время", phrases: [
+    ["지금 몇 시예요?","Jigeum myeot siyeyo?","Который сейчас час?"],
+    ["두 시예요.","Du siyeyo.","Два часа."],
+    ["오늘 뭐 해요?","Oneul mwo haeyo?","Что вы делаете сегодня?"],
+    ["내일 만나요.","Naeil mannayo.","Увидимся завтра."],
+    ["언제 만나요?","Eonje mannayo?","Когда встретимся?"],
+    ["오후에 만나요.","Ohue mannayo.","Встретимся после полудня."],
+    ["월요일이에요.","Woryoirieyo.","Сегодня понедельник."],
+    ["조금 늦어요.","Jogeum neujeoyo.","Я немного опаздываю."],
+  ] },
+  { id: "requests", title: "Просьбы", phrases: [
+    ["천천히 말해 주세요.","Cheoncheonhi malhae juseyo.","Говорите медленнее, пожалуйста."],
+    ["네, 알겠어요.","Ne, algesseoyo.","Да, понятно."],
+    ["다시 말해 주세요.","Dasi malhae juseyo.","Повторите, пожалуйста."],
+    ["잠깐만 기다려 주세요.","Jamkkanman gidaryeo juseyo.","Подождите минутку, пожалуйста."],
+    ["도와주세요.","Dowajuseyo.","Помогите, пожалуйста."],
+    ["여기에 써 주세요.","Yeogie sseo juseyo.","Напишите здесь, пожалуйста."],
+    ["감사합니다.","Gamsahamnida.","Спасибо.","Формально-вежливая форма."],
+    ["죄송합니다.","Joesonghamnida.","Извините.","Формально-вежливая форма."],
+  ] },
+  { id: "university", title: "В университете", phrases: [
+    ["도서관이 어디예요?","Doseogwani eodiyeyo?","Где библиотека?"],
+    ["이 층에 있어요.","I cheunge isseoyo.","На втором этаже."],
+    ["수업은 몇 시에 시작해요?","Sueobeun myeot sie sijakaeyo?","Во сколько начинается занятие?"],
+    ["학생증이 있어요.","Haksaengjeungi isseoyo.","У меня есть студенческий билет."],
+    ["오늘 수업이 있어요.","Oneul sueobi isseoyo.","Сегодня есть занятие."],
+    ["여기 앉아도 돼요?","Yeogi anjado dwaeyo?","Можно здесь сесть?"],
+    ["이 책을 빌릴 수 있어요?","I chaegeul billil su isseoyo?","Можно взять эту книгу?"],
+    ["저는 대학생이에요.","Jeoneun daehaksaengieyo.","Я учусь в университете."],
+  ] },
+  { id: "dorm", title: "В общежитии", phrases: [
+    ["기숙사가 어디예요?", "Gisuksaga eodiyeyo?", "Где общежитие?"],
+    ["학교 옆에 있어요.", "Hakgyo yeope isseoyo.", "Рядом со школой."],
+    ["제 방은 삼 층에 있어요.", "Je bangeun sam cheunge isseoyo.", "Моя комната на третьем этаже."],
+    ["열쇠 주세요.", "Yeolsoe juseyo.", "Ключ, пожалуйста."],
+    ["여기에 살아요.", "Yeogie sarayo.", "Я живу здесь."],
+    ["세탁실이 있어요?", "Setaksiri isseoyo?", "Есть прачечная?"],
+    ["부엌은 어디예요?", "Bueokeun eodiyeyo?", "Где кухня?"],
+    ["문을 닫아 주세요.", "Muneul dada juseyo.", "Закройте дверь, пожалуйста."],
+  ] },
+  { id: "phone", title: "Телефон и мессенджер", phrases: [
+    ["여보세요?", "Yeoboseyo?", "Алло?", "Так отвечают на телефонный звонок."],
+    ["안녕하세요, 준이에요.", "Annyeonghaseyo, Junieyo.", "Здравствуйте, это Джун."],
+    ["전화번호가 뭐예요?", "Jeonhwabeonhoga mwoyeyo?", "Какой у вас номер телефона?"],
+    ["나중에 전화할게요.", "Najunge jeonhwahalgeyo.", "Позвоню позже."],
+    ["문자 보내 주세요.", "Munja bonae juseyo.", "Отправьте сообщение, пожалуйста."],
+    ["사진 보내도 돼요?", "Sajin bonaedo dwaeyo?", "Можно отправить фото?"],
+    ["메시지를 받았어요.", "Mesijireul badasseoyo.", "Сообщение пришло."],
+    ["잘 안 들려요.", "Jal an deullyeoyo.", "Плохо слышно."],
+  ] },
+
+];
+
+export const situations = rows.map(({ id, title, terms, phrases }) => ({
+  id, title, terms, phrases: phrases.map(([korean, romanization, russian, note], index) => ({
+    id: `phrase-${id}-${index + 1}`, situation: id, korean, romanization, russian, note,
+  })),
+}));
+export const phrases = situations.flatMap((situation) => situation.phrases);

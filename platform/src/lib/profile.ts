@@ -30,14 +30,23 @@ export async function getOrCreateStudentProfile(seed: ProfileSeed) {
 
   const { data: created, error: createError } = await supabase
     .from("profiles")
-    .insert({
+    .upsert({
       user_id: seed.userId,
       display_name: seed.displayName,
       avatar_url: seed.avatarUrl,
-    })
+    }, { onConflict: "user_id", ignoreDuplicates: true })
     .select(selection)
-    .single();
+    .maybeSingle();
 
   if (createError) return { profile: null, connected: false };
-  return { profile: created as StudentProfile, connected: true };
+  if (created) return { profile: created as StudentProfile, connected: true };
+
+  const { data: concurrentProfile, error: concurrentReadError } = await supabase
+    .from("profiles")
+    .select(selection)
+    .eq("user_id", seed.userId)
+    .single();
+
+  if (concurrentReadError) return { profile: null, connected: false };
+  return { profile: concurrentProfile as StudentProfile, connected: true };
 }

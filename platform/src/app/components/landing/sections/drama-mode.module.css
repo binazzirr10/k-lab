@@ -1,0 +1,67 @@
+.section { container-type: inline-size; }
+.intro { grid-column: 1 / span 8; }
+.about { grid-column: 9 / -1; align-self: end; display: grid; gap: 1rem; justify-items: start; }
+.player { grid-column: 1 / -1; min-width: 0; }
+.film { --bleed: max(var(--gutter), calc((100cqw + 2 * var(--gutter) - 1480px) / 2)); position: relative; isolation: isolate; overflow: clip; margin: 0 calc(-1 * var(--bleed)); aspect-ratio: 2.39; background: #181b17; color: #fffcf1; }
+.still { position: absolute; inset: clamp(12px, 1.7vw, 28px) 0; overflow: clip; background: #495248; z-index: -2; }
+.camera { position: absolute; inset: 0; }
+.background { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 55%; }
+.cast { position: absolute; width: 57%; height: auto; left: 21%; top: 2%; }
+.cast[data-solo="true"] { width: 36%; left: 35%; top: 2%; }
+.film::before { content: ""; position: absolute; inset: 0; z-index: -1; pointer-events: none; background: linear-gradient(180deg, rgba(14,17,14,.88), rgba(14,17,14,.64) 16%, transparent 39%, transparent 47%, rgba(14,17,14,.83) 77%, #181b17 100%); }
+.filmCaption { position: absolute; top: clamp(1.1rem, 4vw, 3.2rem); inset-inline: var(--bleed); display: grid; justify-items: start; gap: .25rem; }
+.filmCaption span:first-child { font: 400 clamp(1.5rem, 3.1vw, 3.3rem)/1.05 var(--display); word-spacing: -.1em; }
+.filmCaption span:last-child, .speaker { color: #f1f2e5; font-size: 15px; }
+.overlay { position: absolute; inset: auto var(--bleed) clamp(.35rem, 1.2vw, 1rem); }
+.subtitles { margin: 0 auto .55rem; max-width: 47rem; text-align: center; }
+.korean { display: flex; flex-wrap: wrap; justify-content: center; gap: 0 .45rem; }
+.word { min-width: 44px; min-height: 44px; padding: 0 .15rem; border: 0; background: transparent; color: inherit; font: 500 clamp(1.45rem, 3.07vw, 2.75rem)/1.12 var(--text); letter-spacing: -.025em; cursor: pointer; }
+.word:hover, .word[aria-pressed="true"], .word[data-current="true"] { text-decoration: underline; text-underline-offset: .17em; text-decoration-thickness: 1px; color: #ecffd6; }
+.roman, .translation { margin: .12rem 0 0; line-height: 1.32; font-size: clamp(.95rem, 1.45vw, 1.25rem); }
+.roman { color: #e0e8d5; font-size: clamp(.9rem, 1.25vw, 1.1rem); }
+.transport { display: flex; align-items: center; gap: clamp(.4rem, 2vw, 2rem); border-top: 1px solid rgba(255,252,241,.3); margin-top: .6rem; }
+.transportButtons { display: flex; }
+.transportButtons button { display: grid; place-items: center; width: 44px; height: 46px; color: inherit; background: transparent; border: 0; cursor: pointer; }
+.transportButtons button:hover:not(:disabled) { color: #d7ecc1; }
+.transportButtons button:disabled { opacity: .45; cursor: default; }
+.film :is(button, input):focus-visible { outline-color: #f2f7e8; outline-offset: -1px; }
+.scrub { display: flex; flex: 1; align-items: center; min-width: 0; gap: clamp(.35rem, 1.5vw, 1.25rem); }
+.count { white-space: nowrap; font-variant-numeric: tabular-nums; font-size: 14px; }
+.scrubTrack { position: relative; flex: 1; min-width: 44px; }
+.scrubTrack::before { position: absolute; inset: 50% 8px auto; border-top: 1px solid rgba(255,252,241,.55); content: ""; }
+.scrubTrack input { position: relative; width: 100%; height: 44px; display: block; margin: 0; appearance: none; background: transparent; cursor: pointer; }
+.scrubTrack input::-webkit-slider-thumb { appearance: none; width: 14px; height: 14px; border: 1px solid #172015; border-radius: 50%; background: #f1f8e7; }
+.scrubTrack input::-moz-range-thumb { width: 14px; height: 14px; border: 1px solid #172015; border-radius: 50%; background: #f1f8e7; }
+.ticks { position: absolute; inset: 0 7px; display: flex; justify-content: space-between; align-items: center; pointer-events: none; }
+.ticks i { width: 1px; height: 9px; background: #b4bcae; }
+.ticks [data-active="true"] { background: #f4f9ee; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.underPlayer { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: .25rem 1.6rem; padding-block: .85rem; background: var(--paper); }
+.layers { display: flex; align-items: center; flex-wrap: wrap; gap: .45rem; }
+.layers > span { margin-right: .35rem; }
+.layers button { min-height: 44px; padding-inline: .75rem; font-size: 14px; }
+.layers button[aria-pressed="true"] { background: #e6ebdf; }
+.gloss { margin: 0; font-size: 16px; }
+.strip { display: flex; align-items: flex-start; gap: clamp(.5rem, 1.7vw, 1.4rem); border-top: 1px solid var(--line); padding-top: .9rem; }
+.frame { flex: 1 1 0; min-width: 0; border: 0; background: var(--paper); color: var(--ink); padding: 0; font: inherit; text-align: start; cursor: pointer; }
+.frame[aria-pressed="true"] { flex-grow: 1.48; }
+.thumbnail { display: block; overflow: clip; aspect-ratio: 2.39; background: #dce0d3; }
+.thumbnail img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.frameTitle { min-height: 44px; display: flex; gap: .6rem; align-items: baseline; padding-top: .35rem; font-size: 16px; }
+.frameTitle span:first-child { color: var(--accent); font-variant-numeric: tabular-nums; font-size: 14px; }
+.frame[aria-pressed="true"] .frameTitle { border-top: 2px solid var(--accent); margin-top: .25rem; }
+@media (max-width: 900px) { .intro, .about { grid-column: 1 / -1; } }
+@media (max-width: 760px) {
+  .film { aspect-ratio: 4 / 5; min-height: 360px; }
+  .still { inset-block: 12px; }
+  .background { object-position: 49% 50%; }
+  .cast { width: 100%; left: 0; top: 12%; }
+  .cast[data-solo="true"] { width: 76%; left: 14%; top: 10%; }
+  .film::before { background: linear-gradient(180deg, rgba(14,17,14,.90), rgba(14,17,14,.58) 15%, transparent 32%, transparent 38%, rgba(14,17,14,.88) 68%, #181b17 100%); }
+  .overlay { inset-inline: .6rem; }
+  .strip { display: grid; grid-template-columns: repeat(6, minmax(0,1fr)); }
+  .frame { grid-column: span 3; }
+  .frame[aria-pressed="true"] { grid-column: span 6; }
+  .korean { gap: 0 .15rem; }
+  .word { font-size: clamp(1.24rem, 5.5vw, 2rem); }
+}

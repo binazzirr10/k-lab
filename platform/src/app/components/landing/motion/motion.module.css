@@ -1,0 +1,13 @@
+.lines, .source { display: block; }
+.lines :global(.klab-reveal-line-mask) {
+  padding: .09em .035em .14em;
+  margin: -.09em -.035em -.14em;
+}
+.arrow { font-family: system-ui, sans-serif; font-weight: normal; }
+.pill {
+  display: inline-flex; align-items: center; justify-content: center; gap: .9em;
+  min-height: 48px; padding: .55rem 1.1rem; border: 1px solid currentColor;
+  border-radius: 999px; color: var(--lp-ink, #232521); text-decoration: none; font-size: 1rem;
+}
+.pill:hover { background: var(--lp-ink, #232521); color: var(--lp-ivory, #F6F3EC); }
+.pill:focus-visible { outline: 2px solid #556449; outline-offset: 4px; }

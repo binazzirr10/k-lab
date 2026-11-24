@@ -1,0 +1,4 @@
+.guide { display: grid; width: 100%; justify-items: center; gap: 4px; margin-block: 8px; }
+.guide svg { width: 82px; height: 82px; color: var(--accent); }
+.guide path { fill: none; stroke: currentColor; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; }
+.guide .underlay { stroke: var(--line); }

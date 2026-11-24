@@ -1,0 +1,40 @@
+.hero { padding: clamp(14px, 3vw, 32px); }
+.workspace { display: grid; grid-template-columns: minmax(0, 420px) minmax(0, 1fr); gap: clamp(14px, 3vw, 36px); align-items: start; }
+.preview, .console { min-width: 0; }
+.block { position: relative; isolation: isolate; container-type: inline-size; display: grid; width: 100%; aspect-ratio: 1; border: 1px solid var(--line); border-radius: var(--radius); background: var(--bg); }
+.block[data-drop="true"] { outline: 3px solid var(--accent); }
+.parts, .guides, .glyph { grid-area: 1 / 1; }
+:is(.parts, .guides) { display: grid; position: absolute; inset: 8%; grid-template: "initial vowel" 1fr / 1fr 1fr; }
+.block[data-shape="horizontal"] :is(.parts, .guides) { grid-template: "initial" 1fr "vowel" 1fr / 1fr; }
+.block[data-shape="mixed"] :is(.parts, .guides) { grid-template: "initial vowel" 1fr "wrap vowel" 1fr / 1fr 1fr; }
+.block[data-final="true"] :is(.parts, .guides) { grid-template: "initial vowel" 2fr "final final" 1fr / 1fr 1fr; }
+.block[data-shape="horizontal"][data-final="true"] :is(.parts, .guides) { grid-template: "initial" 1fr "vowel" 1fr "final" 1fr / 1fr; }
+.block[data-shape="mixed"][data-final="true"] :is(.parts, .guides) { grid-template: "initial vowel" 1fr "wrap vowel" 1fr "final final" 1fr / 1fr 1fr; }
+.parts > div { min-width: 0; display: flex; align-items: center; justify-content: center; font-size: 32cqi; line-height: 1; font-family: var(--font-display); }
+:is(.parts,.guides) .initial { grid-area: initial; }
+:is(.parts,.guides) .vowel { grid-area: vowel; color: var(--accent); }
+:is(.parts,.guides) .wrap { grid-area: wrap; color: var(--accent); }
+:is(.parts,.guides) .final { grid-area: final; font-size: 25cqi; gap: .08em; }
+.block[data-final="false"] .final { position: absolute; inset: auto 0 0; height: 1px; }
+.glyph { display: grid; place-items: center; font: 700 72cqi/1 var(--font-display); color: var(--ink); position: relative; }
+.guides { pointer-events: none; }
+.guides i { border: 1px dashed var(--line); }
+.block[data-final="false"] .guides .final { inset: 67% 0 0; height: auto; border: 0; border-top: 1px dashed var(--line); }
+.ring { position: absolute; inset: 7%; border: 2px solid var(--accent); border-radius: 48%; pointer-events: none; }
+.flight { position: absolute; z-index: 2; pointer-events: none; translate: -50% -50%; color: var(--accent); font: 700 clamp(1.1rem, 6cqi, 2rem)/1 var(--font-display); }
+.keys { border: 0; min-inline-size: 0; padding: 0; margin: 0 0 12px; }
+.keys legend { font-weight: bold; margin-bottom: 6px; }
+.keys button { margin: 0 4px 4px 0; touch-action: none; }
+.keys button[draggable="true"] { cursor: grab; }
+.stageTools, .presets, .tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-block: 10px; }
+.tabs { display: none; }
+.presets small, .presets b { display: block; }
+.chain { display: flex; gap: 8px; min-height: 3rem; }
+.chain b { background: var(--bg); border: 1px solid var(--line); padding: 4px 10px; font-size: 1.5rem; }
+.changed { min-height: 3.2em; }
+@media (max-width: 740px) {
+  .workspace { grid-template-columns: minmax(0,1fr); }
+  .preview { width: min(100%, 420px); margin-inline: auto; }
+  .tabs { display: flex; }
+  .keys[data-active="false"] { display: none; }
+}

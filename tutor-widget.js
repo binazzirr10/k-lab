@@ -6,7 +6,8 @@
   const style = document.createElement('style'); style.textContent = css; document.head.appendChild(style);
   const launch = document.createElement('button'); launch.id = 'kt-launch'; launch.innerHTML = '<span id="kt-dot"></span>ASK K‑TUTOR';
   const panel = document.createElement('section'); panel.className = 'kt-panel'; panel.hidden = true;
-  panel.innerHTML = `<div class="kt-head"><div><b>K‑Tutor</b><span>AI‑НАСТАВНИК K‑LAB</span></div><button class="kt-close" aria-label="Закрыть">×</button></div><div class="kt-context">ТЕКУЩИЙ РАЗДЕЛ · ${page}</div><div class="kt-messages"><div class="kt-msg">Привет! Я помогу с корейским, заданиями и фразами на этой странице. Спроси коротко и конкретно.</div></div><form class="kt-form"><input maxlength="700" placeholder="Например: почему здесь 은/는?"><button>ОТПР.</button></form>`;
+  panel.innerHTML = `<div class="kt-head"><div><b>K‑Tutor</b><span>AI‑НАСТАВНИК K‑LAB</span></div><button class="kt-close" aria-label="Закрыть">×</button></div><div class="kt-context"></div><div class="kt-messages"><div class="kt-msg">Привет! Я помогу с корейским, заданиями и фразами на этой странице. Спроси коротко и конкретно.</div></div><form class="kt-form"><input maxlength="700" placeholder="Например: почему здесь 은/는?"><button>ОТПР.</button></form>`;
+  panel.querySelector('.kt-context').textContent = `ТЕКУЩИЙ РАЗДЕЛ · ${page}`;
   document.body.append(launch, panel);
   const messages = panel.querySelector('.kt-messages'), input = panel.querySelector('input');
   const add = (text, type = '') => { const item = document.createElement('div'); item.className = `kt-msg ${type}`; item.textContent = text; messages.appendChild(item); messages.scrollTop = messages.scrollHeight; return item; };

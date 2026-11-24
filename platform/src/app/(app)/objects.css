@@ -1,0 +1,4 @@
+.learn-words button.selected{border-color:var(--ink);background:var(--sun);}
+.inline-audio{margin-left:12px;border:0;background:transparent;color:var(--ink);font:700 12px var(--font-text);cursor:pointer}
+
+.inline-audio { padding-inline: 8px; }

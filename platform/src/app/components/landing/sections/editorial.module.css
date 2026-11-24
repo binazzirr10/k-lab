@@ -1,0 +1,45 @@
+.section {
+  --line: var(--lp-line, rgba(35,37,33,.19));
+  --paper: var(--lp-ivory, #F6F3EC);
+  --ink: var(--lp-ink, #232521);
+  --muted: #52584b;
+  --sage: var(--lp-sage, #A4B391);
+  --accent: #5e7050;
+  --accent: color-mix(in srgb, var(--lp-sage-ink, #6F8060) 82%, var(--ink));
+  --display: var(--lp-display, "Tenor Sans"), sans-serif;
+  --text: var(--lp-text, "Pretendard Variable"), Onest, system-ui, sans-serif;
+  --gutter: clamp(1rem, 4.1vw, 4.5rem);
+  color: var(--ink);
+  font: 400 18px/1.45 var(--text);
+  padding: 0 var(--gutter);
+  scroll-margin-top: 76px;
+}
+.frame {
+  max-width: 1480px; margin-inline: auto; display: grid;
+  grid-template-columns: repeat(12, minmax(0, 1fr));
+  gap: clamp(1.25rem, 3vw, 3.5rem) clamp(.75rem, 2vw, 2rem);
+  padding-block: clamp(5.5rem, 9.7vw, 8.75rem);
+  border-top: 1px solid var(--line);
+}
+.intro, .paper { min-width: 0; }
+.intro { align-self: start; }
+.number { display: block; font: 400 26px/1 var(--text); color: var(--accent); margin-bottom: 1.35rem; }
+.title { font: 400 clamp(4.5rem, 6vw, 6rem)/1.04 var(--display); word-spacing: -.1em; letter-spacing: -.012em; margin: 0; }
+.lead { margin: 0; max-width: 42ch; color: var(--muted); font-size: 18px; line-height: 1.55; }
+.label { color: var(--accent); font-size: 13px; font-weight: 550; }
+.controls { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+.button {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 48px; min-width: 44px; padding: .4rem 1rem; border: 1px solid var(--line);
+  border-radius: 999px; background: transparent; color: var(--ink);
+  font: 500 1rem/1.25 var(--text); cursor: pointer;
+}
+.button:hover:not(:disabled), .button[aria-pressed="true"] { border-color: currentColor; }
+.primary { color: var(--paper); background: var(--ink); border-color: var(--ink); }
+.button:disabled { opacity: .62; cursor: default; }
+.section :is(button, a, select, input, [tabindex]):focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.note { color: var(--muted); font-size: 15px; line-height: 1.5; margin: .7rem 0 0; }
+@media (max-width: 760px) {
+  .title { font-size: clamp(2.6rem, 9vw, 4.5rem); }
+  .label { font-size: 14px; }
+}

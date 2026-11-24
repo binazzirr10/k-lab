@@ -1,0 +1,19 @@
+:root {
+  --bg: #F6F3EC;
+  --surface: #FBF9F4;
+  --ink: #232521;
+  --muted: #5a6054;
+  --accent: #5d704f;
+  --sage: #A4B391;
+  --sage-dark: #43543c;
+  --mist: #e3e8da;
+  --quiet: #eeebe3;
+  --on-dark: #cbd1c3;
+  --sun: #e5d5ac;
+  --error: #863a38;
+  --error-bg: #f2ded9;
+  --line: #2325212e;
+  --radius: 4px;
+  --font-display: "Tenor Sans", "Onest", system-ui, sans-serif;
+  --font-text: "Pretendard Variable", "Onest", system-ui, sans-serif;
+}

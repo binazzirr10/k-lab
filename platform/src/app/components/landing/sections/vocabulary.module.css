@@ -1,0 +1,50 @@
+.intro { grid-column: 1 / span 5; }
+.intro h2 { font-size: clamp(3rem, 5.3vw, 5.7rem); }
+.intro p { margin-top: 1.05rem; }
+.workbench { grid-column: 6 / -1; min-width: 0; align-self: start; }
+.progressGroup { margin: clamp(1.5rem, 4vw, 3.25rem) 0 1.4rem; max-width: 22.5rem; }
+.strokes { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: .3rem; border-bottom: 1px solid var(--line); padding-bottom: .7rem; }
+.strokes span { position: relative; justify-self: center; display: block; width: 1px; height: 52px; background: #a7ac9c; }
+.strokes i { position: absolute; inset: 0 -1px; background: var(--accent); transform-origin: bottom; }
+.progress { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding-top: .7rem; color: var(--muted); font-size: 15px; }
+.progress b { display: block; font: 400 clamp(1.85rem, 3.3vw, 3.3rem)/1.05 var(--display); word-spacing: -.1em; color: var(--ink); margin-bottom: .28rem; }
+.progress i { font-size: .53em; font-style: normal; color: var(--accent); }
+.deck { box-sizing: border-box; width: 100%; max-width: 660px; margin-inline: auto; padding: 1.05rem 1.3rem 1.9rem; position: relative; isolation: isolate; overflow: clip; }
+.deck:not([data-empty="true"])::before, .deck:not([data-empty="true"])::after {
+  content: ""; position: absolute; z-index: -1; inset: 1.3rem 2.25rem 1.65rem;
+  background: #e5eadc; border: 1px solid #a4ae9b; transform: rotate(3.25deg);
+}
+.deck:not([data-empty="true"])::after { inset: 1.3rem 2.55rem 1.8rem; background: #edece2; transform: rotate(-4deg); }
+.card { display: grid; border: 1px solid #8e9b83; background: #edf0e3; min-height: clamp(16rem, 25vw, 22.5rem); perspective: 1100px; cursor: grab; touch-action: pan-y; }
+.card:active { cursor: grabbing; }
+.cardContent { display: grid; transform-style: preserve-3d; }
+.face { display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; grid-area: 1 / 1; backface-visibility: hidden; padding: clamp(1.1rem, 3vw, 2.8rem); min-width: 0; }
+.back { transform: rotateY(180deg); background: #e6ebdc; }
+.word { font-size: clamp(3.6rem, 8vw, 7rem); font-weight: 450; line-height: 1.05; letter-spacing: -.065em; }
+.roman { color: var(--muted); margin: .8rem 0 0; font-size: 18px; }
+.meaning, .complete h3 { font: 400 clamp(2rem, 4.1vw, 4.5rem)/1.06 var(--display); word-spacing: -.1em; margin: 0; letter-spacing: -.025em; }
+.complete { padding: clamp(1rem, 3vw, 2.5rem); align-content: center; cursor: default; }
+.actions { display: flex; gap: .2rem 1.1rem; flex-wrap: wrap; justify-content: space-between; margin-inline: auto; max-width: 615px; }
+.actions button, .reset { display: inline-flex; align-items: center; gap: .5rem; min-height: 44px; color: var(--ink); background: none; border: 0; padding: .15rem .25rem; cursor: pointer; font: 500 16px/1.2 var(--text); }
+.actions button:is(:hover, [aria-pressed="true"]), .reset:hover:not(:disabled) { text-decoration: underline; text-underline-offset: .24em; }
+.actions kbd { font: 400 18px/1 var(--text); color: var(--accent); }
+.reset { color: var(--muted); padding-inline: 0; }
+.reset:disabled { opacity: .65; cursor: default; }
+.context { border-top: 1px solid var(--line); padding-top: 1.05rem; margin: 1rem auto 0; max-width: 615px; }
+.example { margin: 0 0 .6rem; font-size: clamp(1.65rem, 3vw, 2.5rem); letter-spacing: -.025em; line-height: 1.28; }
+.gap { display: inline-block; border-bottom: 1px solid var(--accent); color: var(--ink); }
+.gap[data-revealed="false"] > span:first-child { visibility: hidden; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.exampleTranslation { color: var(--muted); font-size: 17px; margin: 0 0 .65rem; }
+@media (max-width: 900px) {
+ .intro, .workbench { grid-column: 1 / -1; }
+ .intro h2 { font-size: clamp(2.6rem, 9vw, 4.5rem); }
+ .deck { padding-inline: .85rem; }
+}
+@media (max-width: 420px) {
+ .face { padding-inline: .45rem; }
+ .word { font-size: clamp(2.8rem, 11.2vw, 3.6rem); }
+ .actions { gap: 0 .45rem; }
+ .actions button, .reset { font-size: 14px; }
+ .deck { padding-inline: .5rem; }
+}
