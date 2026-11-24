@@ -46,3 +46,18 @@
   .path ol > li:not(.pathRule) { padding-top: 0; }
 }
 @media (prefers-reduced-motion: reduce) { .name, .row::before { transition: none; } .trigger:is(:hover,:focus-visible) .name { transform: none; } }
+
+.details[data-open="true"] .facts > div { animation: fact .6s cubic-bezier(.2, .75, .2, 1) backwards; }
+.details[data-open="true"] .facts > div:nth-child(1) { animation-delay: .16s; }
+.details[data-open="true"] .facts > div:nth-child(2) { animation-delay: .25s; }
+.details[data-open="true"] .facts > div:nth-child(3) { animation-delay: .34s; }
+.details[data-open="true"] .official { animation: fact .6s cubic-bezier(.2, .75, .2, 1) .44s backwards; }
+@keyframes fact { from { clip-path: inset(0 0 100% 0); transform: translateY(-16px); opacity: 0; } to { clip-path: inset(0); } }
+@media (prefers-reduced-motion: reduce) { .details .facts > div, .details .official { animation: none !important; } }
+
+@supports (animation-timeline: view()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .pathRule span { animation: path-draw linear both; animation-timeline: view(); animation-range: entry 0% cover 45%; }
+  }
+}
+@keyframes path-draw { from { transform: scaleX(0); } }

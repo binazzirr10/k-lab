@@ -1,0 +1,47 @@
+/* Moving between pages: the new page opens from the middle like two sliding doors. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; types: doors; }
+  .landing-header .landing-wordmark, .app-nav .learn-logo { view-transition-name: klab-wordmark; }
+
+  ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+  html:active-view-transition-type(doors)::view-transition { background: #ece8dd; }
+  html:active-view-transition-type(doors)::view-transition-old(root) { animation: page-leave .62s cubic-bezier(.6, 0, .4, 1) both; }
+  html:active-view-transition-type(doors)::view-transition-new(root) { animation: page-doors .9s cubic-bezier(.7, 0, .16, 1) both; }
+  ::view-transition-old(root), ::view-transition-new(root) { mix-blend-mode: normal; }
+  ::view-transition-group(klab-wordmark) { animation-duration: .75s; animation-timing-function: cubic-bezier(.5, 0, .15, 1); z-index: 2; }
+
+  /* The navigation stays put between course pages and its marker slides to the new section. */
+  html:not(:active-view-transition-type(doors)) .app-nav { view-transition-name: klab-nav !important; view-transition-class: none !important; }
+  html:not(:active-view-transition-type(doors)) .app-nav-links > a.active::after { view-transition-name: klab-nav-marker; }
+  ::view-transition-group(klab-nav) { z-index: 2; }
+  ::view-transition-old(klab-nav) { display: none; }
+  ::view-transition-new(klab-nav) { animation: none; }
+  ::view-transition-group(klab-nav-marker) { z-index: 3; animation-duration: .6s; animation-timing-function: cubic-bezier(.6, 0, .15, 1); }
+
+  /* Inside the course (React view transitions). */
+  ::view-transition-old(.klab-page) { animation: sheet-out .2s cubic-bezier(.5, 0, .8, .4) both; }
+  ::view-transition-new(.klab-page) { animation: sheet-in .62s cubic-bezier(.16, .8, .24, 1) .16s both; }
+  ::view-transition-group(.klab-morph) { z-index: 1; animation-duration: .72s; animation-timing-function: cubic-bezier(.5, 0, .15, 1); }
+  ::view-transition-image-pair(.klab-morph) { overflow: clip; }
+  ::view-transition-old(.klab-morph), ::view-transition-new(.klab-morph) { width: 100%; height: 100%; object-fit: cover; }
+
+  /* Changing the language: the other language spreads out from the button like a drop of ink. */
+  html[data-transition="language"]::view-transition-old(root) { animation: none; }
+  html[data-transition="language"]::view-transition-new(root) { animation: ink-drop 1.05s cubic-bezier(.5, 0, .2, 1) both; }
+  html[data-transition="language"] .landing-wordmark { view-transition-name: none; }
+
+  /* A card becoming its section. */
+  html[data-transition="handoff"]::view-transition-old(root) { animation: fade-out .3s both; }
+  html[data-transition="handoff"]::view-transition-new(root) { animation: fade-in .55s .12s both; }
+  html[data-transition="handoff"]::view-transition-group(handoff) { animation-duration: .95s; animation-timing-function: cubic-bezier(.55, 0, .12, 1); z-index: 1; }
+  html[data-transition="handoff"]::view-transition-image-pair(handoff) { overflow: clip; border-radius: 2px; }
+  html[data-transition="handoff"]::view-transition-old(handoff) { width: 100%; height: 100%; object-fit: cover; animation: fade-out .5s .22s both; }
+  html[data-transition="handoff"]::view-transition-new(handoff) { width: 100%; height: 100%; object-fit: cover; object-position: top; animation: fade-in .5s .22s both; }
+}
+@keyframes page-leave { to { transform: scale(.955); filter: brightness(.86); } }
+@keyframes page-doors { from { clip-path: inset(0 50%); } to { clip-path: inset(0); } }
+@keyframes sheet-out { to { transform: translateY(-18px) rotateX(5deg); opacity: 0; } }
+@keyframes sheet-in { from { transform: translateY(46px); clip-path: inset(0 0 34% 0); opacity: 0; } to { clip-path: inset(0 0 -5% 0); } }
+@keyframes ink-drop { from { clip-path: circle(0 at var(--from-x) var(--from-y)); } to { clip-path: circle(150vmax at var(--from-x) var(--from-y)); } }
+@keyframes fade-out { to { opacity: 0; } }
+@keyframes fade-in { from { opacity: 0; } }

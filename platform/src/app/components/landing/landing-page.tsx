@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { LazyMotion } from "motion/react";
 import { SiteHeader } from "./site-header";
 import { Hero } from "./hero";
 import type { HangulPosters } from "./hangul-scene/stage";
+import { useEntrances } from "./motion/use-entrances";
 import { WeightRipple } from "./motion/weight-ripple";
 import { Discover } from "./discover";
 import { SiteFooter } from "./site-footer";
@@ -23,39 +24,12 @@ const resources = [
   ["/learn/lesson-04-my-day", "04 / My day", "04 / Мой день"],
 ] as const;
 
+const loadMotion = () => import("../motion-kit/features").then((module) => module.default);
+
 function LandingContent({ posters }: { posters: HangulPosters }) {
   const { lang } = useLanguage();
-  const root = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    let cleanup: (() => void) | undefined;
-    let cancelled = false;
-    if (!matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(([{ gsap }, { ScrollTrigger }]) => {
-        if (cancelled || !root.current) return;
-        gsap.registerPlugin(ScrollTrigger);
-        const media = gsap.matchMedia();
-        media.add("(prefers-reduced-motion: no-preference)", () => {
-          const context = gsap.context(() => {
-            for (const section of root.current?.querySelectorAll(".landing-hero, .landing-discover") ?? []) {
-              if (section.getBoundingClientRect().top < window.innerHeight) continue;
-              const lines = [...section.querySelectorAll("[data-line]")];
-              if (!lines.length) continue;
-              gsap.from(lines, {
-                yPercent: 105, duration: .75, stagger: .08, ease: "power3.out",
-                scrollTrigger: { trigger: section, start: "top 91%", once: true },
-              });
-            }
-          }, root);
-          return () => context.revert();
-        });
-        cleanup = () => media.revert();
-      }).catch(() => { /* Content stays visible without choreography. */ });
-    }
-    return () => { cancelled = true; cleanup?.(); };
-  }, [lang]);
-
-  return <div ref={root} className="landing">
+  useEntrances();
+  return <LazyMotion strict features={loadMotion}><div className="landing">
     <a className="landing-skip" href="#top">{lang === "en" ? "Skip to content" : "К содержанию"}</a>
     <SiteHeader />
     <main>
@@ -77,7 +51,7 @@ function LandingContent({ posters }: { posters: HangulPosters }) {
       </section>
     </main>
     <SiteFooter lang={lang} />
-  </div>;
+  </div></LazyMotion>;
 }
 
 export function LandingPage({ posters }: { posters: HangulPosters }) {

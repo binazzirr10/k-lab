@@ -2,11 +2,10 @@
 
 import Link from "next/link";
 import { useAuth } from "@clerk/nextjs";
-import { LazyMotion, m, useReducedMotion } from "motion/react";
+import { useReducedMotion } from "motion/react";
+import * as m from "motion/react-m";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "./lang-provider";
-
-const loadLayout = () => import("../motion-kit/features").then((module) => module.default);
 
 const links = [
   ["discover", "Discover", "Обзор"],
@@ -76,12 +75,12 @@ export function SiteHeader() {
   return <header className="landing-header">
     <div className="landing-shell landing-header-grid">
       <a href="#top"><Wordmark /></a>
-      <div className="landing-desktop"><LazyMotion strict features={loadLayout}>{nav(false)}</LazyMotion></div>
+      <div className="landing-desktop">{nav(false)}</div>
       <div className="landing-header-actions">
         <div className="landing-language" aria-label={lang === "en" ? "Language" : "Язык"}>
-          <button type="button" lang="en" aria-pressed={lang === "en"} onClick={() => setLang("en")}>EN</button>
+          <button type="button" lang="en" aria-pressed={lang === "en"} onClick={(event) => setLang("en", event.currentTarget)}>EN</button>
           <span aria-hidden="true">/</span>
-          <button type="button" lang="ru" aria-pressed={lang === "ru"} onClick={() => setLang("ru")}>RU</button>
+          <button type="button" lang="ru" aria-pressed={lang === "ru"} onClick={(event) => setLang("ru", event.currentTarget)}>RU</button>
         </div>
         <div className="landing-desktop"><Account /></div>
         <button ref={menuButton} className="landing-menu-toggle" type="button" aria-haspopup="dialog" aria-expanded={open}

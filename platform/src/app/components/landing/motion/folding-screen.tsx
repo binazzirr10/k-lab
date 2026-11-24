@@ -1,7 +1,8 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState, type ReactNode } from "react";
-import { animate, motion, useMotionValue, useTransform, type MotionValue } from "motion/react";
+import { animate, useMotionValue, useTransform, type MotionValue } from "motion/react";
+import * as m from "motion/react-m";
 import styles from "./motion.module.css";
 
 const count = 8;
@@ -19,10 +20,10 @@ function Panel({ index, progress, width, children }: { index: number; progress: 
   const skewY = useTransform(angle, (a) => lean * Math.sin(a) * 17);
   const y = useTransform(angle, (a) => lean < 0 ? Math.tan(17 * Math.sin(a) * Math.PI / 180) * width * Math.cos(a) : 0);
   const shade = useTransform(angle, (a) => Math.sin(a) * (lean > 0 ? .28 : .62));
-  return <motion.div className={styles.panel} style={{ left: `${index * 100 / count}%`, x, y, scaleX, skewY }}>
+  return <m.div className={styles.panel} style={{ left: `${index * 100 / count}%`, x, y, scaleX, skewY }}>
     <div className={styles.panelView} style={{ left: `${-index * 100}%` }}>{children}</div>
-    <motion.div className={styles.panelShade} style={{ opacity: shade }} />
-  </motion.div>;
+    <m.div className={styles.panelShade} style={{ opacity: shade }} />
+  </m.div>;
 }
 
 /** The old scene closes like a byeongpung, the Korean folding screen, and uncovers the new one. */

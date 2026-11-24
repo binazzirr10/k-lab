@@ -1,9 +1,8 @@
 "use client";
 
-import { useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
-import { motion, useMotionValue, useSpring, type HTMLMotionProps } from "motion/react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useSyncExternalStore, type ReactNode } from "react";
+import { useMotionValue, useSpring, type HTMLMotionProps } from "motion/react";
+import * as m from "motion/react-m";
 import { Ink } from "./ink";
 import styles from "./motion.module.css";
 
@@ -24,33 +23,6 @@ export function Reveal({ children, lines }: { children?: ReactNode; lines?: read
   </Ink>;
 }
 
-export function useDrawOnEnter() {
-  const ref = useRef<HTMLSpanElement>(null);
-  useLayoutEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    gsap.registerPlugin(ScrollTrigger);
-    const media = gsap.matchMedia();
-    media.add("(prefers-reduced-motion: no-preference)", () => {
-      const context = gsap.context(() => {
-        if (node.getBoundingClientRect().top < window.innerHeight) return;
-        ScrollTrigger.create({
-          trigger: node, start: "top 92%", once: true,
-          onEnter: () => {
-            if (node.getBoundingClientRect().bottom > 0) {
-              context.add(() => gsap.fromTo(node, { scaleX: 0 }, { scaleX: 1, duration: .85, ease: "power2.out" }));
-            }
-          },
-          onEnterBack: () => { gsap.set(node, { clearProps: "transform" }); },
-        });
-      }, node);
-      return () => context.revert();
-    });
-    return () => media.revert();
-  }, []);
-  return ref;
-}
-
 export function LineArrow() {
   return <span aria-hidden="true" className={styles.arrow}>↗</span>;
 }
@@ -62,8 +34,14 @@ export function MagneticPill({ children, className, ...props }: Omit<HTMLMotionP
   const springX = useSpring(x, { stiffness: 310, damping: 25 });
   const springY = useSpring(y, { stiffness: 310, damping: 25 });
   function reset() { x.set(0); y.set(0); }
-  return <motion.a {...props} className={[styles.pill, className].filter(Boolean).join(" ")}
+  return <m.a {...props} className={[styles.pill, className].filter(Boolean).join(" ")}
     style={{ ...props.style, x: reduced ? 0 : springX, y: reduced ? 0 : springY }}
+    onPointerEnter={(event) => {
+      props.onPointerEnter?.(event);
+      const rect = event.currentTarget.getBoundingClientRect();
+      event.currentTarget.style.setProperty("--ink-x", `${event.clientX - rect.left}px`);
+      event.currentTarget.style.setProperty("--ink-y", `${event.clientY - rect.top}px`);
+    }}
     onPointerMove={(event) => {
       props.onPointerMove?.(event);
       if (reduced || event.pointerType !== "mouse") return;
@@ -73,5 +51,5 @@ export function MagneticPill({ children, className, ...props }: Omit<HTMLMotionP
     }} onPointerLeave={(event) => { reset(); props.onPointerLeave?.(event); }}
     onBlur={(event) => { reset(); props.onBlur?.(event); }}>
     {children} <LineArrow />
-  </motion.a>;
+  </m.a>;
 }

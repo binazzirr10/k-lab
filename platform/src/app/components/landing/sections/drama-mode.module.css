@@ -65,3 +65,13 @@
   .korean { gap: 0 .15rem; }
   .word { font-size: clamp(1.24rem, 5.5vw, 2rem); }
 }
+
+.tally { display: inline-block; animation: tally .5s cubic-bezier(.2, .9, .25, 1.25); }
+@keyframes tally { from { transform: translateY(.75em) rotateX(-80deg); opacity: 0; } }
+
+/* Each subtitle is written word by word; its readings follow. */
+.word { animation: subtitle .62s cubic-bezier(.2, .75, .2, 1) calc(var(--i, 0) * 85ms) backwards; }
+.roman { animation: subtitle .6s cubic-bezier(.2, .75, .2, 1) .22s backwards; }
+.translation { animation: subtitle .6s cubic-bezier(.2, .75, .2, 1) .34s backwards; }
+@keyframes subtitle { from { transform: translateY(26px) skewX(-12deg); filter: blur(9px); opacity: 0; } }
+@media (prefers-reduced-motion: reduce) { .word, .roman, .translation, .tally { animation: none; } }

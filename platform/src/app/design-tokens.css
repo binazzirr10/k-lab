@@ -14,6 +14,6 @@
   --error-bg: #f2ded9;
   --line: #2325212e;
   --radius: 4px;
-  --font-display: "Tenor Sans", "Onest", system-ui, sans-serif;
-  --font-text: "Pretendard Variable", "Onest", system-ui, sans-serif;
+  --font-display: var(--font-tenor), var(--font-onest), system-ui, sans-serif;
+  --font-text: "Pretendard K", "Pretendard Variable", var(--font-onest), system-ui, sans-serif;
 }

@@ -6,20 +6,20 @@
   --sage: var(--lp-sage, #A4B391);
   --accent: #5e7050;
   --accent: color-mix(in srgb, var(--lp-sage-ink, #6F8060) 82%, var(--ink));
-  --display: var(--lp-display, "Tenor Sans"), sans-serif;
-  --text: var(--lp-text, "Pretendard Variable"), Onest, system-ui, sans-serif;
+  --display: var(--font-display);
+  --text: var(--font-text);
   --gutter: clamp(1rem, 4.1vw, 4.5rem);
   color: var(--ink);
   font: 400 18px/1.45 var(--text);
   padding: 0 var(--gutter);
-  scroll-margin-top: 76px;
 }
+.section:focus { outline: none; }
 .frame {
   max-width: 1480px; margin-inline: auto; display: grid;
   grid-template-columns: repeat(12, minmax(0, 1fr));
   gap: clamp(1.25rem, 3vw, 3.5rem) clamp(.75rem, 2vw, 2rem);
   padding-block: clamp(5.5rem, 9.7vw, 8.75rem);
-  border-top: 1px solid var(--line);
+  position: relative;
 }
 .intro, .paper { min-width: 0; }
 .intro { align-self: start; }

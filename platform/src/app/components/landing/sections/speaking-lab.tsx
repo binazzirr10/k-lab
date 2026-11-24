@@ -1,10 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
-import { LayoutGroup, motion } from "motion/react";
+import { type CSSProperties, useEffect, useRef, useState } from "react";
+import { LayoutGroup } from "motion/react";
+import * as m from "motion/react-m";
 import type { Lang } from "@/lib/landing/lang";
 import { practicePhrases } from "@/lib/landing/phrases";
 import { MagneticPill, Reveal, useReducedMotion } from "../motion";
+import { Divider } from "../motion/divider";
 import { AssembledPhrase } from "../motion/assemble";
 import { Gayageum } from "../motion/gayageum";
 import { speakKorean } from "../motion/speech";
@@ -49,6 +51,10 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
   const { status, seconds, url, heard, recognition, canvas, start, stop, reset } = usePracticeRecorder();
   const busy = ["asking", "recording", "processing"].includes(status);
   useEffect(() => () => cancelSpeech.current?.(), []);
+  useEffect(() => {
+    // A transcript can contain any syllable, so the full font family is fetched only now.
+    if (status === "result") void import("pretendard/dist/web/variable/pretendardvariable-dynamic-subset.css");
+  }, [status]);
 
   const active = status === "recording";
   const progress = active ? Math.min(1, (seconds + 1) / 8) : position;
@@ -71,6 +77,7 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
 
   return <section className={e.section} id="speaking" data-scene="speaking" lang={lang} aria-labelledby="speaking-heading">
     <div className={e.frame}>
+      <Divider />
       <header className={`${e.intro} ${s.intro}`}>
         <span className={e.number} aria-hidden="true">01</span>
         <h2 className={e.title} id="speaking-heading"><Reveal lines={t.title} /></h2>
@@ -82,10 +89,10 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
       <div className={`${e.paper} ${s.instrument}`}>
         <LayoutGroup id="practice-phrases">
           <div className={s.choices} role="group" aria-label={t.phrase}>
-            {practicePhrases.map(({ line: phrase }, i) => <button type="button" disabled={busy} aria-pressed={index === i}
+            {practicePhrases.map(({ line: phrase }, i) => <button type="button" disabled={busy} aria-pressed={index === i} data-enter="rise" style={{ "--i": i } as CSSProperties}
               key={phrase.text} onClick={() => changePhrase(i)}>
               <span aria-hidden="true">{String(i + 1).padStart(2, "0")}</span><span lang="ko">{phrase.text}</span>
-              {index === i && <motion.span className={s.underline} layoutId={reduced ? undefined : "phrase-underline"} transition={{ duration: .26 }} />}
+              {index === i && <m.span className={s.underline} layoutId={reduced ? undefined : "phrase-underline"} transition={{ duration: .26 }} />}
             </button>)}
           </div>
         </LayoutGroup>
@@ -102,16 +109,16 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
             </div>)}
           </div>
         </div>
-        <div className={s.wavefield}>
+        <div className={s.wavefield} data-handoff="" data-open-on-view="unroll">
           <div className={s.legend}><span>{t.reference}</span><span>{t.mic}</span></div>
           <Gayageum pulse={strums} quiet={busy} />
           <canvas className={s.trace} ref={canvas} width={1200} height={220} aria-hidden="true" />
-          {(active || playing) && <motion.span className={s.playhead} aria-hidden="true" initial={reduced ? false : { left: "0%" }}
+          {(active || playing) && <m.span className={s.playhead} aria-hidden="true" initial={reduced ? false : { left: "0%" }}
             animate={{ left: `${progress * 100}%` }} transition={{ duration: reduced ? 0 : active ? .92 : .24, ease: "linear" }} />}
           <div className={s.micWell}>
             <svg className={s.ring} viewBox="0 0 100 100" aria-hidden="true">
               <circle cx="50" cy="50" r="47" />
-              <motion.circle cx="50" cy="50" r="47" initial={false} animate={{ pathLength: active ? Math.min(1, (seconds + 1) / 8) : 0 }}
+              <m.circle cx="50" cy="50" r="47" initial={false} animate={{ pathLength: active ? Math.min(1, (seconds + 1) / 8) : 0 }}
                 transition={{ duration: reduced ? 0 : active ? 1 : .2, ease: "linear" }} />
             </svg>
             <button className={s.microphone} type="button" aria-label={active ? t.stop : status === "asking" ? t.cancel : t.record}
@@ -150,10 +157,10 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
         {status === "result" && (heard ? <div className={s.result}>
           <p className={e.note}>{t.heard} <b lang="ko">{heard}</b> · {t.match}</p>
           <ul className={s.syllables} lang="ko">{compareSyllables(line.text, heard).map((pair, i) =>
-            <motion.li key={i} data-match={pair.target === pair.actual} initial={reduced ? false : { opacity: .35, y: 4 }}
+            <m.li key={i} data-match={pair.target === pair.actual} initial={reduced ? false : { opacity: .35, y: 4 }}
               animate={{ opacity: 1, y: 0 }} transition={{ duration: reduced ? 0 : .22, delay: reduced ? 0 : i * .055 }}>
               <span>{pair.target || "–"}</span><small>{pair.actual || "–"}</small>
-            </motion.li>)}</ul>
+            </m.li>)}</ul>
         </div> : <p className={e.note}>{recognition === "unavailable" ? t.missing : recognition === "failed" ? t.failed : t.empty}</p>)}
       </div>
     </div>

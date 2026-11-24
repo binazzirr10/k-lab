@@ -1,3 +1,4 @@
+import { ViewTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
@@ -28,10 +29,10 @@ export default async function KSceneHub() {
         <section className="scene-grid" aria-label="Сцены">
           {kScenes.map((scene) => (
             <Link className="scene-card" href={`/k-scene/${scene.slug}`} key={scene.id}>
-              <figure>
-                <Image src={scene.cover.replace(".png", ".webp")} alt={scene.location} fill unoptimized />
-                <Image src={scene.cast.replace(".png", ".webp")} alt="" width={720} height={scene.slug === "joons-day" ? 1080 : 658} unoptimized />
-              </figure>
+              <ViewTransition name={`scene-${scene.slug}`} share="klab-morph" default="none"><figure>
+                <Image src={scene.cover} alt={scene.location} fill unoptimized />
+                <Image src={scene.cast} alt="" width={720} height={scene.slug === "joons-day" ? 1080 : 658} unoptimized />
+              </figure></ViewTransition>
               <div>
                 <small>{scene.lesson.replace("Lesson", "Урок")} · {scene.location}</small>
                 <h2>{scene.title}</h2>

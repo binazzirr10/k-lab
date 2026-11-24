@@ -1,4 +1,7 @@
 @import "../design-tokens.css";
+/* Only the characters of this page; anything else comes from the full family on demand.
+   Rebuild with scripts/subset-landing-font.sh. */
+@font-face { font-family: "Pretendard K"; src: url("/fonts/pretendard-landing.woff2") format("woff2"); font-weight: 300 910; font-display: swap; }
 
 :root {
   --gutter: clamp(20px, 4.03vw, 88px);
@@ -160,6 +163,7 @@ html[lang="ru"] .landing-hero h1 { font-size: clamp(45px, 6.05vw, 114px); }
 }
 .hangul-stage:not([data-live="true"]) .hangul-live { visibility: hidden; }
 .hangul-stage[data-live="true"] .hangul-live[data-hero="true"] { pointer-events: auto; cursor: grab; touch-action: pan-y; }
+.hangul-canvas { display: block; width: 100%; height: 100%; }
 .hangul-live:active { cursor: grabbing; }
 .hangul-stage[data-capture="true"] :is(.hangul-live, .hangul-static) { transition: none; }
 
@@ -198,8 +202,8 @@ html[lang="ru"] .landing-hero h1 { font-size: clamp(45px, 6.05vw, 114px); }
     repeating-linear-gradient(90deg, transparent 0 15px, rgba(116, 98, 70, .8) 15px 17px),
     repeating-linear-gradient(transparent 0 23px, rgba(116, 98, 70, .8) 23px 25px), #f3ede0;
 }
-.landing-feature-art::before { left: 0; transform: translateX(-100%); transform-origin: left; }
-.landing-feature-art::after { right: 0; transform: translateX(100%); transform-origin: right; }
+.landing-feature-art::before { left: 0; transform: translateX(-102%); transform-origin: left; }
+.landing-feature-art::after { right: 0; transform: translateX(102%); transform-origin: right; }
 @media (prefers-reduced-motion: no-preference) {
   .landing-feature-art::before { animation: door-left 1.25s cubic-bezier(.7, 0, .16, 1) calc(.55s + var(--door, 0) * .17s) backwards; transition: transform .62s cubic-bezier(.5, 0, .1, 1); }
   .landing-feature-art::after { animation: door-right 1.25s cubic-bezier(.7, 0, .16, 1) calc(.55s + var(--door, 0) * .17s) backwards; transition: transform .62s cubic-bezier(.5, 0, .1, 1); }
