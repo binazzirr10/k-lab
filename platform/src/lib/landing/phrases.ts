@@ -8,3 +8,5 @@ export const practicePhrases = [
   { line: landingScenes[1].lines[3], cue: landingScenes[1].lines[2] },
   { line: landingScenes[3].lines[1], cue: { text: "오늘 뭐 해요?", english: "What are you doing today?", translation: "Что вы делаете сегодня?" } },
 ];
+
+export type PracticePhrases = typeof practicePhrases;

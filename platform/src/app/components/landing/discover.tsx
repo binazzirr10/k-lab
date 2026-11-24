@@ -12,8 +12,8 @@ const features = [
   },
   {
     id: "drama", image: "/assets/kscene-cafe-table-480.webp", crop: "42% center",
-    en: ["K-Drama Mode", "Follow four original illustrated K‑Scene dialogues and read the Korean line by line."],
-    ru: ["Режим K-Drama", "Читай четыре авторских иллюстрированных диалога K‑Scene на корейском."],
+    en: ["K-Drama Mode", "Follow original illustrated K‑Scene dialogues and read the Korean line by line."],
+    ru: ["Режим K-Drama", "Читай авторские иллюстрированные диалоги K‑Scene на корейском."],
   },
   {
     id: "university", image: "/assets/kscene-campus-morning-480.webp", crop: "66% center",

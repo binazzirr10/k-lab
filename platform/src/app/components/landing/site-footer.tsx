@@ -9,6 +9,7 @@ const columns = [
       ["#speaking", "Speaking Lab", "Speaking Lab"],
       ["#drama", "K-Drama Mode", "Режим K-Drama"],
       ["#university", "University Hub", "Университеты"],
+      ["#pricing", "Plans", "Тарифы"],
     ],
   },
   {
