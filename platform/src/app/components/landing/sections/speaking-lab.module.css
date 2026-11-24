@@ -18,8 +18,8 @@
 .wavefield { position: relative; height: 260px; isolation: isolate; overflow: clip; border-block: 1px solid var(--line); background: #edf0e5; }
 .wavefield::before { position: absolute; content: ""; inset: 50% 0 auto; border-top: 1px solid rgba(70,84,62,.2); }
 .legend { position: absolute; z-index: 1; inset: .8rem .9rem auto; display: flex; justify-content: space-between; color: var(--accent); font-size: 14px; }
-.wavefield :is(svg.reference, canvas) { position: absolute; inset: 0; width: 100%; height: 100%; }
-.reference { color: #899a78; }
+.trace { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; }
+.legend { pointer-events: none; }
 .playhead { position: absolute; inset-block: 0; width: 1px; background: rgba(36,49,31,.42); box-shadow: 0 0 12px 3px rgba(90,112,72,.26); }
 .micWell { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%,-50%); display: grid; place-items: center; width: 100px; height: 100px; }
 .ring { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; transform: rotate(-90deg); }
@@ -43,7 +43,9 @@
   .readout, .below { grid-template-columns: 1fr; }
   .hangul { font-size: clamp(2.6rem, 11vw, 4rem); }
   .exchange { padding: .75rem 0 0; border: 0; border-top: 1px solid var(--line); }
-  .wavefield { height: 160px; }
+  .wavefield { height: 190px; }
+  .legend { inset: .5rem .7rem auto; white-space: nowrap; }
+  .legend span:last-child { display: none; }
   .choices button { padding-inline: .4rem; }
   .choices button > span:first-child { font-size: 14px; }
 }

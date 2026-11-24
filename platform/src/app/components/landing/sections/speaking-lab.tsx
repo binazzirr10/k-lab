@@ -5,6 +5,8 @@ import { LayoutGroup, motion } from "motion/react";
 import type { Lang } from "@/lib/landing/lang";
 import { practicePhrases } from "@/lib/landing/phrases";
 import { MagneticPill, Reveal, useReducedMotion } from "../motion";
+import { AssembledPhrase } from "../motion/assemble";
+import { Gayageum } from "../motion/gayageum";
 import { speakKorean } from "../motion/speech";
 import { compareSyllables, usePracticeRecorder } from "./use-practice-recorder";
 import e from "./editorial.module.css";
@@ -14,7 +16,7 @@ const copy = {
   en: {
     title: ["Speaking Lab"], intro: "Try a line from the course. Listen, say it aloud, then play back your take.",
     link: "Open the full Speaking Lab", phrase: "Practice phrase", playbackError: "Couldn’t play this recording.", listen: "Listen", record: "Record", stop: "Stop recording", cancel: "Cancel",
-    reference: "Reference pattern", mic: "Your microphone", take: "Your recording", exchange: "In conversation", minji: "Minji", answer: "You",
+    reference: "Twelve gayageum strings. Drag to play.", mic: "Your microphone", take: "Your recording", exchange: "In conversation", minji: "Minji", answer: "You",
     privacy: "K-Lab doesn’t upload your recording. Your browser may use its own speech service.",
     idle: "Record up to 8 seconds.", asking: "Waiting for microphone permission…", denied: "Microphone permission was denied. Check your browser settings to try again.",
     recording: "Recording", processing: "Preparing your take…", result: "Your take is ready.", unsupported: "This browser or connection doesn’t support microphone recording.",
@@ -24,7 +26,7 @@ const copy = {
   ru: {
     title: ["Speaking Lab"], intro: "Выбери фразу из курса. Послушай её, произнеси вслух и включи свою запись.",
     link: "Открыть полную версию", phrase: "Фраза для практики", playbackError: "Не удалось воспроизвести запись.", listen: "Послушать", record: "Записать", stop: "Остановить запись", cancel: "Отмена",
-    reference: "Пример волны", mic: "Твой микрофон", take: "Твоя запись", exchange: "В диалоге", minji: "Минджи", answer: "Ты",
+    reference: "Двенадцать струн каягыма. Проведи по ним.", mic: "Твой микрофон", take: "Твоя запись", exchange: "В диалоге", minji: "Минджи", answer: "Ты",
     privacy: "K-Lab не загружает твою запись. Браузер может использовать собственную службу распознавания речи.",
     idle: "Запись до 8 секунд.", asking: "Ожидаем разрешения на доступ к микрофону…", denied: "Доступ к микрофону запрещён. Проверь настройки браузера и попробуй снова.",
     recording: "Идёт запись", processing: "Готовим твою запись…", result: "Твоя запись готова.", unsupported: "В этом браузере или при таком соединении запись недоступна.",
@@ -33,13 +35,11 @@ const copy = {
   },
 };
 
-const pattern = Array.from({ length: 221 }, (_, i) =>
-  `${i * 2},${(32 + Math.sin(i * 2.1) * Math.sin(i * .061) ** 4 * 19 + Math.sin(i * .52) * 2).toFixed(2)}`).join(" ");
-
 export function SpeakingLab({ lang }: { lang: Lang }) {
   const t = copy[lang];
   const reduced = useReducedMotion();
   const [index, setIndex] = useState(0);
+  const [strums, setStrums] = useState(0);
   const [audioError, setAudioError] = useState<"voice" | "playbackError" | null>(null);
   const [playing, setPlaying] = useState(false);
   const [position, setPosition] = useState(0);
@@ -56,6 +56,7 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
     cancelSpeech.current?.();
     reset();
     setIndex(i);
+    setStrums((count) => count + 1);
     setPosition(0);
     setPlaying(false);
     setAudioError(null);
@@ -90,7 +91,7 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
         </LayoutGroup>
         <div className={s.readout}>
           <div>
-            <p className={s.hangul} lang="ko">{line.text}</p>
+            <p className={s.hangul} lang="ko"><AssembledPhrase text={line.text} /></p>
             <div className={s.translation}><span>{line.romanization}</span><span>{lang === "en" ? line.english : line.translation}</span></div>
           </div>
           <div className={s.exchange}>
@@ -103,8 +104,8 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
         </div>
         <div className={s.wavefield}>
           <div className={s.legend}><span>{t.reference}</span><span>{t.mic}</span></div>
-          <svg className={s.reference} viewBox="0 0 440 64" preserveAspectRatio="none" aria-hidden="true"><polyline points={pattern} fill="none" stroke="currentColor" strokeWidth="1.2" vectorEffect="non-scaling-stroke" /></svg>
-          <canvas ref={canvas} width={1200} height={220} aria-hidden="true" />
+          <Gayageum pulse={strums} quiet={busy} />
+          <canvas className={s.trace} ref={canvas} width={1200} height={220} aria-hidden="true" />
           {(active || playing) && <motion.span className={s.playhead} aria-hidden="true" initial={reduced ? false : { left: "0%" }}
             animate={{ left: `${progress * 100}%` }} transition={{ duration: reduced ? 0 : active ? .92 : .24, ease: "linear" }} />}
           <div className={s.micWell}>
@@ -132,6 +133,7 @@ export function SpeakingLab({ lang }: { lang: Lang }) {
           <div className={e.controls}>
             <button type="button" className={e.button} disabled={busy} onClick={() => {
               setAudioError(null); cancelSpeech.current?.(); playback.current?.pause();
+              setStrums((count) => count + 1);
               cancelSpeech.current = speakKorean(line.text, { onError: () => setAudioError("voice") });
             }}>▷ {t.listen}</button>
             {url && <>

@@ -6,6 +6,7 @@ import type { Lang } from "@/lib/landing/lang";
 import { landingScenes, wordGlosses } from "@/lib/landing/scenes";
 import { sceneImage } from "@/lib/landing/scene-images";
 import { MagneticPill, Reveal, useReducedMotion } from "../motion";
+import { FoldingScreen } from "../motion/folding-screen";
 import { speakKorean } from "../motion/speech";
 import e from "./editorial.module.css";
 import s from "./drama-mode.module.css";
@@ -29,6 +30,8 @@ export function DramaMode({ lang }: { lang: Lang }) {
   const [visible, setVisible] = useState<Record<Track, boolean>>({ korean: true, romanization: true, translation: true });
   const sound = useRef<{ cancel?: () => void; timers: number[]; resumeWord: number }>({ timers: [], resumeWord: 0 });
   const scene = landingScenes[sceneIndex];
+  const [leaving, setLeaving] = useState<{ scene: typeof scene; at: number } | null>(null);
+  const folds = useRef(0);
   const line = scene.lines[lineIndex];
 
   useEffect(() => {
@@ -125,13 +128,11 @@ export function DramaMode({ lang }: { lang: Lang }) {
       <div className={s.player} role="group" tabIndex={0} aria-keyshortcuts="ArrowLeft ArrowRight Space" aria-label={title(scene)} onKeyDown={onPlayerKey}>
         <figure className={s.film}>
           <div className={s.still}>
+            {leaving && <FoldingScreen key={leaving.at} onFolded={() => setLeaving(null)}><Still scene={leaving.scene} /></FoldingScreen>}
             <motion.div className={s.camera} initial={false}
               animate={reduced ? { scale: 1, x: "0%" } : { scale: lineIndex % 2 ? 1.16 : 1.07, x: lineIndex % 2 ? "2.3%" : "-1.4%" }}
               transition={{ duration: reduced ? 0 : 1.85, ease: [.22, .61, .36, 1] }}>
-              {/* eslint-disable-next-line @next/next/no-img-element -- Existing responsive WebP variants. */}
-              <img className={s.background} {...sceneImage(scene.cover, "100vw")} alt="" decoding="async" fetchPriority="low" />
-              {/* eslint-disable-next-line @next/next/no-img-element -- Existing transparent WebP variants. */}
-              <img className={s.cast} data-solo={scene.slug === "joons-day"} {...sceneImage(scene.cast, "(max-width: 760px) 95vw, 57vw")} alt="" decoding="async" fetchPriority="low" />
+              <Still scene={scene} />
             </motion.div>
           </div>
           <figcaption className={s.filmCaption}><span>{title(scene)}</span><span>{location}</span></figcaption>
@@ -180,6 +181,7 @@ export function DramaMode({ lang }: { lang: Lang }) {
             {landingScenes.map((item, i) => <motion.button layout={!reduced} transition={{ layout: { duration: .38, ease: [.22, .61, .36, 1] } }}
               type="button" key={item.slug} className={s.frame} aria-pressed={i === sceneIndex} onClick={() => {
                 sound.current.resumeWord = 0;
+                if (i !== sceneIndex && !reduced) setLeaving({ scene, at: folds.current += 1 });
                 stop(); setSceneIndex(i); setLineIndex(0); setPickedWord(""); setVoiceError(false);
               }}>
               <span className={s.thumbnail}>
@@ -193,6 +195,15 @@ export function DramaMode({ lang }: { lang: Lang }) {
       </div>
     </div>
   </section>;
+}
+
+function Still({ scene }: { scene: (typeof landingScenes)[number] }) {
+  return <>
+    {/* eslint-disable-next-line @next/next/no-img-element -- Existing responsive WebP variants. */}
+    <img className={s.background} {...sceneImage(scene.cover, "100vw")} alt="" decoding="async" fetchPriority="low" />
+    {/* eslint-disable-next-line @next/next/no-img-element -- Existing transparent WebP variants. */}
+    <img className={s.cast} data-solo={scene.slug === "joons-day"} {...sceneImage(scene.cast, "(max-width: 760px) 95vw, 57vw")} alt="" decoding="async" fetchPriority="low" />
+  </>;
 }
 
 function Icon({ name }: { name: "previous" | "next" | "play" | "pause" }) {

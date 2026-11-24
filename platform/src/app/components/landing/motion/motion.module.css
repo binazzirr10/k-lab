@@ -11,3 +11,61 @@
 }
 .pill:hover { background: var(--lp-ink, #232521); color: var(--lp-ivory, #F6F3EC); }
 .pill:focus-visible { outline: 2px solid #556449; outline-offset: 4px; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+.filters { position: absolute; width: 0; height: 0; }
+.lines [data-ink] { display: block; padding: .12em .06em .26em; margin: -.12em -.06em -.26em; }
+
+/* Letter rollers: front face is the letter, the face below it the Korean letter of the same sound. */
+.jamoText { position: relative; }
+.word { display: inline-block; white-space: nowrap; }
+.roller { position: relative; display: inline-block; transform-style: preserve-3d; }
+.front { display: inline-block; backface-visibility: hidden; transform: translateZ(.46em); }
+.back {
+  position: absolute; inset: 0; display: grid; place-items: center; color: #6f8757;
+  font-family: "Pretendard Variable", Pretendard, sans-serif; font-size: .78em; font-weight: 300; letter-spacing: 0;
+  backface-visibility: hidden; transform: rotateX(-90deg) translateZ(.58em);
+}
+
+.again { position: absolute; inset: 0; backface-visibility: hidden; transform: rotateX(180deg) translateZ(.46em); }
+
+/* Phrases built from jamo */
+.phrase { position: relative; display: inline-block; }
+.phraseLine { display: inline-block; }
+.syllable { position: relative; display: inline-block; }
+.flying { position: absolute; inset: 0; display: grid; place-items: center; color: #6f8757; font-weight: 300; pointer-events: none; }
+
+/* Gayageum */
+.strings { position: absolute; inset: 0; width: 100%; height: 100%; touch-action: pan-y; cursor: crosshair; }
+
+/* Byeongpung */
+.screen { position: absolute; inset: 0; z-index: 2; overflow: hidden; pointer-events: none; }
+.panel { position: absolute; top: 0; bottom: 0; width: 12.5%; overflow: hidden; transform-origin: 0 0; will-change: transform; background: #20241e; }
+.panelView { position: absolute; top: 0; bottom: 0; width: 800%; }
+.panelShade { position: absolute; inset: 0; background: #10130f; }
+.panel::after { position: absolute; inset: 0 auto 0 0; width: 1px; background: rgba(255, 255, 255, .28); content: ""; }
+
+/* Departure board */
+.board { display: inline-flex; gap: .07em; }
+.cell { position: relative; display: block; width: 1.14em; height: 1.36em; perspective: 4em; }
+.top, .bottom { position: absolute; inset-inline: 0; height: 50%; overflow: hidden; background: #e9ede0; color: #56684a; }
+.top { top: 0; border-radius: .05em .05em 0 0; border-bottom: 1px solid #f6f3ec; }
+.bottom { bottom: 0; border-radius: 0 0 .05em .05em; background: #e2e8d7; }
+.top b, .bottom b { position: absolute; inset-inline: 0; height: 200%; display: grid; place-items: center; font-weight: 400; }
+.top b { top: 0; }
+.bottom b { bottom: 0; }
+.leaf { transform-origin: bottom; backface-visibility: hidden; }
+.rise { transform-origin: top; backface-visibility: hidden; }
+
+.letter { display: inline-block; will-change: transform; }
+
+/* Bojagi wrapping cloth */
+.cloth { position: relative; grid-area: 1 / 1; transform-style: preserve-3d; min-height: 100%; }
+.cloth[inert] { pointer-events: none; }
+.flap {
+  position: absolute; inset: 0; display: grid;
+  background: linear-gradient(90deg, rgba(86, 104, 74, .10) 1px, transparent 1px) 0 0 / 25% 100%, linear-gradient(rgba(86, 104, 74, .10) 1px, transparent 1px) 0 0 / 100% 34%, #edf0e3;
+}
+.flap:nth-child(2) { background-color: #e6ebdb; }
+.flap:nth-child(3) { background-color: #f1f2e8; }
+.flap:nth-child(4) { background-color: #e9ede0; }
+.print { display: grid; backface-visibility: hidden; }

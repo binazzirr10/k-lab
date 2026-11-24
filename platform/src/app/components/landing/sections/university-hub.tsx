@@ -5,6 +5,8 @@ import { motion } from "motion/react";
 import type { Lang } from "@/lib/landing/lang";
 import { admissionSteps, universities } from "@/lib/landing/universities";
 import { LineArrow, MagneticPill, Reveal, useDrawOnEnter, useReducedMotion } from "../motion";
+import { JamoText } from "../motion/jamo-text";
+import { SplitFlap } from "../motion/split-flap";
 import e from "./editorial.module.css";
 import s from "./university-hub.module.css";
 
@@ -51,7 +53,7 @@ export function UniversityHub({ lang }: { lang: Lang }) {
                   if (event.currentTarget.matches(":focus-visible")) { setSelected(i); setPreview(null); }
                 }}
                 onClick={() => { setSelected(selected === i && preview === null ? null : i); setPreview(null); }}>
-                <span className={s.name}>{university.name}</span>
+                <span className={s.name}><JamoText text={university.name} active={open === i} /></span>
                 <span className={s.korean} lang="ko">{university.korean}</span>
                 <span className={s.indicator} aria-hidden="true">{open === i ? "−" : "+"}</span>
               </button>
@@ -59,7 +61,7 @@ export function UniversityHub({ lang }: { lang: Lang }) {
                 transition={{ duration: reduced ? 0 : .32, ease: [.22, .61, .36, 1] }}
                 className={s.details} id={`university-details-${i}`} inert={open !== i} aria-hidden={open !== i}>
                 <div className={s.detailInner}>
-                  <span className={s.outlineName} aria-hidden="true" lang="ko">{university.korean}</span>
+                  <span className={s.outlineName} lang="ko"><SplitFlap text={university.korean} active={open === i} /></span>
                   <dl className={s.facts}>
                     <div><dt>{t.city}</dt><dd>{university.city[lang]}</dd></div>
                     <div><dt>{t.areas}</dt><dd>{university.areas[lang]}</dd></div>

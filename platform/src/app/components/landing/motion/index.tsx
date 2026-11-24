@@ -3,8 +3,8 @@
 import { useLayoutEffect, useRef, useSyncExternalStore, type ReactNode } from "react";
 import { motion, useMotionValue, useSpring, type HTMLMotionProps } from "motion/react";
 import { gsap } from "gsap";
-import { SplitText } from "gsap/SplitText";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { Ink } from "./ink";
 import styles from "./motion.module.css";
 
 const query = "(prefers-reduced-motion: reduce)";
@@ -18,98 +18,10 @@ export function useReducedMotion() {
   return useSyncExternalStore(subscribe, preference, () => true);
 }
 
-export function useMaskedLines() {
-  const ref = useRef<HTMLSpanElement>(null);
-  useLayoutEffect(() => {
-    const node = ref.current;
-    if (!node) return;
-    const media = window.matchMedia(query);
-    let disposed = false;
-    let played = false;
-    let trigger: ScrollTrigger | undefined;
-    let split: SplitText | undefined;
-    let tween: gsap.core.Tween | undefined;
-    let safety = 0;
-    let resize = 0;
-
-    function finish() {
-      played = true;
-      window.clearTimeout(safety);
-      try { tween?.progress(1).kill(); }
-      finally { split?.lines.forEach((line) => { if (line instanceof HTMLElement) line.style.removeProperty("transform"); }); }
-    }
-
-    function rebuild() {
-      trigger?.kill();
-      if (tween) finish();
-      split?.revert();
-      if (disposed || !node?.isConnected || media.matches) return;
-      try {
-        split = SplitText.create(node.querySelectorAll("[data-reveal-source]"), {
-          type: "lines", mask: "lines", tag: "span", aria: "none", linesClass: "klab-reveal-line",
-        });
-        if (!split.lines.length || played || node.getBoundingClientRect().top < window.innerHeight) {
-          played = true;
-          return;
-        }
-        trigger = ScrollTrigger.create({
-          trigger: node, start: "top 92%", once: true,
-          onEnter: () => {
-            if (played || !split || node.getBoundingClientRect().bottom <= 0) { finish(); return; }
-            played = true;
-            safety = window.setTimeout(finish, 1100);
-            try {
-              tween = gsap.fromTo(split.lines, { yPercent: 112 }, {
-                yPercent: 0, duration: .64, stagger: .07, ease: "power3.out", clearProps: "transform",
-              });
-            } catch { finish(); }
-          },
-          onEnterBack: finish,
-          onLeave: finish,
-        });
-      } catch {
-        finish();
-        split?.revert();
-      }
-    }
-
-    const context = gsap.context(() => {}, node);
-    function schedule() {
-      cancelAnimationFrame(resize);
-      resize = requestAnimationFrame(() => context.add(rebuild));
-    }
-    (document.fonts?.ready ?? Promise.resolve()).then(() => {
-      if (disposed) return;
-      gsap.registerPlugin(ScrollTrigger, SplitText);
-      schedule();
-      window.addEventListener("resize", schedule);
-      media.addEventListener("change", schedule);
-    }).catch(() => { /* The original text is visible. */ });
-
-    return () => {
-      disposed = true;
-      window.removeEventListener("resize", schedule);
-      media.removeEventListener("change", schedule);
-      cancelAnimationFrame(resize);
-      window.clearTimeout(safety);
-      trigger?.kill();
-      tween?.kill();
-      context.revert();
-      split?.revert();
-    };
-  }, []);
-  return ref;
-}
-
-function RevealContent({ lines }: { lines: readonly ReactNode[] }) {
-  const ref = useMaskedLines();
-  return <span className={styles.lines} ref={ref}>{lines.map((line, index) =>
-    <span className={styles.source} key={index} data-reveal-source>{line}</span>
-  )}</span>;
-}
-
 export function Reveal({ children, lines }: { children?: ReactNode; lines?: readonly string[] }) {
-  return <RevealContent key={lines?.join("|") ?? (typeof children === "string" ? children : undefined)} lines={lines ?? [children]} />;
+  return <Ink key={lines?.join("|") ?? (typeof children === "string" ? children : undefined)}>
+    {lines ? lines.map((line) => <span className={styles.source} key={line}>{line}</span>) : children}
+  </Ink>;
 }
 
 export function useDrawOnEnter() {

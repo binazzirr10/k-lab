@@ -19,7 +19,7 @@
 .details { overflow: hidden; }
 .details:focus-within { overflow: visible; }
 .detailInner { position: relative; min-height: 10rem; isolation: isolate; padding: 2.95rem .2rem .7rem; }
-.outlineName { position: absolute; top: -.35rem; right: .3rem; color: color-mix(in srgb, #a4b391 46%, transparent); font: 300 clamp(2.2rem, 4vw, 4.2rem)/1.2 var(--text); letter-spacing: -.055em; pointer-events: none; z-index: -1; }
+.outlineName { position: absolute; top: -.1rem; right: 0; font: 400 clamp(1.7rem, 2.7vw, 2.6rem)/1 var(--text); pointer-events: none; z-index: -1; }
 .facts { display: grid; grid-template-columns: .7fr 1.12fr 1.18fr; margin: .85rem 0 .45rem; padding: .7rem 0 0; border-top: 1px solid var(--line); background: var(--paper); gap: .75rem; }
 .facts > div + div { border-left: 1px solid var(--line); padding-left: .75rem; }
 .facts dt { color: var(--accent); font-size: 14px; margin: 0 0 .25rem; }

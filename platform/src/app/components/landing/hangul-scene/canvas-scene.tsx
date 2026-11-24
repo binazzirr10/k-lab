@@ -3,7 +3,7 @@
 import { Environment, Lightformer, PerformanceMonitor } from "@react-three/drei";
 import { Canvas, useFrame, useLoader, useThree } from "@react-three/fiber";
 import { Suspense, useEffect, useState, useRef, type RefObject } from "react";
-import { Group, MathUtils, SRGBColorSpace, TextureLoader } from "three";
+import { Group, MathUtils, Mesh, Raycaster, SRGBColorSpace, TextureLoader, Vector2, Vector3, type BufferGeometry } from "three";
 import { home, scenes, type StageInput } from "./composition";
 import { makeGlass, tints } from "./glass";
 import { makeSyllables, syllableOutlines } from "./outlines";
@@ -18,11 +18,42 @@ type Props = {
 
 declare global { interface Window { __hangulReady?: boolean } }
 
+const axes = ["x", "y", "z"] as const;
+
 const float = [
   { period: 7.9, phase: .2, amplitude: .105 },
   { period: 10.6, phase: 1.8, amplitude: .115 },
   { period: 9.2, phase: 3.7, amplitude: .14 },
 ];
+
+/** One jamo on a spring: where it flies when its syllable comes apart, and how it is moving now. */
+type Piece = { away: Vector3; spin: Vector3; delay: number; offset: Vector3; velocity: Vector3; angle: Vector3; whirl: Vector3 };
+
+function makePieces(geometries: BufferGeometry[][]): Piece[][] {
+  return geometries.map((syllable, i) => syllable.map((geometry, j) => {
+    geometry.computeBoundingBox();
+    const centre = geometry.boundingBox?.getCenter(new Vector3()) ?? new Vector3();
+    const side = j % 2 ? 1 : -1;
+    const away = centre.clone().setZ(0).multiplyScalar(1.15);
+    away.x += side * .12;
+    away.z = .55 - j * .5;
+    return {
+      away, spin: new Vector3(side * (.55 + i * .12), .9 - j * .55, side * (.3 + j * .14)), delay: i * .13 + j * .085,
+      offset: new Vector3(), velocity: new Vector3(), angle: new Vector3(), whirl: new Vector3(),
+    };
+  }));
+}
+
+function speak(text: string) {
+  if (!("speechSynthesis" in window)) return;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = "ko-KR";
+  utterance.rate = .8;
+  window.speechSynthesis.speak(utterance);
+}
+
+const sounds = ["한", "글", "말"];
 
 function Sculpture({ capture, input, onReady, onFailure }: Props) {
   const [{ geometries, materials }] = useState(() => ({
@@ -38,6 +69,13 @@ function Sculpture({ capture, input, onReady, onFailure }: Props) {
     return texture;
   });
   const groups = useRef<(Group | null)[]>([]);
+  const jamo = useRef<(Mesh | null)[][]>([[], [], []]);
+  const pieces = useRef<Piece[][] | null>(null);
+  const hovered = useRef(-1);
+  const struck = useRef([-9, -9, -9]);
+  const opened = useRef<number | null>(null);
+  const taps = useRef(0);
+  const probe = useRef({ ray: new Raycaster(), point: new Vector2() });
   const elapsed = useRef(0);
   const frames = useRef(0);
   const nudge = useRef({ previous: [0, 0], impulse: [0, 0] });
@@ -58,14 +96,15 @@ function Sculpture({ capture, input, onReady, onFailure }: Props) {
   useEffect(() => () => {
     geometries.flat().forEach((geometry) => geometry.dispose());
     materials.flat().forEach((material) => material.dispose());
+    document.body.style.cursor = "";
     ground.dispose();
   }, [geometries, materials, ground]);
 
-  useFrame(({ gl: renderer, viewport }, delta) => {
+  useFrame(({ gl: renderer, viewport, camera }, delta) => {
     const dt = Math.min(delta, .05);
     elapsed.current += dt;
     const time = capture ? 2.2 : elapsed.current;
-    const { scene, pointer, impulse: drag } = input.current;
+    const { scene, pointer, impulse: drag, leave } = input.current;
     const { previous, impulse } = nudge.current;
     for (let axis = 0; axis < 2; axis++) {
       impulse[axis] = MathUtils.clamp(d(impulse[axis], 0, 2.5, dt) + drag[axis] - previous[axis], -1, 1);
@@ -76,6 +115,23 @@ function Sculpture({ capture, input, onReady, onFailure }: Props) {
     const { frame, letters } = scenes[capture ? "hero" : scene];
     root.current?.scale.setScalar(Math.min(viewport.width / frame[0], viewport.height / frame[1]));
     if (backdrop.current) backdrop.current.visible = capture || scene === "hero";
+    // Which syllable is under the pointer? A jamo that has flown off still counts.
+    const { inside, taps: presses } = input.current;
+    let found = -1;
+    if (inside && !capture) {
+      const { ray, point } = probe.current;
+      ray.setFromCamera(point.set(pointer[0], pointer[1]), camera);
+      const hit = ray.intersectObjects(jamo.current.flat().filter((mesh): mesh is Mesh => Boolean(mesh?.parent?.visible)), false)[0];
+      found = hit ? jamo.current.findIndex((syllable) => syllable.includes(hit.object as Mesh)) : -1;
+    }
+    if (found !== hovered.current) {
+      hovered.current = found;
+      document.body.style.cursor = found < 0 ? "" : "pointer";
+    }
+    if (presses !== taps.current) {
+      taps.current = presses;
+      if (found >= 0) { struck.current[found] = elapsed.current; speak(sounds[found]); }
+    }
     groups.current.forEach((group, i) => {
       if (!group) return;
       const { rotation } = home[i];
@@ -96,8 +152,33 @@ function Sculpture({ capture, input, onReady, onFailure }: Props) {
       );
       group.scale.setScalar(Math.max(.0001, settle(group.scale.x, scale)));
       group.visible = group.scale.x > .01;
+
+      // Come apart on arrival, under the pointer, on a press, while leaving and while tucked away.
+      const breath = opened.current === null ? -1 : elapsed.current - opened.current;
+      (pieces.current ??= makePieces(geometries))[i].forEach((piece, j) => {
+        const mesh = jamo.current[i][j];
+        if (!mesh) return;
+        if (capture) { mesh.position.set(0, 0, 0); mesh.rotation.set(0, 0, 0); return; }
+        const arriving = breath >= piece.delay * .5 && breath < .75 + piece.delay ? .82 : 0;
+        const pressed = elapsed.current - struck.current[i] < .2 ? 1.25 : 0;
+        const apart = Math.max(arriving, pressed, hovered.current === i ? .34 : 0,
+          scale === 0 ? .9 : 0, MathUtils.smoothstep(leave, piece.delay * .5, .62 + piece.delay * .5) * 1.35);
+        const steps = Math.max(1, Math.ceil(dt / .012));
+        const h = dt / steps;
+        for (let step = 0; step < steps; step++) {
+          for (const axis of axes) {
+            piece.velocity[axis] += ((piece.away[axis] * apart - piece.offset[axis]) * 88 - piece.velocity[axis] * 8.4) * h;
+            piece.offset[axis] += piece.velocity[axis] * h;
+            piece.whirl[axis] += ((piece.spin[axis] * apart - piece.angle[axis]) * 62 - piece.whirl[axis] * 6.6) * h;
+            piece.angle[axis] += piece.whirl[axis] * h;
+          }
+        }
+        mesh.position.copy(piece.offset);
+        mesh.rotation.set(piece.angle.x, piece.angle.y, piece.angle.z);
+      });
     });
     if (++frames.current === 4) {
+      opened.current = elapsed.current + .45;
       requestAnimationFrame(() => {
         ready.current();
         if (capture) requestAnimationFrame(() => { window.__hangulReady = true; });
@@ -127,7 +208,8 @@ function Sculpture({ capture, input, onReady, onFailure }: Props) {
       </mesh>
       {geometries.map((syllable, i) => (
         <group key={i} ref={(group) => { groups.current[i] = group; }} position={home[i].position} rotation={home[i].rotation} scale={home[i].scale}>
-          {syllable.map((geometry, j) => <mesh key={j} geometry={geometry} material={materials[i][j]} />)}
+          {syllable.map((geometry, j) => <mesh key={j} geometry={geometry} material={materials[i][j]}
+            ref={(mesh) => { jamo.current[i][j] = mesh; }} />)}
         </group>
       ))}
     </group>

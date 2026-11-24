@@ -32,7 +32,7 @@ export type HangulPosters = { desktop?: string; mobile?: string };
 export function HangulStage({ posters }: { posters: HangulPosters }) {
   const marker = useRef<HTMLDivElement>(null);
   const layer = useRef<HTMLDivElement>(null);
-  const input = useRef<StageInput>({ scene: "hero", pointer: [0, 0], impulse: [0, 0] });
+  const input = useRef<StageInput>({ scene: "hero", pointer: [0, 0], impulse: [0, 0], leave: 0, inside: false, taps: 0 });
   const [enabled, setEnabled] = useState(false);
   const [running, setRunning] = useState(false);
   const [capture, setCapture] = useState(false);
@@ -83,6 +83,7 @@ export function HangulStage({ posters }: { posters: HangulPosters }) {
     let frame = 0;
     let hasBounds = false;
     let drag: { id: number; x: number; y: number } | undefined;
+    let origin: typeof drag;
     const update = () => {
       frame = 0;
       const bounds = target.getBoundingClientRect();
@@ -94,6 +95,7 @@ export function HangulStage({ posters }: { posters: HangulPosters }) {
       const hero = name === "hero";
       const header = siteHeader?.getBoundingClientRect().bottom ?? 0;
       input.current.scene = name;
+      input.current.leave = hero ? Math.max(0, Math.min(1, (header - bounds.top) / Math.max(1, bounds.height * .8))) : 0;
       // After the hero the letters travel: each section keeps one empty spot for them.
       const config: SceneConfig = scenes[name];
       const host = hero ? undefined : current?.getBoundingClientRect();
@@ -119,8 +121,9 @@ export function HangulStage({ posters }: { posters: HangulPosters }) {
     };
     const schedule = () => { if (!frame) frame = requestAnimationFrame(update); };
     const point = (event: PointerEvent) => {
-      if (!hasBounds) return;
+      if (!hasBounds) { input.current.inside = false; return; }
       const box = visual.getBoundingClientRect();
+      input.current.inside = within(event);
       const clamp = (value: number) => Math.max(-1, Math.min(1, value));
       input.current.pointer = [clamp((event.clientX - box.left) / box.width * 2 - 1), clamp(1 - (event.clientY - box.top) / box.height * 2)];
       if (drag?.id === event.pointerId) {
@@ -130,13 +133,25 @@ export function HangulStage({ posters }: { posters: HangulPosters }) {
         drag = { id: event.pointerId, x: event.clientX, y: event.clientY };
       }
     };
+    // The canvas lies behind the page, so the stage listens to the document instead.
+    const within = (event: PointerEvent) => {
+      const box = visual.getBoundingClientRect();
+      const header = siteHeader?.getBoundingClientRect().bottom ?? 0;
+      return event.clientX > box.left && event.clientX < box.right && event.clientY > Math.max(box.top, header) && event.clientY < box.bottom
+        && !(event.target instanceof Element && event.target.closest("a, button, input, h1, h2, p, [role=group]"));
+    };
     const start = (event: PointerEvent) => {
-      if (event.button !== 0) return;
+      if (event.button !== 0 || event.pointerType !== "mouse" || !hasBounds || !within(event)) return;
       drag = { id: event.pointerId, x: event.clientX, y: event.clientY };
-      visual.setPointerCapture(event.pointerId);
+      origin = drag;
+    };
+    const release = (event: PointerEvent) => {
+      if (origin && within(event) && Math.hypot(event.clientX - origin.x, event.clientY - origin.y) < 7) input.current.taps += 1;
+      origin = undefined;
+      endDrag();
     };
     const endDrag = () => { drag = undefined; };
-    const reset = () => { input.current.pointer = [0, 0]; };
+    const reset = () => { input.current.pointer = [0, 0]; input.current.inside = false; };
     const observer = new ResizeObserver(schedule);
     observer.observe(target);
     observer.observe(document.body);
@@ -145,8 +160,9 @@ export function HangulStage({ posters }: { posters: HangulPosters }) {
     window.addEventListener("pointermove", point, { passive: true });
     document.addEventListener("visibilitychange", update);
     document.documentElement.addEventListener("pointerleave", reset);
-    visual.addEventListener("pointerdown", start);
-    visual.addEventListener("lostpointercapture", endDrag);
+    document.addEventListener("pointerdown", start);
+    document.addEventListener("pointerup", release);
+    document.addEventListener("pointercancel", endDrag);
     update();
     return () => {
       cancelAnimationFrame(frame);
@@ -156,8 +172,9 @@ export function HangulStage({ posters }: { posters: HangulPosters }) {
       window.removeEventListener("pointermove", point);
       document.removeEventListener("visibilitychange", update);
       document.documentElement.removeEventListener("pointerleave", reset);
-      visual.removeEventListener("pointerdown", start);
-      visual.removeEventListener("lostpointercapture", endDrag);
+      document.removeEventListener("pointerdown", start);
+      document.removeEventListener("pointerup", release);
+      document.removeEventListener("pointercancel", endDrag);
     };
   }, [enabled, failed, capture]);
 
