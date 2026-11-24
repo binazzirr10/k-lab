@@ -26,12 +26,12 @@ export async function updateStudyProfile(formData: FormData) {
   const supabase = await createServerSupabaseClient();
   const { error } = await supabase
     .from("profiles")
-    .update({
+    .upsert({
+      user_id: userId,
       display_name: parsed.data.displayName,
       target_level: parsed.data.targetLevel,
       daily_goal_minutes: parsed.data.dailyGoalMinutes,
-    })
-    .eq("user_id", userId);
+    }, { onConflict: "user_id" });
 
   if (error) throw new Error("Не удалось сохранить настройки.");
   revalidatePath("/studio");

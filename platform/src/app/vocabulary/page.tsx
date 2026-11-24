@@ -1,5 +1,6 @@
 import { UserButton } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { KTutor } from "@/app/components/k-tutor";
 import { LessonStyleFix } from "@/app/components/lesson-style-fix";
@@ -19,8 +20,8 @@ export default async function VocabularyPage() {
     savedStates = Object.fromEntries((data ?? []).map((review) => [review.item_id, review.state]));
   } catch { /* The deck is still usable before the first database sync. */ }
   return <><LessonStyleFix /><WordDeckStyleFix />
-    <nav className="learn-nav"><a className="learn-logo" href="/studio"><span>ㅋ</span>K‑Lab</a><div><a href="/studio">МОЙ РИТМ</a><a href="/learn/lesson-01-introduction">УРОКИ</a><a href="https://k-lab-two.vercel.app/speaking.html">SPEAKING</a><a className="active" href="/vocabulary">WORD DECK</a><a href="https://k-lab-two.vercel.app/kdrama.html">K‑DRAMA</a></div><section><b>{name}</b><UserButton appearance={{ elements: { avatarBox: "learn-avatar" } }} /></section></nav>
-    <main className="deck-wrap"><header className="deck-hero"><div><span>WORD DECK · LEVEL 01</span><h1>Слова, которые<br />останутся с тобой.</h1><p>Выбирай тему, слушай произношение, отмечай карточки и возвращайся к словам, которые нужно повторить.</p></div><div className="deck-stats"><div><b>24</b><small>СЛОВА В LEVEL 01</small></div><div><b>{Object.values(savedStates).filter((state) => state === "known").length}</b><small>УЖЕ ВЫУЧЕНО</small></div><div><b>{Object.values(savedStates).filter((state) => state === "review").length}</b><small>ЖДУТ ПОВТОРА</small></div></div></header><WordDeckClient initialStates={savedStates} /></main>
+    <nav className="learn-nav"><a className="learn-logo" href="/studio"><span>ㅋ</span>K‑Lab</a><div><a href="/studio">МОЙ РИТМ</a><a href="/learn/lesson-01-introduction">УРОКИ</a><a href="https://k-lab-two.vercel.app/speaking.html">SPEAKING</a><a className="active" href="/vocabulary">WORD DECK</a><Link href="/k-scene">K‑SCENE</Link></div><section><b>{name}</b><UserButton appearance={{ elements: { avatarBox: "learn-avatar" } }} /></section></nav>
+    <main className="deck-wrap"><header className="deck-hero"><div><span>WORD DECK · УРОВЕНЬ 1</span><h1>Слова к первым<br />четырём урокам.</h1><p>Выбери тему, послушай фразу с новым словом и отметь, знаешь ты его или хочешь повторить.</p></div><div className="deck-stats"><div><b>24</b><small>СЛОВА В КОЛОДЕ</small></div><div><b>{Object.values(savedStates).filter((state) => state === "known").length}</b><small>УЖЕ ВЫУЧЕНО</small></div><div><b>{Object.values(savedStates).filter((state) => state === "review").length}</b><small>НУЖНО ПОВТОРИТЬ</small></div></div></header><WordDeckClient initialStates={savedStates} /></main>
     <KTutor context="word-deck" />
   </>;
 }

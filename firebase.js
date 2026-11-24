@@ -71,7 +71,7 @@ window.register = async function(email, password, name) {
         const userCredential = await auth.createUserWithEmailAndPassword(email, password);
         const user = userCredential.user;
         
-        const role = email === "binazzirr@mail.ru" ? "admin" : "user";
+        const role = "user";
         
         const userData = {
             name: name,

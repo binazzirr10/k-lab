@@ -12,8 +12,42 @@ export async function POST(request: Request) {
   if (!parsed.success) return NextResponse.json({ error: "Некорректная карточка." }, { status: 400 });
   const { itemId, state } = parsed.data;
   const days = state === "known" ? 7 : state === "review" ? 1 : 2;
-  const supabase = await createServerSupabaseClient();
-  const { error } = await supabase.from("vocabulary_reviews").upsert({ user_id: userId, item_id: itemId, state, repetitions: state === "known" ? 3 : 1, interval_days: days, next_review_at: new Date(Date.now() + days * 86400000).toISOString(), last_reviewed_at: new Date().toISOString() }, { onConflict: "user_id,item_id" });
-  if (error) return NextResponse.json({ error: "Не получилось сохранить карточку." }, { status: 502 });
-  return NextResponse.json({ ok: true });
+  const failure = () => NextResponse.json({ error: "Не получилось сохранить карточку." }, { status: 502 });
+
+  try {
+    const supabase = await createServerSupabaseClient();
+    const key = { user_id: userId, item_id: itemId };
+
+    // Retry if another review inserted or changed the row since it was read.
+    for (let attempt = 0; attempt < 5; attempt++) {
+      const { data: previous, error: readError } = await supabase
+        .from("vocabulary_reviews")
+        .select("repetitions")
+        .match(key)
+        .maybeSingle();
+      if (readError) return failure();
+
+      const now = Date.now();
+      const review = {
+        state,
+        repetitions: (previous?.repetitions ?? 0) + 1,
+        interval_days: days,
+        next_review_at: new Date(now + days * 86400000).toISOString(),
+        last_reviewed_at: new Date(now).toISOString(),
+      };
+      const write = previous
+        ? supabase.from("vocabulary_reviews").update(review).match(key).eq("repetitions", previous.repetitions)
+        : supabase.from("vocabulary_reviews").upsert({ ...key, ...review }, {
+          onConflict: "user_id,item_id",
+          ignoreDuplicates: true,
+        });
+
+      const { data: saved, error: writeError } = await write.select("item_id").maybeSingle();
+      if (writeError) return failure();
+      if (saved) return NextResponse.json({ ok: true });
+    }
+    return failure();
+  } catch {
+    return failure();
+  }
 }
