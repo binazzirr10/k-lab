@@ -4,6 +4,7 @@ import { Fragment, useEffect, useRef, useState, ViewTransition } from "react";
 import { AnimatePresence, m, useReducedMotion } from "motion/react";
 import { MotionScope, spring } from "@/app/components/motion-kit/motion";
 import styles from "@/app/components/motion-kit/learning.module.css";
+import { koreanUtterance } from "@/lib/korean-voice";
 import type { KScene } from "@/lib/k-scenes";
 
 export function ScenePlayer({ scene }: { scene: KScene }) {
@@ -28,11 +29,7 @@ export function ScenePlayer({ scene }: { scene: KScene }) {
     activeUtterance.current = null;
     setSpeaking(null);
     window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "ko-KR";
-    utterance.rate = 0.78;
-    const voice = window.speechSynthesis.getVoices().find((item) => item.lang.startsWith("ko") && (voiceType === "male" ? /male|man|남성/i.test(item.name) : !/male|man|남성/i.test(item.name)));
-    if (voice) utterance.voice = voice;
+    const utterance = koreanUtterance(text, voiceType);
     activeUtterance.current = utterance;
     utterance.onstart = () => {
       if (activeUtterance.current === utterance) setSpeaking(index);

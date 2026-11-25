@@ -1,3 +1,4 @@
+import { sayKorean as speak } from "@/lib/korean-voice";
 import {
   Color, DoubleSide, Group, MathUtils, Mesh, MeshBasicMaterial, PMREMGenerator, PerspectiveCamera, PlaneGeometry, Raycaster, Scene,
   SRGBColorSpace, NoToneMapping, TextureLoader, Vector2, Vector3, WebGLRenderer, DirectionalLight, type BufferGeometry,
@@ -35,15 +36,6 @@ function makePieces(geometries: BufferGeometry[][]): Piece[][] {
       offset: new Vector3(), velocity: new Vector3(), angle: new Vector3(), whirl: new Vector3(),
     };
   }));
-}
-
-function speak(text: string) {
-  if (!("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ko-KR";
-  utterance.rate = .8;
-  window.speechSynthesis.speak(utterance);
 }
 
 // Soft boxes around the glass: position, size, brightness, colour.
