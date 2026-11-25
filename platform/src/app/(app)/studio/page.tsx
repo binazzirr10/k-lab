@@ -1,4 +1,6 @@
 import { activePlan, planName } from "@/lib/plans";
+import { readiness } from "@/lib/universities";
+import { loadUniversityLab } from "@/lib/university-lab";
 import { AppNav } from "@/app/components/app-nav";
 import { UserButton } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
@@ -57,7 +59,7 @@ export default async function StudioPage() {
   const clerkName = user?.firstName || user?.username || "Ученик";
   const profileResult = await getOrCreateStudentProfile({ userId, displayName: clerkName, avatarUrl: user?.imageUrl ?? null }).catch(() => ({ profile: null, connected: false }));
   const name = profileResult.profile?.display_name || clerkName;
-  const stats = await getLearningStats(userId);
+  const [stats, lab] = await Promise.all([getLearningStats(userId), loadUniversityLab(userId)]);
   const xpToNext = 250 - (stats.totalXp % 250 || 0);
   const todayIndex = (new Date().getDay() + 6) % 7;
   const nextLesson = stats.fourthLessonProgress === 100
@@ -92,6 +94,12 @@ export default async function StudioPage() {
           <aside className="rhythm-panel rhythm-weekly"><div className="rhythm-panel-title"><h2>Серия дней</h2><span>{stats.streak ? `${stats.streak} дн. подряд` : "Начни сегодня"}</span></div><div className="rhythm-week-chart">{weekNames.map((day, index) => { const done = stats.streak > 0 && index <= todayIndex && index > todayIndex - stats.streak; return <div key={day}><i className={done ? "done" : ""} style={{ height: done ? "86px" : "8px" }} /><span>{day}</span></div>; })}</div><p>{stats.streak ? <>Ты завершаешь уроки <b>{stats.streak} дн.</b> подряд.</> : "Серия начнётся в день, когда ты завершишь новый урок."}</p></aside>
         </section>
 
+        <section className="rhythm-panel rhythm-lab" aria-labelledby="rhythm-lab">
+          <div><h2 id="rhythm-lab">University Lab</h2><p>Каталог университетов Кореи, твой список и подготовка к поступлению.</p></div>
+          <dl><div><dt>В списке</dt><dd>{lab.saved.length}</dd></div>{current.plan === "pro_plus" && <div><dt>Документы</dt><dd>{readiness(lab.planner.done).percent}%</dd></div>}</dl>
+          <Link href="/universities">Открыть University Lab <span aria-hidden="true">→</span></Link>
+        </section>
+
         <section className="rhythm-directions"><div className="rhythm-directions-head"><h2>Выбери, чем заняться ещё.</h2><p>Эти разделы открываются на прежнем сайте K‑Lab. Вход там отдельный, и результаты в этот кабинет не попадают.</p></div><div className="rhythm-paths">{paths.map((path) => <a href={path.href} key={path.number}><span>{path.number}</span><h3>{path.title}</h3><p>{path.note}</p></a>)}</div></section>
 
         <section className="rhythm-badges" aria-label="Бейджи">
@@ -99,7 +107,7 @@ export default async function StudioPage() {
         </section>
         {!stats.connected && <p className="rhythm-db-note">Не удалось загрузить прогресс, поэтому здесь нули. Обнови страницу или зайди позже.</p>}
       </main>
-      <footer className="rhythm-footer">© 2026 K‑Lab<a href="https://k-lab-two.vercel.app/universities.html">Университеты</a></footer>
+      <footer className="rhythm-footer">© 2026 K‑Lab<Link href="/universities">Университеты</Link></footer>
       <KTutor context="studio" />
     </>
   );

@@ -111,3 +111,13 @@
   .rhythm-badges{grid-template-columns:1fr}
   .rhythm-week-chart{height:134px}
 }
+
+.rhythm-lab{display:grid;grid-template-columns:minmax(0,1.6fr) auto auto;gap:20px 48px;align-items:center;margin-top:20px}
+.rhythm-lab h2{margin:0 0 6px;font:500 clamp(28px,3.4vw,42px)/1.05 var(--font-display)}
+.rhythm-lab p{margin:0;color:var(--muted);font-size:15px;line-height:1.5}
+.rhythm-lab dl{display:flex;gap:32px;margin:0}
+.rhythm-lab dt{color:var(--muted);font-size:13px}
+.rhythm-lab dd{margin:0;font:400 30px/1.1 var(--font-display)}
+.rhythm-lab a{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 22px;border-radius:999px;background:var(--ink);color:var(--surface);text-decoration:none;font-weight:500}
+.rhythm-lab a:hover{background:var(--sage-dark)}
+@media(max-width:860px){.rhythm-lab{grid-template-columns:minmax(0,1fr)}.rhythm-lab a{justify-self:start}}
