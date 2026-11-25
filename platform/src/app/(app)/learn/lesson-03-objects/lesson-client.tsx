@@ -1,5 +1,6 @@
 "use client";
 
+import { sayKorean as speak } from "@/lib/korean-voice";
 import { useState } from "react";
 import { Builder } from "@/app/components/motion-kit/builder";
 import { MotionScope, Stamp } from "@/app/components/motion-kit/motion";
@@ -22,15 +23,6 @@ const test = [
   ["Как сказать «Это сумка»?", ["이것은 가방이에요", "저는 가방이에요", "가방 아니에요"], "이것은 가방이에요"],
   ["Что означает 저것?", ["Это рядом", "То далеко", "Ручка"], "То далеко"],
 ] as const;
-
-function speak(text: string) {
-  if (!("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "ko-KR";
-  utterance.rate = 0.78;
-  window.speechSynthesis.speak(utterance);
-}
 
 export function LessonThreeClient({ lessonId }: { lessonId: string }) {
   const [objectIndex, setObjectIndex] = useState(0);

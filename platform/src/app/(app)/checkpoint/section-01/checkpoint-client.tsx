@@ -1,5 +1,6 @@
 "use client";
 
+import { sayKorean as say } from "@/lib/korean-voice";
 import { MotionScope, Stamp } from "@/app/components/motion-kit/motion";
 import { useState } from "react";
 
@@ -35,7 +36,6 @@ const listening: Question[] = [
   { q: "저는 커피를 마셔요.", options: ["Я пью кофе", "Я ем кофе", "Я покупаю кофе"], correct: "Я пью кофе" },
   { q: "친구를 만나요.", options: ["Встречаюсь с другом", "Зову друга", "Друг учится"], correct: "Встречаюсь с другом" },
 ];
-function say(text: string) { if ("speechSynthesis" in window) { window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = "ko-KR"; utterance.rate = .78; window.speechSynthesis.speak(utterance); } }
 function QuestionGroup({ title, points, items, answers, setAnswers, audible = false }: { title: string; points: string; items: Question[]; answers: Record<string, string>; setAnswers: (id: string, value: string) => void; audible?: boolean }) { return <article className="learn-card"><h2>{title} · {points}</h2><p className="learn-lead">{items.length} вопрос{items.length === 1 ? "" : items.length < 5 ? "а" : "ов"} × 2 балла.</p>{items.map((item, index) => { const id = `${title}-${index}`; return <section className="learn-question" key={id}><b>{index + 1}. {item.q}</b>{audible && <button className="inline-audio" onClick={() => say(item.q)}>🔊 слушать</button>}<div>{item.options.map(option => <button aria-pressed={answers[id] === option} className={answers[id] === option ? "selected" : ""} onClick={() => setAnswers(id, option)} key={option}>{option}</button>)}</div></section>; })}</article>; }
 export function CheckpointClient({ lessonId }: { lessonId: string }) {
   const [answers, setAnswers] = useState<Record<string, string>>({});

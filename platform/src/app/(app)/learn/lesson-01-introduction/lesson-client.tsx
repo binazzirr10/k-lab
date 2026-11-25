@@ -1,5 +1,6 @@
 "use client";
 
+import { sayKorean as speak } from "@/lib/korean-voice";
 import { useState } from "react";
 import { Builder } from "@/app/components/motion-kit/builder";
 import { MotionScope, Stamp } from "@/app/components/motion-kit/motion";
@@ -13,15 +14,6 @@ const testQuestions = [
   { question: "Что нужно вставить: 저는 알리나__?", answers: ["이에요", "예요", "해요"], correct: "예요" },
   { question: "Что означает 반갑습니다?", answers: ["Спасибо", "Приятно познакомиться", "До свидания"], correct: "Приятно познакомиться" },
 ];
-
-function speak(text: string) {
-  if (!("speechSynthesis" in window)) return;
-  window.speechSynthesis.cancel();
-  const voice = new SpeechSynthesisUtterance(text);
-  voice.lang = "ko-KR";
-  voice.rate = 0.78;
-  window.speechSynthesis.speak(voice);
-}
 
 export function LessonClient({ lessonId }: { lessonId: string }) {
   const [builder, setBuilder] = useState<number[]>([]);

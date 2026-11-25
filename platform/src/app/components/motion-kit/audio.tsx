@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { koreanUtterance } from "@/lib/korean-voice";
 
 let activeUtterance: SpeechSynthesisUtterance | undefined;
 
@@ -9,12 +10,8 @@ export function speakKorean(text: string, onEnd?: () => void, onError?: () => vo
   const synthesis = window.speechSynthesis;
   synthesis.cancel();
   if (synthesis.paused) synthesis.resume();
-  const utterance = new SpeechSynthesisUtterance(text);
+  const utterance = koreanUtterance(text);
   activeUtterance = utterance;
-  utterance.lang = "ko-KR";
-  utterance.rate = .82;
-  const voice = synthesis.getVoices().find((item) => /^ko(?:-|$)/i.test(item.lang));
-  if (voice) utterance.voice = voice;
   utterance.onend = () => {
     if (activeUtterance === utterance) activeUtterance = undefined;
     onEnd?.();

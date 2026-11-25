@@ -1,5 +1,6 @@
 "use client";
 
+import { sayKorean as speak } from "@/lib/korean-voice";
 import { useState } from "react";
 import { Builder } from "@/app/components/motion-kit/builder";
 import { MotionScope, Stamp } from "@/app/components/motion-kit/motion";
@@ -21,8 +22,6 @@ const test = [
   ["한국어를 공부해요", ["Я учу корейский", "Я ем корейский", "Я пью кофе"], "Я учу корейский"],
   ["-아요/어요", ["вежливое настоящее", "прошедшее время", "будущее время"], "вежливое настоящее"],
 ] as const;
-
-function speak(text: string) { if ("speechSynthesis" in window) { window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = "ko-KR"; utterance.rate = .78; window.speechSynthesis.speak(utterance); } }
 
 export function LessonFourClient({ lessonId }: { lessonId: string }) {
   const [chosen, setChosen] = useState(0);

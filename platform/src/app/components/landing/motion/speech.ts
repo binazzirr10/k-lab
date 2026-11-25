@@ -1,8 +1,10 @@
 "use client";
 
+import { koreanUtterance, type Speaker } from "@/lib/korean-voice";
+
 type SpeechOptions = {
   onStart?: () => void;
-  voice?: "male" | "female";
+  voice?: Speaker;
   onEnd?: () => void;
   onError?: () => void;
   onInterrupt?: () => void;
@@ -16,12 +18,7 @@ export function speakKorean(text: string, options: SpeechOptions = {}) {
   const engine = window.speechSynthesis;
   if (active) active.interrupt();
   else engine.cancel();
-  const speech = new SpeechSynthesisUtterance(text);
-  speech.lang = "ko-KR";
-  speech.rate = .82;
-  const voices = engine.getVoices().filter((candidate) => /^ko([-_]|$)/i.test(candidate.lang));
-  const voice = (options.voice && voices.find((candidate) => /\b(?:male|man)\b|남성/i.test(candidate.name) === (options.voice === "male"))) || voices[0];
-  if (voice) speech.voice = voice;
+  const speech = koreanUtterance(text, options.voice);
   speech.onstart = () => options.onStart?.();
   speech.onend = () => { if (active?.speech === speech) active = null; options.onEnd?.(); };
   speech.onerror = () => { if (active?.speech === speech) active = null; options.onError?.(); };

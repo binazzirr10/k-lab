@@ -1,4 +1,5 @@
 "use client";
+import { sayKorean as speak } from "@/lib/korean-voice";
 import { useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { m } from "motion/react";
@@ -13,7 +14,6 @@ const words: Word[] = [
   { id:"b2000000-0000-4000-8000-000000000013",set:"Вещи вокруг",korean:"이것",romanization:"igeot",russian:"это (рядом со мной)",example:"이것은 책이에요.",exampleRu:"Это книга." },{ id:"b2000000-0000-4000-8000-000000000014",set:"Вещи вокруг",korean:"그것",romanization:"geugeot",russian:"то (рядом с собеседником)",example:"그것은 가방이에요.",exampleRu:"То (рядом с вами) — сумка." },{ id:"b2000000-0000-4000-8000-000000000015",set:"Вещи вокруг",korean:"저것",romanization:"jeogeot",russian:"вон то (далеко от обоих)",example:"저것은 커피예요.",exampleRu:"Вон то — кофе." },{ id:"b2000000-0000-4000-8000-000000000016",set:"Вещи вокруг",korean:"책",romanization:"chaek",russian:"книга",example:"이것은 책이에요.",exampleRu:"Это книга." },{ id:"b2000000-0000-4000-8000-000000000017",set:"Вещи вокруг",korean:"가방",romanization:"gabang",russian:"сумка",example:"이것은 가방이에요.",exampleRu:"Это сумка." },{ id:"b2000000-0000-4000-8000-000000000018",set:"Вещи вокруг",korean:"펜",romanization:"pen",russian:"ручка",example:"이것은 펜이에요.",exampleRu:"Это ручка." },
   { id:"b2000000-0000-4000-8000-000000000019",set:"Мой день",korean:"공부해요",romanization:"gongbuhaeyo",russian:"учу, учусь",example:"한국어를 공부해요.",exampleRu:"Я учу корейский язык." },{ id:"b2000000-0000-4000-8000-000000000020",set:"Мой день",korean:"먹어요",romanization:"meogeoyo",russian:"ем",example:"김밥을 먹어요.",exampleRu:"Я ем кимбап." },{ id:"b2000000-0000-4000-8000-000000000021",set:"Мой день",korean:"마셔요",romanization:"masyeoyo",russian:"пью",example:"커피를 마셔요.",exampleRu:"Я пью кофе." },{ id:"b2000000-0000-4000-8000-000000000022",set:"Мой день",korean:"만나요",romanization:"mannayo",russian:"встречаюсь (с кем-то)",example:"친구를 만나요.",exampleRu:"Я встречаюсь с другом." },{ id:"b2000000-0000-4000-8000-000000000023",set:"Мой день",korean:"오늘",romanization:"oneul",russian:"сегодня",example:"오늘 뭐 해요?",exampleRu:"Что вы делаете сегодня?" },{ id:"b2000000-0000-4000-8000-000000000024",set:"Мой день",korean:"커피",romanization:"keopi",russian:"кофе",example:"커피를 마셔요.",exampleRu:"Я пью кофе." },
 ];
-function speak(text: string) { if ("speechSynthesis" in window) { window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = "ko-KR"; utterance.rate = .78; window.speechSynthesis.speak(utterance); } }
 const reducedMotionQuery = "(prefers-reduced-motion: reduce)";
 function listenForMotionPreference(change: () => void) {
   const preference = window.matchMedia(reducedMotionQuery);
