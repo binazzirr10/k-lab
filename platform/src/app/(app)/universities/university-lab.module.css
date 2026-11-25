@@ -1,0 +1,93 @@
+.main { width: min(1120px, calc(100% - 32px)); margin-inline: auto; padding-block: clamp(28px, 6vw, 76px) 120px; display: grid; gap: clamp(44px, 6vw, 80px); color: var(--ink); font: 400 17px/1.5 var(--font-text); }
+.main :is(h1, h2, h3) { margin: 0; font-family: var(--font-display); font-weight: 400; line-height: 1.1; }
+.main h1 { font-size: clamp(2.5rem, 7vw, 5rem); }
+.main h2 { font-size: clamp(1.7rem, 4vw, 2.7rem); }
+.main p { margin: 0; }
+.main ul, .main ol { margin: 0; padding: 0; list-style: none; }
+.main :is(button, input, select, textarea) { max-width: 100%; min-height: 46px; border: 1px solid var(--line); border-radius: var(--radius); background: var(--surface); color: var(--ink); font: 400 16px/1.3 var(--font-text); padding: 8px 12px; }
+.main button { cursor: pointer; border-radius: 999px; padding-inline: 18px; }
+.main button:disabled { opacity: .5; cursor: default; }
+.main :focus-visible { outline: 2px solid var(--accent); outline-offset: 3px; }
+.main a { color: var(--accent); }
+.hero { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); gap: 28px 48px; align-items: end; }
+.hero p { margin-top: 14px; max-width: 46ch; color: var(--muted); font-size: 18px; }
+.facts { display: flex; flex-wrap: wrap; gap: 0; margin: 0; border-top: 1px solid var(--ink); }
+.facts div { flex: 1 1 110px; padding: 12px 14px 0 0; }
+.facts dt { color: var(--muted); font-size: 14px; }
+.facts dd { margin: 0; font: 400 clamp(1.5rem, 3vw, 2.2rem)/1.2 var(--font-display); }
+.notice { padding: 16px 20px; border: 1px solid var(--line); background: var(--mist); }
+.section { display: grid; gap: 22px; min-width: 0; }
+.hint { color: var(--muted); font-size: 15px; }
+.saved > li { padding: 18px 0; border-top: 1px solid var(--line); display: grid; gap: 16px; animation: arrive .6s cubic-bezier(.16, .8, .24, 1); }
+.savedHead { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 16px; }
+.savedHead h3 { font-size: clamp(1.35rem, 3vw, 1.9rem); }
+.savedHead span { color: var(--accent); }
+.savedHead button { margin-left: auto; background: none; }
+.entry { display: grid; grid-template-columns: 1fr 1fr 2fr; gap: 12px; }
+.entry label, .filters label { display: grid; gap: 5px; align-content: start; min-width: 0; color: var(--muted); font-size: 14px; }
+.entry em { color: var(--accent); font-style: normal; }
+.entry label:has(em) { grid-template-columns: auto 1fr; column-gap: 8px; }
+.entry label:has(em) input { grid-column: 1 / -1; }
+.entry em[data-late="true"] { color: var(--error); }
+.main label :is(select, input:not([type="checkbox"]), textarea) { width: 100%; min-width: 0; }
+.entry textarea { resize: vertical; }
+.filters { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 12px; }
+.search { grid-column: span 1; }
+.matches { counter-reset: match; border-top: 1px solid var(--line); }
+.matches li { counter-increment: match; display: flex; align-items: center; justify-content: space-between; gap: 12px 24px; padding: 14px 0; border-bottom: 1px solid var(--line); animation: arrive .6s cubic-bezier(.16, .8, .24, 1); }
+.matches li::before { content: counter(match); flex: 0 0 1em; align-self: start; color: var(--accent); font-size: 15px; }
+.matches li > div { flex: 1; min-width: 0; }
+.matches h3 { font-size: clamp(1.2rem, 2.6vw, 1.6rem); }
+.matches p { color: var(--muted); font-size: 15px; }
+.tableWrap { overflow-x: auto; }
+.table { width: 100%; min-width: 560px; border-collapse: collapse; table-layout: fixed; }
+.table :is(th, td) { padding: 13px 14px 13px 0; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; font-size: 16px; }
+.table thead th { font: 400 1.25rem/1.15 var(--font-display); }
+.table thead button { min-width: 44px; min-height: 44px; padding: 0; border: 0; background: none; }
+.table th:first-child { width: 108px; }
+.table tbody th { color: var(--accent); font-weight: 500; font-size: 14px; }
+.progress { height: 4px; background: var(--line); overflow: hidden; }
+.progress span { display: block; height: 100%; background: var(--accent); transform-origin: left; transition: transform .7s cubic-bezier(.16, .8, .24, 1); }
+.checks { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px 48px; }
+.check { margin: 0; padding: 0; border: 0; min-width: 0; }
+.check legend { padding: 0 0 8px; font: 400 1.3rem/1.2 var(--font-display); }
+.check label { display: flex; align-items: center; gap: 14px; min-height: 52px; padding: 8px 0; border-top: 1px solid var(--line); cursor: pointer; }
+.check input { flex: none; appearance: none; width: 24px; height: 24px; min-height: 0; padding: 0; border: 1px solid var(--muted); border-radius: 50%; background: var(--surface); transition: background .25s, box-shadow .25s; cursor: pointer; }
+.check input:checked { background: var(--accent); box-shadow: inset 0 0 0 5px var(--surface); }
+.check span { background: linear-gradient(var(--accent), var(--accent)) 0 55% / 0 1px no-repeat; transition: background-size .5s cubic-bezier(.16, .8, .24, 1), color .3s; }
+.check input:checked + span { background-size: 100% 1px; color: var(--muted); }
+.locked { padding: clamp(24px, 5vw, 56px); background: var(--ink); color: var(--surface); }
+.locked p { max-width: 56ch; margin: 12px 0 24px; color: var(--on-dark); }
+.main .action { display: inline-flex; align-items: center; min-height: 48px; padding: 0 24px; border-radius: 999px; background: var(--surface); color: var(--ink); text-decoration: none; font-weight: 500; }
+.main .action:hover { background: var(--sage); }
+.count { font-size: 15px; color: var(--muted); }
+.reset { background: none; }
+.catalog > li { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1.3fr) auto; gap: 12px 32px; padding: 22px 0; border-top: 1px solid var(--line); animation: arrive .55s cubic-bezier(.16, .8, .24, 1) calc(var(--i) * 45ms) backwards; }
+.name h3 { font-size: clamp(1.45rem, 3vw, 2.05rem); overflow-wrap: anywhere; }
+.name span { display: block; margin-top: 5px; color: var(--accent); }
+.about b { font-weight: 500; }
+.about p { color: var(--muted); font-size: 16px; }
+.about a { display: inline-flex; align-items: center; min-height: 44px; font-size: 15px; }
+.actions { display: grid; gap: 8px; align-content: start; min-width: 172px; }
+.main .save { display: inline-flex; align-items: center; justify-content: center; gap: 10px; }
+.main .save[aria-pressed="true"] { background: var(--mist); }
+.seal { display: grid; place-items: center; width: 26px; height: 26px; border: 1px solid var(--line); border-radius: 50%; color: var(--muted); font-size: 14px; line-height: 1; transition: background .2s, color .2s; }
+.save[aria-pressed="true"] .seal { border-color: var(--error); background: var(--error); color: var(--surface); animation: stamp .5s cubic-bezier(.2, 1.5, .4, 1); }
+.main .secondary[aria-pressed="true"] { background: var(--ink); color: var(--surface); }
+.saveState { position: fixed; z-index: 20; left: 20px; bottom: 20px; padding: 9px 16px; border-radius: 999px; background: var(--ink); color: var(--surface); font-size: 14px; }
+.saveState:empty { display: none; }
+.saveState[data-state="saved"] { animation: leave .4s 1.8s forwards; }
+.main .saveState button { min-height: 44px; padding: 0 8px; border: 0; background: none; color: inherit; text-decoration: underline; }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+@keyframes arrive { from { transform: translateY(26px); opacity: 0; } }
+@keyframes stamp { from { transform: scale(2.4) rotate(-24deg); opacity: 0; } }
+@keyframes leave { to { opacity: 0; visibility: hidden; } }
+@media (max-width: 860px) {
+  .hero, .checks { grid-template-columns: minmax(0, 1fr); }
+  .entry { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+  .note { grid-column: 1 / -1; }
+  .catalog > li { grid-template-columns: minmax(0, 1fr); }
+  .actions { display: flex; flex-wrap: wrap; }
+}
+@media (max-width: 480px) { .entry { grid-template-columns: minmax(0, 1fr); } .matches li { flex-wrap: wrap; } }
+@media (prefers-reduced-motion: reduce) { .main *, .main *::before { animation: none !important; transition: none !important; } .saveState[data-state="saved"] { display: none; } }

@@ -45,7 +45,7 @@ export const plans: Plan[] = [
       { en: "AI Speaking: 120 minutes a month", ru: "AI Speaking: 120 минут в месяц", soon: true },
       { en: "Personal AI conversation partner", ru: "Персональный AI-собеседник", soon: true },
       { en: "TOPIK mock exams with mistake analysis", ru: "TOPIK Mock Exams с разбором ошибок", soon: true },
-      { en: "University Hub Pro: matching and checklists", ru: "University Hub Pro: подбор вузов и чек-листы", soon: true },
+      { en: "University Hub Pro: matching and checklists", ru: "University Hub Pro: подбор вузов и чек-листы" },
       { en: "Personal study recommendations", ru: "Персональные рекомендации по обучению", soon: true },
     ],
   },
@@ -58,7 +58,7 @@ export const comparison: { section: string; free: string; paid: string; soon: bo
   { section: "Speaking Lab", free: "3 попытки в день", paid: "Без дневного лимита; AI-разговоры позже", soon: false },
   { section: "K-Drama", free: "1 сцена", paid: "Все сцены", soon: false },
   { section: "TOPIK", free: "Мини-тест (скоро)", paid: "Полные тесты и анализ ошибок", soon: true },
-  { section: "University Hub", free: "Каталог университетов", paid: "Подбор программ, требования, чек-листы", soon: true },
+  { section: "University Hub", free: "Каталог университетов", paid: "В Pro+: подбор, сравнение, чек-листы и свои сроки", soon: false },
   { section: "Прогресс", free: "Пройденные уроки", paid: "Анализ ошибок, рекомендации", soon: true },
 ];
 

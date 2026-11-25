@@ -40,7 +40,7 @@ export function UniversityHub({ lang }: { lang: Lang }) {
         <span className={e.number} aria-hidden="true">03</span>
         <h2 className={e.title} id={heading}><Reveal lines={t.title} /></h2>
         <p className={e.lead}>{t.intro}</p>
-        <MagneticPill href="https://k-lab-two.vercel.app/universities.html">{t.directory}</MagneticPill>
+        <MagneticPill href="/universities">{t.directory}</MagneticPill>
       </div>
       <div className={`${e.paper} ${s.index}`} data-handoff="">
         <h3 className={s.indexLabel}>{t.index}</h3>

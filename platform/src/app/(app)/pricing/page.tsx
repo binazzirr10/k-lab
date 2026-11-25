@@ -28,13 +28,13 @@ export default async function PricingPage() {
     if (!user) return <Link className="plan-action" href="/sign-in">Войти и оставить заявку</Link>;
     if (active === "pro_plus") return <p className="plan-current">Входит в Pro+</p>;
     return <PlanRequest plan={plan.id} initialSent={requested === plan.id}
-      label={plan.id === "pro" ? "Оставить заявку на Pro" : "В лист ожидания Pro+"} />;
+      label={plan.id === "pro" ? "Оставить заявку на Pro" : "Оставить заявку на Pro+"} />;
   }
 
   return <div className={styles.shell}>
     <AppNav active="pricing"><AuthActions /></AppNav>
     <main className={styles.main}>
-      <header className={styles.hero}><h1>Тарифы</h1><p>Начни бесплатно. Pro открывает все K-Drama сцены и убирает дневной лимит Speaking.</p></header>
+      <header className={styles.hero}><h1>Тарифы</h1><p>Начни бесплатно. Pro открывает все K-Drama сцены и убирает дневной лимит Speaking. Pro+ добавляет инструменты University Lab.</p></header>
       <PlanCards lang="ru" action={action} />
       <p className="plan-note">Онлайн-оплаты пока нет. Заявка ничего не списывает: команда K‑Lab свяжется с тобой по почте аккаунта и откроет доступ после оплаты. Пункты с пометкой «скоро» ещё не готовы.</p>
       <section className={styles.panel}>
