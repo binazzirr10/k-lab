@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 // When one model hangs or is overloaded, the next one answers.
-const MODELS = ["gemini-3.6-flash", "gemini-3.8-flash", "gemini-3.5-flash-lite"] as const;
+const MODELS = ["gemini-3.5-flash-lite", "gemini-3.8-flash", "gemini-3.6-flash"] as const;
 const url = (model: string) => `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent`;
 const ATTEMPT_MS = 12_000;
 const TIMEOUT_MS = 40_000;
