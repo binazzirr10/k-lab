@@ -12,7 +12,7 @@ export default async function handler(req, res) {
   const prompt = `Ты K‑Tutor, доброжелательный преподаватель корейского для начинающих из Казахстана. Контекст текущего урока: ${lessonContext || 'Знакомство: 안녕하세요, 저는 ...이에요/예요.'} Отвечай по-русски просто, точно и ЗАКАНЧИВАЙ мысль полностью. Максимум 4 коротких предложения. Если уместно, добавь один корейский пример с переводом. Не придумывай правила и не уходи в сложную грамматику. Вопрос ученика: ${message}`;
   try {
     // When one model hangs or is overloaded, the next one answers. Each gets its own short time limit.
-    const models = ['gemini-3.6-flash', 'gemini-3.8-flash', 'gemini-3.5-flash-lite'];
+    const models = ['gemini-3.5-flash-lite', 'gemini-3.8-flash', 'gemini-3.6-flash'];
     const total = AbortSignal.timeout(40_000);
     let response;
     for (const model of models) {
