@@ -1,3 +1,4 @@
+import { signInFor } from "@/lib/sign-in";
 import { AppNav } from "@/app/components/app-nav";
 import { UserButton } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
@@ -10,7 +11,7 @@ const lessonId = "a1000000-0000-4000-8000-000000000101";
 
 export default async function LessonOnePage() {
   const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  if (!userId) redirect(signInFor("/learn/lesson-01-introduction"));
   const user = await currentUser();
   const name = user?.firstName || user?.username || "Ученик";
   return <>

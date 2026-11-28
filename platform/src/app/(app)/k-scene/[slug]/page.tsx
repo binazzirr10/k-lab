@@ -1,3 +1,4 @@
+import { signInFor } from "@/lib/sign-in";
 import Link from "next/link";
 import { UserButton } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
@@ -11,8 +12,8 @@ import { ScenePlayer } from "./scene-player";
 
 export default async function ScenePage({ params }: { params: Promise<{ slug: string }> }) {
   const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
   const { slug } = await params;
+  if (!userId) redirect(signInFor(`/k-scene/${encodeURIComponent(slug)}`));
   const scene = getScene(slug);
   if (!scene) notFound();
   const user = await currentUser();

@@ -1,3 +1,4 @@
+import { signInFor } from "@/lib/sign-in";
 import { AppNav } from "@/app/components/app-nav";
 import { UserButton } from "@clerk/nextjs";
 import { auth, clerkClient, currentUser } from "@clerk/nextjs/server";
@@ -30,7 +31,7 @@ async function loadRows(query: string): Promise<{ rows: PlanRow[]; failed: boole
 
 export default async function AdminPage({ searchParams }: { searchParams: Promise<{ q?: string | string[] }> }) {
   const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  if (!userId) redirect(signInFor("/admin"));
 
   const user = await currentUser();
   const role = String(user?.publicMetadata?.role ?? "").toLowerCase();

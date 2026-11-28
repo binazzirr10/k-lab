@@ -1,3 +1,4 @@
+import { signInFor } from "@/lib/sign-in";
 import { AppNav } from "@/app/components/app-nav";
 import { UserButton } from "@clerk/nextjs";
 import { auth, currentUser } from "@clerk/nextjs/server";
@@ -8,7 +9,7 @@ import { LessonTwoClient } from "./lesson-client";
 
 export default async function LessonTwoPage() {
   const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  if (!userId) redirect(signInFor("/learn/lesson-02-country"));
   const user = await currentUser();
   const name = user?.firstName || user?.username || "Ученик";
   return <>
