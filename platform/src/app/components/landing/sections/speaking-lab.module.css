@@ -49,3 +49,5 @@
   .choices button { padding-inline: .4rem; }
   .choices button > span:first-child { font-size: 14px; }
 }
+
+.standalone { min-height: 100vh; }

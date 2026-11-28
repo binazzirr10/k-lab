@@ -40,7 +40,8 @@ const copy = {
   },
 };
 
-export function SpeakingLab({ lang, phrases }: { lang: Lang; phrases: PracticePhrases }) {
+/** `standalone` is the full page: the heading is the page title and there is no link to itself. */
+export function SpeakingLab({ lang, phrases, standalone = false }: { lang: Lang; phrases: PracticePhrases; standalone?: boolean }) {
   const t = copy[lang];
   const reduced = useReducedMotion();
   const [index, setIndex] = useState(0);
@@ -83,16 +84,16 @@ export function SpeakingLab({ lang, phrases }: { lang: Lang; phrases: PracticePh
     else audio.pause();
   }
 
-  return <section className={e.section} id="speaking" data-scene="speaking" lang={lang} aria-labelledby="speaking-heading">
+  return <section className={`${e.section} ${standalone ? s.standalone : ""}`} id="speaking" data-scene="speaking" lang={lang} aria-labelledby="speaking-heading">
     <div className={e.frame}>
-      <Divider />
+      {!standalone && <Divider />}
       <header className={`${e.intro} ${s.intro}`}>
-        <span className={e.number} aria-hidden="true">01</span>
-        <h2 className={e.title} id="speaking-heading"><Reveal lines={t.title} /></h2>
+        {!standalone && <span className={e.number} aria-hidden="true">01</span>}
+        {standalone ? <h1 className={e.title} id="speaking-heading"><Reveal lines={t.title} /></h1> : <h2 className={e.title} id="speaking-heading"><Reveal lines={t.title} /></h2>}
       </header>
       <div className={`${e.paper} ${s.about}`}>
         <p className={e.lead}>{t.intro}</p>
-        <MagneticPill href="https://k-lab-two.vercel.app/speaking.html">{t.link}</MagneticPill>
+        {!standalone && <MagneticPill href="/speaking">{t.link}</MagneticPill>}
       </div>
       <div className={`${e.paper} ${s.instrument}`}>
         <LayoutGroup id="practice-phrases">
@@ -107,12 +108,12 @@ export function SpeakingLab({ lang, phrases }: { lang: Lang; phrases: PracticePh
         <div className={s.readout}>
           <div>
             <p className={s.hangul} lang="ko"><AssembledPhrase text={line.text} /></p>
-            <div className={s.translation}><span>{line.romanization}</span><span>{lang === "en" ? line.english : line.translation}</span></div>
+            <div className={s.translation}>{line.romanization && <span>{line.romanization}</span>}<span>{lang === "en" ? line.english : line.translation}</span></div>
           </div>
           <div className={s.exchange}>
             <span className={e.label}>{t.exchange}</span>
-            {[cue, line].map((turn, i) => <div className={s.turn} key={i}>
-              <span>{i === 0 ? t.minji : t.answer}</span>
+            {(cue ? [cue, line] : [line]).map((turn, i) => <div className={s.turn} key={i}>
+              <span>{cue && i === 0 ? t.minji : t.answer}</span>
               <div><span lang="ko">{turn.text}</span><small>{lang === "en" ? turn.english : turn.translation}</small></div>
             </div>)}
           </div>
@@ -160,7 +161,7 @@ export function SpeakingLab({ lang, phrases }: { lang: Lang; phrases: PracticePh
               <button className={e.button} type="button" aria-pressed={playing} onClick={togglePlayback}>{playing ? "Ⅱ" : "▷"} {t.take}</button>
             </>}
           </div>
-          <div><p className={e.note} role="status">{t[status]}{audioError && ` ${t[audioError]}`}</p>{left !== null && <p className={e.note} role="status">{left === 0 ? t.spent : t.left[left - 1]} <a href="#pricing">{t.plans}</a></p>}<p className={e.note}>{t.privacy}</p></div>
+          <div><p className={e.note} role="status">{t[status]}{audioError && ` ${t[audioError]}`}</p>{left !== null && <p className={e.note} role="status">{left === 0 ? t.spent : t.left[left - 1]} <a href={standalone ? "/pricing" : "#pricing"}>{t.plans}</a></p>}<p className={e.note}>{t.privacy}</p></div>
         </div>
         {status === "result" && (heard ? <div className={s.result}>
           <p className={e.note}>{t.heard} <b lang="ko">{heard}</b> · {t.match}</p>

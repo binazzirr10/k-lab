@@ -1,6 +1,9 @@
 import { landingScenes } from "./scenes";
 
-export const practicePhrases = [
+export type PracticeLine = { text: string; romanization?: string; translation: string; english: string };
+export type PracticePhrase = { line: PracticeLine; cue?: PracticeLine };
+
+export const practicePhrases: PracticePhrase[] = [
   { line: landingScenes[0].lines[1], cue: landingScenes[0].lines[0] },
   { line: landingScenes[0].lines[3], cue: landingScenes[0].lines[2] },
   { line: landingScenes[0].lines[5], cue: landingScenes[0].lines[4] },
@@ -9,4 +12,4 @@ export const practicePhrases = [
   { line: landingScenes[3].lines[1], cue: { text: "오늘 뭐 해요?", english: "What are you doing today?", translation: "Что вы делаете сегодня?" } },
 ];
 
-export type PracticePhrases = typeof practicePhrases;
+export type PracticePhrases = PracticePhrase[];
