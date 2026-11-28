@@ -62,6 +62,19 @@ const tutorCss = `
 .k-tutor-messages { min-height: 0; overscroll-behavior: contain; align-content: start; }
 .k-tutor-messages p { overflow-wrap: anywhere; font-size: 14px; }
 
+/* On phones the launcher is a small round chat button, so it covers as little of the page as possible. */
+.k-tutor-icon { display: none; }
+@media (max-width: 600px) {
+  .k-tutor .k-tutor-launch {
+    position: relative; justify-content: center; width: 52px; height: 52px; min-height: 52px; padding: 0;
+    border-radius: 50%; box-shadow: 3px 3px #15251e;
+  }
+  .k-tutor-launch .k-tutor-icon { display: block; }
+  .k-tutor-launch i { position: absolute; top: 7px; right: 7px; }
+  .k-tutor-launch .k-tutor-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  body:has(.k-tutor) { padding-bottom: 84px; }
+}
+
 @keyframes tutor-open {
   from { transform: translateY(7px) scale(.96); opacity: .65; }
 }
@@ -149,7 +162,7 @@ export function KTutorChat({ context, label }: { context: TutorContextId; label:
         </div>
         <form onSubmit={askTutor}><input ref={input} aria-label="Вопрос для K-Tutor" value={question} onChange={(event) => setQuestion(event.target.value)} maxLength={700} placeholder="Например: почему здесь 은/는?" /><button type="submit" disabled={loading}>СПРОСИТЬ</button></form>
       </section>}
-      <button ref={launcher} className="k-tutor-launch" type="button" aria-expanded={open} onClick={() => open ? close() : setOpen(true)}><i />СПРОСИ K‑TUTOR</button>
+      <button ref={launcher} className="k-tutor-launch" type="button" aria-expanded={open} onClick={() => open ? close() : setOpen(true)}><i /><svg className="k-tutor-icon" aria-hidden="true" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinejoin="round"><path d="M4 5h16v11H9l-5 4z" /><path d="M8.5 10.5h.01M12 10.5h.01M15.5 10.5h.01" strokeLinecap="round" strokeWidth="2.6" /></svg><span className="k-tutor-label">СПРОСИ K‑TUTOR</span></button>
     </aside>
   </>);
 }
