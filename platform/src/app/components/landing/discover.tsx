@@ -7,8 +7,8 @@ import { withTransition } from "./motion/transition";
 const features = [
   {
     id: "speaking", image: null, crop: undefined,
-    en: ["Speaking Lab", "Practise speaking Korean. Record a phrase and get an AI comment on how it sounds."],
-    ru: ["Speaking Lab", "Запиши фразу на корейском и получи комментарий от ИИ."],
+    en: ["Speaking Lab", "Practise speaking Korean. Record a phrase and compare it with the original, syllable by syllable."],
+    ru: ["Speaking Lab", "Запиши фразу на корейском и сравни её с образцом по слогам."],
   },
   {
     id: "drama", image: "/assets/kscene-cafe-table-480.webp", crop: "42% center",

@@ -12,9 +12,9 @@ import { getOrCreateStudentProfile } from "@/lib/profile";
 const weekNames = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 
 const paths = [
-  { number: "Уроки", title: "Список уроков курса", note: "Открыть список уроков →", href: "https://k-lab-two.vercel.app/courses.html" },
-  { number: "Speaking Lab", title: "Записать свою фразу", note: "Получить комментарий к записи →", href: "https://k-lab-two.vercel.app/speaking.html" },
-  { number: "K‑Drama", title: "Сцены к урокам курса", note: "Слушать и повторять реплики →", href: "https://k-lab-two.vercel.app/kdrama.html" },
+  { number: "Уроки", title: "Список уроков курса", note: "Открыть первый урок →", href: "/learn/lesson-01-introduction" },
+  { number: "Speaking Lab", title: "Записать свою фразу", note: "Записать и сравнить с образцом →", href: "/speaking" },
+  { number: "K‑Drama", title: "Сцены к урокам курса", note: "Слушать и повторять реплики →", href: "/k-scene" },
 ];
 
 
@@ -100,7 +100,7 @@ export default async function StudioPage() {
           <Link href="/universities">Открыть University Lab <span aria-hidden="true">→</span></Link>
         </section>
 
-        <section className="rhythm-directions"><div className="rhythm-directions-head"><h2>Выбери, чем заняться ещё.</h2><p>Эти разделы открываются на прежнем сайте K‑Lab. Вход там отдельный, и результаты в этот кабинет не попадают.</p></div><div className="rhythm-paths">{paths.map((path) => <a href={path.href} key={path.number}><span>{path.number}</span><h3>{path.title}</h3><p>{path.note}</p></a>)}</div></section>
+        <section className="rhythm-directions"><div className="rhythm-directions-head"><h2>Выбери, чем заняться ещё.</h2><p>Уроки, Speaking Lab и сцены курса открываются здесь же, а прогресс сохраняется в этом кабинете.</p></div><div className="rhythm-paths">{paths.map((path) => <a href={path.href} key={path.number}><span>{path.number}</span><h3>{path.title}</h3><p>{path.note}</p></a>)}</div></section>
 
         <section className="rhythm-badges" aria-label="Бейджи">
           <article className={stats.completed >= 1 ? "unlocked" : "locked"}><i>{stats.completed >= 1 ? "✦" : "○"}</i><b>Первый шаг</b><span>Заверши один урок</span></article><article className={stats.streak >= 7 ? "unlocked" : "locked"}><i>{stats.streak >= 7 ? "✦" : "○"}</i><b>Семь дней</b><span>Пока недоступен</span></article><article className={stats.completed >= 5 ? "unlocked" : "locked"}><i>{stats.completed >= 5 ? "✦" : "○"}</i><b>Начало A1</b><span>4 урока и Checkpoint</span></article><article className={stats.speakingAttempts >= 1 ? "unlocked" : "locked"}><i>{stats.speakingAttempts >= 1 ? "✦" : "○"}</i><b>Голос K‑Lab</b><span>Пока недоступен</span></article>

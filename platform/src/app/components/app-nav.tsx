@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useId, useRef, useState, type ReactNode } from "react";
 
-export type AppSection = "studio" | "learn" | "hangul" | "grammar" | "phrases" | "words" | "scenes" | "universities" | "pricing";
+export type AppSection = "studio" | "learn" | "hangul" | "grammar" | "phrases" | "words" | "speaking" | "scenes" | "universities" | "pricing";
 
 const items: { id: AppSection; label: string; href: string }[] = [
   { id: "studio", label: "Мой ритм", href: "/studio" },
@@ -12,6 +12,7 @@ const items: { id: AppSection; label: string; href: string }[] = [
   { id: "grammar", label: "Грамматика", href: "/grammar" },
   { id: "phrases", label: "Фразы", href: "/phrases" },
   { id: "words", label: "Word Deck", href: "/vocabulary" },
+  { id: "speaking", label: "Speaking", href: "/speaking" },
   { id: "scenes", label: "K‑Scene", href: "/k-scene" },
   { id: "universities", label: "University Lab", href: "/universities" },
   { id: "pricing", label: "Тарифы", href: "/pricing" },
