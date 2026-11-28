@@ -24,6 +24,7 @@
 .facts > div + div { border-left: 1px solid var(--line); padding-left: .75rem; }
 .facts dt { color: var(--accent); font-size: 14px; margin: 0 0 .25rem; }
 .facts dd { font-size: 16px; line-height: 1.4; margin: 0; overflow-wrap: anywhere; }
+.links { display: flex; flex-wrap: wrap; gap: .35rem 1.25rem; }
 .official { display: inline-flex; gap: .55rem; min-height: 44px; align-items: center; color: var(--ink); text-decoration: none; border-bottom: 1px solid var(--ink); font-size: 16px; }
 .path { grid-column: 1 / -1; padding-top: clamp(1rem, 3vw, 2rem); }
 .path h3 { font: 400 clamp(2rem, 4vw, 3.8rem)/1.08 var(--display); word-spacing: -.1em; margin: 0 0 1.5rem; letter-spacing: -.012em; }
