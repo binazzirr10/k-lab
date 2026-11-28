@@ -20,7 +20,7 @@ export default async function VocabularyPage() {
   } catch { /* The deck is still usable before the first database sync. */ }
   return <>
     <AppNav active="words"><b>{name}</b><UserButton appearance={{ elements: { avatarBox: "learn-avatar" } }} /></AppNav>
-    <main className="deck-wrap"><header className="deck-hero"><div><span>Word Deck · A1</span><h1>Слова к четырём урокам</h1><p>Выбери тему, послушай фразу с новым словом и отметь, знаешь ты его или хочешь повторить.</p></div><div className="deck-stats"><div><b>24</b><small>Слова в колоде</small></div><div><b>{Object.values(savedStates).filter((state) => state === "known").length}</b><small>Уже выучено</small></div><div><b>{Object.values(savedStates).filter((state) => state === "review").length}</b><small>Нужно повторить</small></div></div></header><WordDeckClient initialStates={savedStates} /></main>
+    <main className="deck-wrap"><WordDeckClient initialStates={savedStates} intro={<div><span>Word Deck · A1</span><h1>Слова к четырём урокам</h1><p>Выбери тему, послушай фразу с новым словом и отметь, знаешь ты его или хочешь повторить.</p></div>} /></main>
     <KTutor context="word-deck" />
   </>;
 }
