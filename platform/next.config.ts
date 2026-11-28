@@ -3,6 +3,11 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   turbopack: { root: process.cwd() },
   experimental: { optimizePackageImports: ["motion/react"] },
+  images: {
+    remotePatterns: [
+      { protocol: "https", hostname: "upload.wikimedia.org", port: "", pathname: "/wikipedia/commons/thumb/**", search: "" },
+    ],
+  },
   async headers() {
     return [
       { source: "/fonts/:path*", headers: [{ key: "Cache-Control", value: "public, max-age=2592000, stale-while-revalidate=31536000" }] },

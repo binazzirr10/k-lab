@@ -1,0 +1,37 @@
+.number { font-variant-numeric: tabular-nums lining-nums; white-space: nowrap; }
+.reel { display: inline-block; position: relative; width: 1ch; height: 1lh; overflow: hidden; vertical-align: bottom; }
+.strip { position: absolute; inset: 0 0 auto; display: grid; text-align: center; }
+.strip > span { height: 1lh; }
+.strip > span::before { content: attr(data-digit); }
+.srOnly { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+
+.seal {
+  position: relative;
+  display: inline-grid;
+  flex: 0 0 26px;
+  width: 26px;
+  height: 26px;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1;
+}
+.stamp, .ink { position: absolute; inset: -1px; border-radius: inherit; pointer-events: none; }
+.stamp { display: grid; place-items: center; border: 1px solid var(--error); background: var(--error); color: var(--surface); }
+.ink { border: 1px solid var(--error); opacity: 0; }
+
+.toast {
+  grid-area: 1 / 1;
+  justify-self: start;
+  align-self: end;
+  display: block;
+  max-width: 100%;
+  padding: 9px 16px;
+  border-radius: 18px;
+  background: var(--ink);
+  color: var(--surface);
+  font: 400 14px/1.5 var(--font-text);
+  pointer-events: auto;
+}

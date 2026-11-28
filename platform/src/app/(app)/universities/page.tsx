@@ -4,8 +4,13 @@ import { AppNav } from "@/app/components/app-nav";
 import { AuthActions } from "@/app/components/auth-actions";
 import { activePlan } from "@/lib/plans";
 import { emptyPlanner } from "@/lib/universities";
+import { universityArticles } from "@/lib/university-articles";
 import { loadUniversityLab } from "@/lib/university-lab";
 import { UniversityLab } from "./university-lab";
+
+const thumbnails = Object.fromEntries(Object.entries(universityArticles).map(([id, { photo }]) => [
+  id, photo && { src: photo.src, alt: photo.alt },
+]));
 
 export const metadata: Metadata = {
   title: "University Lab: университеты Кореи | K‑Lab",
@@ -19,6 +24,6 @@ export default async function UniversitiesPage() {
   return <>
     <AppNav active="universities"><AuthActions /></AppNav>
     <UniversityLab saved={lab.saved} planner={lab.planner} connected={lab.connected} signedIn={!!user}
-      pro={activePlan(user?.publicMetadata).plan === "pro_plus"} today={today} />
+      pro={activePlan(user?.publicMetadata).plan === "pro_plus"} today={today} thumbnails={thumbnails} />
   </>;
 }

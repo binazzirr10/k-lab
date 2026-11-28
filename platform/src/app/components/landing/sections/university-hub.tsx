@@ -1,9 +1,11 @@
 "use client";
 
 import { type CSSProperties, useState } from "react";
+import Link from "next/link";
 import * as m from "motion/react-m";
 import type { Lang } from "@/lib/landing/lang";
 import { admissionSteps, universities } from "@/lib/landing/universities";
+import { universityCatalog } from "@/lib/universities";
 import { LineArrow, MagneticPill, Reveal, useReducedMotion } from "../motion";
 import { Divider } from "../motion/divider";
 import { JamoText } from "../motion/jamo-text";
@@ -16,15 +18,18 @@ const copy = {
     title: ["University", "Hub"], intro: "Explore Korean universities and the usual steps to applying.",
     directory: "See the university directory", index: "University index", path: "From research to application",
     language: "Language of instruction varies by program. Check the official page.",
-    official: "Official admissions", city: "City", areas: "Areas of study", instruction: "Language of instruction",
+    official: "Official admissions", article: "Read the article", city: "City", areas: "Areas of study", instruction: "Language of instruction",
   },
   ru: {
     title: ["Вузы", "Кореи"], intro: "Познакомься с университетами Кореи и узнай, как обычно проходит поступление.",
     directory: "Открыть каталог вузов", index: "Список университетов", path: "От выбора вуза до поступления",
     language: "Язык обучения зависит от программы. Уточни на официальном сайте.",
-    official: "Официальный сайт приёмной комиссии", city: "Город", areas: "Направления", instruction: "Язык обучения",
+    official: "Официальный сайт приёмной комиссии", article: "Читать статью", city: "Город", areas: "Направления", instruction: "Язык обучения",
   },
 };
+
+const universityIds = new Map(universityCatalog.map(({ name, id }) => [name, id]));
+const universityIndex = universities.map((university) => ({ university, id: universityIds.get(university.name) }));
 
 export function UniversityHub({ lang }: { lang: Lang }) {
   const t = copy[lang];
@@ -45,7 +50,7 @@ export function UniversityHub({ lang }: { lang: Lang }) {
       <div className={`${e.paper} ${s.index}`} data-handoff="">
         <h3 className={s.indexLabel}>{t.index}</h3>
         <ul role="list" className={s.list} onPointerLeave={() => setPreview(null)}>
-          {universities.map((university, i) => (
+          {universityIndex.map(({ university, id }, i) => (
             <li key={university.korean} className={s.row} data-enter="slide" style={{ "--i": i } as CSSProperties} onPointerEnter={(event) => {
               if (event.pointerType === "mouse" && !event.currentTarget.parentElement?.querySelector(":focus-visible")) setPreview(i);
             }}>
@@ -68,7 +73,10 @@ export function UniversityHub({ lang }: { lang: Lang }) {
                     <div><dt>{t.areas}</dt><dd>{university.areas[lang]}</dd></div>
                     <div><dt>{t.instruction}</dt><dd>{university.language?.[lang] ?? t.language}</dd></div>
                   </dl>
-                  <a className={s.official} href={university.admissions}>{t.official} <LineArrow /></a>
+                  <div className={s.links}>
+                    <a className={s.official} href={university.admissions}>{t.official} <LineArrow /></a>
+                    {id && <Link className={s.official} href={`/universities/${id}`} prefetch={false}>{t.article} <LineArrow /></Link>}
+                  </div>
                 </div>
               </m.div>
             </li>

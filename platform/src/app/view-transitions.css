@@ -1,7 +1,9 @@
 /* Moving between pages: the new page opens from the middle like two sliding doors. */
 @media (prefers-reduced-motion: no-preference) {
   @view-transition { navigation: auto; types: doors; }
-  .landing-header .landing-wordmark, .app-nav .learn-logo { view-transition-name: klab-wordmark; }
+  html:active-view-transition-type(doors) :is(.landing-header .landing-wordmark, .app-nav .learn-logo) {
+    view-transition-name: klab-wordmark;
+  }
 
   ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
   html:active-view-transition-type(doors)::view-transition { background: #ece8dd; }
@@ -13,7 +15,7 @@
   /* The navigation stays put between course pages and its marker slides to the new section. */
   html:not(:active-view-transition-type(doors)) .app-nav { view-transition-name: klab-nav !important; view-transition-class: none !important; }
   html:not(:active-view-transition-type(doors)) .app-nav-links > a.active::after { view-transition-name: klab-nav-marker; }
-  ::view-transition-group(klab-nav) { z-index: 2; }
+  ::view-transition-group(klab-nav) { animation: none; z-index: 2; }
   ::view-transition-old(klab-nav) { display: none; }
   ::view-transition-new(klab-nav) { animation: none; }
   ::view-transition-group(klab-nav-marker) { z-index: 3; animation-duration: .6s; animation-timing-function: cubic-bezier(.6, 0, .15, 1); }
@@ -37,6 +39,11 @@
   html[data-transition="handoff"]::view-transition-image-pair(handoff) { overflow: clip; border-radius: 2px; }
   html[data-transition="handoff"]::view-transition-old(handoff) { width: 100%; height: 100%; object-fit: cover; animation: fade-out .5s .22s both; }
   html[data-transition="handoff"]::view-transition-new(handoff) { width: 100%; height: 100%; object-fit: cover; object-position: top; animation: fade-in .5s .22s both; }
+}
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
+    animation: none !important;
+  }
 }
 @keyframes page-leave { to { transform: scale(.955); filter: brightness(.86); } }
 @keyframes page-doors { from { clip-path: inset(0 50%); } to { clip-path: inset(0); } }
