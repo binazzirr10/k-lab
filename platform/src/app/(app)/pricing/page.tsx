@@ -6,6 +6,7 @@ import { AuthActions } from "@/app/components/auth-actions";
 import { PlanCards } from "@/app/components/plan-cards";
 import { PlanRequest } from "@/app/components/plan-request";
 import styles from "@/app/components/motion-kit/reference.module.css";
+import { signInFor } from "@/lib/sign-in";
 import { activePlan, comparison, type Plan } from "@/lib/plans";
 
 export const metadata: Metadata = {
@@ -25,7 +26,7 @@ export default async function PricingPage() {
     if (plan.id === "free") {
       return user ? <p className="plan-current">Всегда доступно</p> : <Link className="plan-action" href="/sign-up">Начать бесплатно</Link>;
     }
-    if (!user) return <Link className="plan-action" href="/sign-in">Войти и оставить заявку</Link>;
+    if (!user) return <Link className="plan-action" href={signInFor("/pricing")}>Войти и оставить заявку</Link>;
     if (active === "pro_plus") return <p className="plan-current">Входит в Pro+</p>;
     return <PlanRequest plan={plan.id} initialSent={requested === plan.id}
       label={plan.id === "pro" ? "Оставить заявку на Pro" : "Оставить заявку на Pro+"} />;

@@ -1,3 +1,4 @@
+import { signInFor } from "@/lib/sign-in";
 import { ViewTransition } from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -12,7 +13,7 @@ import "@/app/components/plan-cards.css";
 
 export default async function KSceneHub() {
   const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  if (!userId) redirect(signInFor("/k-scene"));
   const user = await currentUser();
   const { plan } = activePlan(user?.publicMetadata);
   const name = user?.firstName || user?.username || "Ученик";

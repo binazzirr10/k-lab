@@ -1,3 +1,4 @@
+import { signInFor } from "@/lib/sign-in";
 import { activePlan, planName } from "@/lib/plans";
 import { readiness } from "@/lib/universities";
 import { loadUniversityLab } from "@/lib/university-lab";
@@ -51,7 +52,7 @@ async function getLearningStats(userId: string) {
 
 export default async function StudioPage() {
   const { userId } = await auth();
-  if (!userId) redirect("/sign-in");
+  if (!userId) redirect(signInFor("/studio"));
 
   const user = await currentUser();
   const isAdmin = String(user?.publicMetadata?.role ?? "").toLowerCase() === "admin";

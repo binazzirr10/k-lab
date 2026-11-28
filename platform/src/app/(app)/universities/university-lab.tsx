@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { signInFor } from "@/lib/sign-in";
 import Image from "next/image";
 import { useEffect, useLayoutEffect, useRef, useState, ViewTransition, type MouseEventHandler, type ReactNode } from "react";
 import { getCatalogReturn, rememberCatalog, restoreCatalogRow, universityMorph } from "./university-navigation";
@@ -157,7 +158,7 @@ export function UniversityLab({ saved: initialSaved, planner: initialPlanner, co
         </dl>
       </header>
 
-      {!signedIn && <p className={s.notice}>Каталог открыт для всех. <Link href="/sign-in">Войди</Link>, чтобы сохранять университеты в личный кабинет.</p>}
+      {!signedIn && <p className={s.notice}>Каталог открыт для всех. <Link href={signInFor("/universities")}>Войди</Link>, чтобы сохранять университеты в личный кабинет.</p>}
       {signedIn && !connected && <p className={s.notice} role="alert">Не удалось загрузить твой список. Обнови страницу, чтобы сохранять изменения.</p>}
 
       <Presence initial={false} mode="popLayout">
